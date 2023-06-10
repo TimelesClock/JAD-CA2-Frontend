@@ -2,6 +2,7 @@ package books;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -18,14 +19,25 @@ public class BookServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Book> books = new ArrayList<>();
-        String genre = request.getParameter("genre");
+        String bookName = request.getParameter("books");
         
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
-            Statement stmt = con.createStatement();
-            String query = "SELECT * FROM Books INNER JOIN Genres ON Books.genre_id = Genres.genre_id WHERE Genres.name = '" + genre + "'";
-            ResultSet rs = stmt.executeQuery(query);
+            String query = "";
+            ResultSet rs;
+            if (bookName != null) {
+            	query = "SELECT * FROM Books b INNER JOIN Genres g ON b.genre_id = g.genre_id WHERE b.title LIKE ?";
+            	PreparedStatement pst = con.prepareStatement(query);
+                pst.setString(1, "%"+bookName+"%");
+                rs = pst.executeQuery();
+            }else {
+            	Statement stmt = con.createStatement();
+            	query = "SELECT * FROM Books b INNER JOIN Genres g ON b.genre_id = g.genre_id";
+            	rs = stmt.executeQuery(query);
+            }
+            
+            
             
             while(rs.next()) {
                 Book book = new Book();
@@ -47,6 +59,7 @@ public class BookServlet extends HttpServlet {
             con.close();
         } catch(Exception e) {
             e.printStackTrace();
+            request.setAttribute("err", e.getMessage());
         }
         
         request.setAttribute("books", books);
