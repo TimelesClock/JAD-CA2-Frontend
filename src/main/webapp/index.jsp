@@ -10,6 +10,8 @@
 	rel="stylesheet">
 </head>
 <body>
+	<% pageContext.setAttribute("cartItems",4); %>
+	<%@include file = "header.jsp"%>
 	<%
 	@SuppressWarnings("unchecked")
 	String err = (String) request.getAttribute("err");
