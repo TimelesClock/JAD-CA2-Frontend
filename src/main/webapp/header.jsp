@@ -4,9 +4,6 @@
 <html>
 
 <head>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdn.jsdelivr.net/npm/daisyui@3.0.20/dist/full.css"
-	rel="stylesheet">
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>

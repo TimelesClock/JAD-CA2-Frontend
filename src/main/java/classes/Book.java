@@ -1,6 +1,13 @@
-package books;
+package classes;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Base64;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Book {
     private int bookId;
@@ -14,12 +21,29 @@ public class Book {
     private String description;
     private int publisherId;
     private int genreId;
+    private byte[] image;
 
     // Constructor
     public Book() {
     }
+    
+    //Methods
+    public String getImageBase64() {
+    	if (image != null) {
+    		return Base64.getEncoder().encodeToString(image);
+    	}else {
+    		return "";
+    	}
+        
+    }
 
     // Setters
+    
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+    
     public void setBookId(int bookId) {
         this.bookId = bookId;
     }
@@ -65,6 +89,10 @@ public class Book {
     }
 
     // Getters
+    public byte[] getImage() {
+        return image;
+    }
+    
     public int getBookId() {
         return bookId;
     }
