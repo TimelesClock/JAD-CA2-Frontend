@@ -82,7 +82,7 @@
 			for (Book book : books) {
 		%>
 		<div class="card w-96 h-96 bg-base-100 shadow-xl my-2">
-			<figure><img src="data:image/jpeg;base64,<%=book.getImageBase64()%>" alt="Book Image"></figure>
+			<figure><img src="data:image/jpeg;base64,<%=book.getImageBase64()%>" alt="Book img"></figure>
 			<div class="card-body">
 				<h2 class="card-title">
 					<%=book.getTitle()%>
