@@ -76,36 +76,36 @@
 		</div>
 	</div>
 
-	<div class="flex flex-wrap m-10 mx-16 px-32 justify-between">
+	<div class="flex flex-wrap my-10 px-80 justify-between">
 		<%
 		@SuppressWarnings("unchecked")
 		List<Book> books = (List<Book>) request.getAttribute("books");
 		if (books != null) {
 			for (Book book : books) {
 		%>
-		<div class="card w-72 h-96 bg-base-100 shadow-xl my-2">
+		<div class="card md:w-72 lg:w-96 h-1/6 bg-base-100 shadow-xl m-2 border border-base-300">
 			<%
 			if (!book.getImageBase64().equals("")) {
 			%>
-			<figure>
+			<figure class = "w-full h-80">
 				<img src="data:image/jpeg;base64,<%=book.getImageBase64()%>"
-					alt="Book img">
+					alt="Book img" class = "w-full h-full">
 			</figure>
 			<%
 			} else {
 			%>
-			<figure>
-				<img src="https://picsum.photos/200/300" alt="Book img">
+			<figure class = "w-full h-80">
+				<img src="https://picsum.photos/200/300" alt="Book img" class = "w-full h-full">
 			</figure>
 			<%
 			}
 			%>
 
 			<div class="card-body">
-				<h2 class="card-title">
+				<h2 class="card-title line-clamp-1">
 					<%=book.getTitle()%>
 				</h2>
-				<p><%=book.getDescription().length() > 100 ? book.getDescription().substring(0, 100) + "..." : book.getDescription()%></p>
+				<p class = "h-20 line-clamp-4"><%=book.getDescription().length() > 100 ? book.getDescription().substring(0, 100) + "..." : book.getDescription()%></p>
 				<div class="card-actions justify-end">
 					<button class="btn btn-primary">Show Details</button>
 				</div>
