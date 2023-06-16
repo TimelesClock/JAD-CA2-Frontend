@@ -13,7 +13,7 @@
         <div class="menu menu-horizontal px-1">
             <%
             HttpSession loginSession = request.getSession(false);
-            if (loginSession != null && loginSession.getAttribute("email") != null) { %>
+            if (loginSession != null && loginSession.getAttribute("role") != null) { %>
                 <!-- Logout button -->
                 <form action="AuthenticateServlet" method="post">
                     <input type="hidden" name="action" value="logout">
@@ -26,7 +26,6 @@
                     <button type="submit" class="btn btn-outline">Login</button>
                 </form>
             <% } %>
-
         </div>
     </div>
 </div>
