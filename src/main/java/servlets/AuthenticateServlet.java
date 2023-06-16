@@ -1,13 +1,10 @@
 package servlets;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Base64;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -50,7 +47,7 @@ public class AuthenticateServlet extends HttpServlet {
         else if (action.equals("login")) {
             login(request, response, email, password);
         } else if (action.equals("register")) {
-            register(request, response, email, password,name,password);
+            register(request, response, email, password,name,phone);
         }
     }
 
@@ -73,14 +70,14 @@ public class AuthenticateServlet extends HttpServlet {
                 session.setAttribute("role", rs.getString("role"));
             } else {
                 request.setAttribute("err", "Invalid email or password");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+                response.sendRedirect("BookServlet");
             }
             response.sendRedirect("BookServlet");
             conn.close();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             request.setAttribute("err", "An error occurred");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            response.sendRedirect("BookServlet");
         }
     }
 
