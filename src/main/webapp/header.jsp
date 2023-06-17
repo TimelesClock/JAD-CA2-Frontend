@@ -1,6 +1,3 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<!DOCTYPE html>
 <html>
 
 <head>
@@ -13,32 +10,47 @@
 			<a class="btn btn-ghost normal-case text-xl">SP Books</a>
 		</div>
 		<div class="flex-none">
-			<div class="dropdown dropdown-end">
-				<label tabindex="0" class="btn btn-ghost btn-circle">
-					<div class="indicator">
-						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-							fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round"
-								stroke-width="2"
-								d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-						<span class="badge badge-sm indicator-item"><%=pageContext.getAttribute("cartItems")%></span>
-					</div>
-				</label>
-				<div tabindex="0"
-					class="mt-3 card card-compact dropdown-content w-52 bg-base-100 shadow">
-					<div class="card-body">
-						<span class="font-bold text-lg">8 Items</span> <span
-							class="text-info">Subtotal: $999</span>
-						<div class="card-actions">
-							<button class="btn btn-primary btn-block">View cart</button>
-						</div>
-					</div>
-				</div>
+			<div class="menu menu-horizontal px-1">
+				<%
+				HttpSession loginSession = request.getSession(false);
+				if (loginSession.getAttribute("role") != null && loginSession.getAttribute("role").equals("admin")) {
+				%>
+				<form action="AdminPanelServlet" method="get" class="mx-2">
+					<input type="hidden" name="action" value="login">
+					<button type="submit" class="btn btn-outline">Admin Panel</button>
+				</form>
+				<%
+				} else if (loginSession.getAttribute("role") != null && loginSession.getAttribute("role").equals("customer")) {
+				%>
+				<form action="AuthenticateServlet" method="get" class="mx-2">
+					<input type="hidden" name="action" value="login">
+					<button type="submit" class="btn btn-outline">Customer Panel</button>
+				</form>
+				<%
+				}
+				%>
+				<%
+				if (loginSession != null && loginSession.getAttribute("role") != null) {
+				%>
+				<!-- Logout button -->
+				<form action="AuthenticateServlet" method="post" class = "mx-2">
+					<input type="hidden" name="action" value="logout">
+					<button type="submit" class="btn btn-outline btn-error">Logout</button>
+				</form>
+				<%
+				} else {
+				%>
+				<!-- Login button -->
+				<form action="AuthenticateServlet" method="get" class="mx-2">
+					<input type="hidden" name="action" value="login">
+					<button type="submit" class="btn btn-outline">Login</button>
+				</form>
+				<%
+				}
+				%>
 			</div>
-			<ul class="menu menu-horizontal px-1">
-				<li class = "btn">Login</li>
-			</ul>
 		</div>
 	</div>
+
 </body>
 </html>
