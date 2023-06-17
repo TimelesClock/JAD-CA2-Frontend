@@ -10,7 +10,7 @@
 	rel="stylesheet">
 </head>
 <body>
-<%
+	<%
 	String err = (String) request.getParameter("err");
 	if (err != null) {
 		int maxLength = 50;
@@ -46,18 +46,27 @@
 	%>
 	<div class="container-fluid mx-auto">
 		<div class="flex flex-row">
-			<%@include file="adminSidePanel.jsp" %>
+			<%@include file="adminSidePanel.jsp"%>
 			<div class="w-10/12">
 				<%
 				String content = request.getParameter("p");
-				if(content != null && content.equals("addBook")){
-					%><%@include file = "adminAddBook.jsp" %><%
-				}else{
-					%><%
+				if (content != null && content.equals("addBook")) {
+				%><%@include file="adminAddBook.jsp"%>
+				<%
+				} else if (content != null && content.equals("editBook")) {
+				%><%@include file="adminEditBook.jsp"%>
+				<%
+				} else if (content != null && content.equals("deleteBook")) {
+				%><%@include file="adminDeleteBook.jsp"%>
+				<%
+				} else {
+				%><div>Hello</div>
+				<%
 				}
 				%>
 			</div>
 		</div>
 	</div>
+
 </body>
 </html>
