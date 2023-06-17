@@ -105,9 +105,12 @@
 				<h2 class="card-title line-clamp-1">
 					<%=book.getTitle()%>
 				</h2>
-				<p class = "h-20 line-clamp-4"><%=book.getDescription().length() > 100 ? book.getDescription().substring(0, 100) + "..." : book.getDescription()%></p>
-				<div class="card-actions justify-end">
-					<button class="btn btn-primary">Show Details</button>
+				<p><%=book.getDescription().length() > 100 ? book.getDescription().substring(0, 100) + "..." : book.getDescription()%></p>
+				<div class="card-actions justify-end">					
+					<form class="btn btn-primary" action="BookDetailsServlet" method="get">
+						<input type="hidden" name="bookId" value='<%=book.getBookId()%>'>
+						<input type="submit" value="SHOW DETAILS" />
+					</form>
 				</div>
 			</div>
 		</div>
