@@ -22,10 +22,12 @@
 				<%
 				} else if (loginSession.getAttribute("role") != null && loginSession.getAttribute("role").equals("customer")) {
 				%>
-				<form action="AuthenticateServlet" method="get" class="mx-2">
+				<form action="CustomerPanelServlet" method="get" class="mx-2">
 					<input type="hidden" name="action" value="login">
-					<button type="submit" class="btn btn-outline">Customer Panel</button>
+					<button type="submit" class="btn btn-outline">Customer
+						Panel</button>
 				</form>
+				<%@include file="customerHeader.jsp"%>
 				<%
 				}
 				%>
@@ -33,7 +35,7 @@
 				if (loginSession != null && loginSession.getAttribute("role") != null) {
 				%>
 				<!-- Logout button -->
-				<form action="AuthenticateServlet" method="post" class = "mx-2">
+				<form action="AuthenticateServlet" method="post" class="mx-2">
 					<input type="hidden" name="action" value="logout">
 					<button type="submit" class="btn btn-outline btn-error">Logout</button>
 				</form>

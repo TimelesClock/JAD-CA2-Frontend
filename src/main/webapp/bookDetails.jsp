@@ -12,10 +12,12 @@
 	rel="stylesheet">
 </head>
 <body>
-	Sanity Check #011
+	Sanity Check #014
 
-	<%@page import="java.sql.Timestamp"%>
+	<%@page import="java.sql.Date"%>
 	<%@page import="java.sql.Blob"%>
+	
+	<%@include file="header.jsp"%>
 	<%
 	try {
 		Blob image = (Blob) request.getAttribute("image");
@@ -24,7 +26,7 @@
 		Double price = (Double) request.getAttribute("price");
 		Integer quantity = (Integer) request.getAttribute("quantity");
 		String publisher = (String) request.getAttribute("publisher");
-		Timestamp publicationDate = (Timestamp) request.getAttribute("publicationDate");
+		Date publicationDate = (Date) request.getAttribute("publicationDate");
 		String ISBN = (String) request.getAttribute("ISBN");
 		String genre = (String) request.getAttribute("genre");
 		Integer rating = (Integer) request.getAttribute("rating");
@@ -44,8 +46,7 @@
 					<h2 class="text-2xl text-black font-bold">
 						<%=title%>
 					</h2>
-					<%=genre%>
-					<div class="badge badge-secondary text-xs">
+					<div class="badge badge-accent text-xs">
 						<%=genre%>
 					</div>
 					<p class="text-lg">
@@ -53,7 +54,7 @@
 						<%=author%>
 					</p>
 					<h3 class="text-black text-xl font-semibold">
-						<%=price%>
+						$<%=price%>
 					</h3>
 					<p>
 						<span class="text-black">Quantity:</span>
@@ -62,28 +63,114 @@
 					<button type="button" class="btn btn-primary w-[200px]">
 						Add to Cart</button>
 					<div class="tabs pt-12">
-						<button type="button" class="tab tab-lg tab-lifted tab-active">
-							Description</button>
-							<div class="tab-content">
-								<p class="text-black"><%=description%></p>
-							</div>
-						<button type="button" class="tab tab-lg tab-lifted text-gray-400">Product
-							Details</button>
-						<button type="button" class="tab tab-lg tab-lifted text-gray-400">Vendor
-							Info</button>
-						<button type="button" class="tab tab-lg tab-lifted text-gray-400">Reviews
-						</button>
+						<button type="button" class="tab tab-lg tab-lifted tab-active"
+							id="descriptionTab">Description</button>
+						<button type="button" class="tab tab-lg tab-lifted text-gray-400"
+							id="productTab">Product Details</button>
+						<button type="button" class="tab tab-lg tab-lifted text-gray-400"
+							id="reviewsTab">Reviews</button>
 					</div>
-					
-					<div class="tab-content">
-						<p class="text-black">Tab 2 content</p>
+
+					<div class="tab-content" id="descriptionContent">
+						<p class="text-black"><%=description%></p>
 					</div>
-					<div class="tab-content">
-						<p class="text-black">Tab 3 content</p>
+					<div class="tab-content hidden" id="productContent">
+						<table class="table">
+							<tbody>
+								<tr>
+									<th>ISBN</th>
+									<td><%=ISBN%></td>
+								</tr>
+								<tr>
+									<th>Publisher</th>
+									<td><%=publisher%></td>
+								</tr>
+								<tr>
+									<th>Publication Date</th>
+									<td><%=publicationDate%></td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
-					<div class="tab-content">
-						<p class="text-black">Tab 4 content</p>
+					<div class="tab-content hidden" id="reviewsContent">
+						Rating: <%=rating%> / 5
 					</div>
+
+					<script>
+						document
+								.getElementById('descriptionTab')
+								.addEventListener(
+										'click',
+										function() {
+											document
+													.getElementById('descriptionContent').classList
+													.remove('hidden');
+											document
+													.getElementById('productContent').classList
+													.add('hidden');
+											document
+													.getElementById('reviewsContent').classList
+													.add('hidden');
+											document
+													.getElementById('descriptionTab').classList
+													.add('tab-active');
+											document
+													.getElementById('productTab').classList
+													.remove('tab-active');
+											document
+													.getElementById('reviewsTab').classList
+													.remove('tab-active');
+										});
+
+						document
+								.getElementById('productTab')
+								.addEventListener(
+										'click',
+										function() {
+											document
+													.getElementById('productContent').classList
+													.remove('hidden');
+											document
+													.getElementById('descriptionContent').classList
+													.add('hidden');
+											document
+													.getElementById('reviewsContent').classList
+													.add('hidden');
+											document
+													.getElementById('productTab').classList
+													.add('tab-active');
+											document
+													.getElementById('descriptionTab').classList
+													.remove('tab-active');
+											document
+													.getElementById('reviewsTab').classList
+													.remove('tab-active');
+										});
+						document
+								.getElementById('reviewsTab')
+								.addEventListener(
+										'click',
+										function() {
+											document
+													.getElementById('reviewsContent').classList
+													.remove('hidden');
+											document
+													.getElementById('descriptionContent').classList
+													.add('hidden');
+											document
+													.getElementById('productContent').classList
+													.add('hidden');
+											document
+													.getElementById('reviewsTab').classList
+													.add('tab-active');
+											document
+													.getElementById('descriptionTab').classList
+													.remove('tab-active');
+											document
+													.getElementById('productTab').classList
+													.remove('tab-active');
+										});
+					</script>
 				</div>
 			</div>
 		</div>

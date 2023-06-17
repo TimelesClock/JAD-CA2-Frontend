@@ -27,7 +27,7 @@ public class AuthenticateServlet extends HttpServlet {
     	HttpSession session = request.getSession(false);
     	if (session != null && session.getAttribute("role")!=null) {
     		response.sendRedirect("BookServlet");
-    	}else {
+    	} else {
     		request.getRequestDispatcher("/login.jsp").forward(request, response);
     	}
     }
@@ -47,7 +47,7 @@ public class AuthenticateServlet extends HttpServlet {
         else if (action.equals("login")) {
             login(request, response, email, password);
         } else if (action.equals("register")) {
-            register(request, response, email, password,name,phone);
+            register(request, response, email, password, name, phone);
         }
     }
 
@@ -67,6 +67,8 @@ public class AuthenticateServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 int timeout = 24 * 60 * 60; // 24 hours
                 session.setMaxInactiveInterval(timeout);
+                session.setAttribute("userId", rs.getInt("id"));
+                session.setAttribute("username", rs.getString("name"));
                 session.setAttribute("role", rs.getString("role"));
             } else {
                 request.setAttribute("err", "Invalid email or password");
