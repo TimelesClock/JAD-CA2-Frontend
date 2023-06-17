@@ -13,7 +13,7 @@
     <%@include file="header.jsp"%>
     	<!-- Error Handler -->
 	<%
-	String err = (String) request.getAttribute("err");
+	String err = (String) request.getParameter("err");
 	if (err != null) {
 		int maxLength = 50;
 		if (err.length() > maxLength) {

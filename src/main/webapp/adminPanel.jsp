@@ -66,7 +66,7 @@
 					%><%@include file="adminEditInventory.jsp"%>
 					<%
 					} else {
-				%><div>Hello</div>
+				%><h1 class = "text-2xl font-bold">Admin Panel</h1>
 				<%
 				}
 				%>

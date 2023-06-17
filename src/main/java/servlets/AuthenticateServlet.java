@@ -67,19 +67,18 @@ public class AuthenticateServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 int timeout = 24 * 60 * 60; // 24 hours
                 session.setMaxInactiveInterval(timeout);
-                session.setAttribute("userId", rs.getInt("id"));
+                session.setAttribute("userId", rs.getInt("user_id"));
                 session.setAttribute("username", rs.getString("name"));
                 session.setAttribute("role", rs.getString("role"));
             } else {
-                request.setAttribute("err", "Invalid email or password");
-                response.sendRedirect("BookServlet");
+                response.sendRedirect("AuthenticateServlet?err=Invalid%20email%20or%20password");
+                return;
             }
             response.sendRedirect("BookServlet");
             conn.close();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
-            request.setAttribute("err", "An error occurred");
-            response.sendRedirect("BookServlet");
+            response.sendRedirect("AuthenticateServlet?err=Something%20went%20wrong");
         }
     }
 
