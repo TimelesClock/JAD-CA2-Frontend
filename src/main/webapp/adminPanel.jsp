@@ -59,7 +59,13 @@
 				} else if (content != null && content.equals("deleteBook")) {
 				%><%@include file="adminDeleteBook.jsp"%>
 				<%
-				} else {
+				} else if (content != null && content.equals("viewInventory")) {
+				%><%@include file="adminViewInventory.jsp"%>
+				<%
+				}else if (content != null && content.equals("editInventory")) {
+					%><%@include file="adminEditInventory.jsp"%>
+					<%
+					} else {
 				%><div>Hello</div>
 				<%
 				}

@@ -5,7 +5,6 @@ import classes.Book;
 import classes.Publisher;
 import classes.Genre;
 import java.io.IOException;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -57,6 +56,24 @@ public class AdminPanelServlet extends HttpServlet {
 				addContext(request,response,true);
 				
 			}else if (context.equals("deleteBook")) {
+				try {
+					addBookContext(request);
+					request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				}catch(Exception e) {
+					e.printStackTrace();
+					request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				}
+			    
+			}else if (context.equals("viewInventory")) {
+				try {
+					addBookContext(request);
+					request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				}catch(Exception e) {
+					e.printStackTrace();
+					request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				}
+			    
+			}else if (context.equals("editInventory")) {
 				try {
 					addBookContext(request);
 					request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
@@ -160,10 +177,7 @@ public class AdminPanelServlet extends HttpServlet {
     		book.setDescription(bookRs.getString("description"));
     		book.setPublisherId(bookRs.getInt("publisher_id"));
     		book.setGenreId(bookRs.getInt("genre_id"));
-    		Blob blob = bookRs.getBlob("image");
-    		if (blob != null) {
-    		    book.setImage(blob.getBytes(1, (int) blob.length()));
-    		}
+    		book.setImage(bookRs.getString("image"));
     	    books.add(book);
     	}
     	bookRs.close();
@@ -178,10 +192,16 @@ public class AdminPanelServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String action = request.getParameter("action");
-        if (action != null && action.equals("addBook")) {
+		if (action == null) {
+			request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+		}else if (action.equals("addBook")) {
             addBook(request, response);
-        }else if (action != null && action.equals("editBook")) {
+        }else if (action.equals("editBook")) {
         	editBook(request,response);
+        }else if (action.equals("deleteBook")) {
+        	deleteBook(request,response);
+        }else if (action.equals("editInventory")) {
+        	editInventory(request,response);
         }
         else {
         	request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
@@ -200,6 +220,7 @@ public class AdminPanelServlet extends HttpServlet {
 	    int rating = Integer.parseInt(request.getParameter("rating"));
 	    String description = request.getParameter("description");
 	    Date publicationDate = Date.valueOf(request.getParameter("publication_date"));
+	    String image = request.getParameter("image");
 	    try {
 	        Class.forName("com.mysql.jdbc.Driver");
 	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
@@ -226,7 +247,7 @@ public class AdminPanelServlet extends HttpServlet {
 	        }
 
 	        // Perform book insertion
-	        boolean bookInserted = insertBook(title, newAuthorId, price, quantity, newPublisherId, newGenreId, ISBN, rating, description, publicationDate, conn);
+	        boolean bookInserted = insertBook(title, newAuthorId, price, quantity, newPublisherId, newGenreId, ISBN, rating, description, publicationDate,image, conn);
 
 	        if (bookInserted) {
 	        	request.setAttribute("success", "Book Added Successfully");
@@ -277,6 +298,7 @@ public class AdminPanelServlet extends HttpServlet {
 	    int rating = Integer.parseInt(request.getParameter("rating"));
 	    String description = request.getParameter("description");
 	    Date publicationDate = Date.valueOf(request.getParameter("publication_date"));
+	    String image = request.getParameter("image");
 	    
 	    try {
 	        Class.forName("com.mysql.jdbc.Driver");
@@ -304,13 +326,8 @@ public class AdminPanelServlet extends HttpServlet {
 	        }
 
 	        // Perform book update
-	        boolean bookUpdated = updateBook(bookId, title, newAuthorId, price, newPublisherId, newGenreId, ISBN, rating, description, publicationDate, conn);
+	        updateBook(bookId, title, newAuthorId, price, newPublisherId, newGenreId, ISBN, rating, description, publicationDate,image, conn);
 
-	        if (bookUpdated) {
-	            request.setAttribute("success", "Book Updated Successfully");
-	        } else {
-	            request.setAttribute("err", "Something Went Wrong");
-	        }
 
 	        conn.close();
 	        response.sendRedirect("AdminPanelServlet?p=editBook&success=Book%20Updated%20Successfully");
@@ -318,6 +335,32 @@ public class AdminPanelServlet extends HttpServlet {
 	        e.printStackTrace();
 	        request.setAttribute("err", e.getMessage());
 	        response.sendRedirect("AdminPanelServlet?p=editBook&err=" + e.getMessage());
+	    }
+	}
+	
+	private void deleteBook(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
+	    try {
+	        Class.forName("com.mysql.jdbc.Driver");
+	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+	        int bookId = Integer.parseInt(request.getParameter("book_id"));
+
+	        String query = "DELETE FROM Books WHERE book_id = ?";
+	        PreparedStatement stmt = conn.prepareStatement(query);
+	        stmt.setInt(1, bookId);
+
+	        int rowsAffected = stmt.executeUpdate();
+	        if (rowsAffected > 0) {
+	        	response.sendRedirect("AdminPanelServlet?p=deleteBook&success=Book%20Deleted%20Successfully");
+	        }else {
+	        	response.sendRedirect("AdminPanelServlet?p=deleteBook&err=Book%20was%20not%20deleted");
+	        }
+
+	        stmt.close();
+	        conn.close();
+	    } catch (ClassNotFoundException | SQLException e) {
+	        e.printStackTrace();
+	        response.sendRedirect("AdminPanelServlet?p=deleteBook&err=" + e.getMessage());
+	        
 	    }
 	}
 
@@ -367,10 +410,10 @@ public class AdminPanelServlet extends HttpServlet {
 	    return newPublisherId;
 	}
 
-	private boolean insertBook(String title, int authorId, double price, int quantity, int publisherId, int genreId, String ISBN, int rating, String description, Date publicationDate, Connection conn) {
+	private boolean insertBook(String title, int authorId, double price, int quantity, int publisherId, int genreId, String ISBN, int rating, String description, Date publicationDate,String image, Connection conn) {
 	    boolean bookInserted = false;
 	    try {
-	        String query = "INSERT INTO Books (title, author_id, price, quantity, publisher_id, genre_id, ISBN, rating, description, publication_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	        String query = "INSERT INTO Books (title, author_id, price, quantity, publisher_id, genre_id, ISBN, rating, description, publication_date,image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 	        PreparedStatement stmt = conn.prepareStatement(query);
 	        stmt.setString(1, title);
 	        stmt.setInt(2, authorId);
@@ -382,6 +425,7 @@ public class AdminPanelServlet extends HttpServlet {
 	        stmt.setInt(8, rating);
 	        stmt.setString(9, description);
 	        stmt.setDate(10, publicationDate);
+	        stmt.setString(11, image);
 
 	        int rowsAffected = stmt.executeUpdate();
 	        if (rowsAffected > 0) {
@@ -395,10 +439,10 @@ public class AdminPanelServlet extends HttpServlet {
 	    return bookInserted;
 	}
 
-	private boolean updateBook(int bookId, String title, int authorId, double price, int publisherId, int genreId, String ISBN, int rating, String description, Date publicationDate, Connection conn) {
+	private boolean updateBook(int bookId, String title, int authorId, double price, int publisherId, int genreId, String ISBN, int rating, String description, Date publicationDate,String image, Connection conn) {
 	    boolean bookUpdated = false;
 	    try {
-	        String query = "UPDATE Books SET title = ?, author_id = ?, price = ?, publisher_id = ?, genre_id = ?, ISBN = ?, rating = ?, description = ?, publication_date = ? WHERE book_id = ?";
+	        String query = "UPDATE Books SET title = ?, author_id = ?, price = ?, publisher_id = ?, genre_id = ?, ISBN = ?, rating = ?, description = ?, publication_date = ?,image = ? WHERE book_id = ?";
 	        PreparedStatement stmt = conn.prepareStatement(query);
 	        stmt.setString(1, title);
 	        stmt.setInt(2, authorId);
@@ -409,7 +453,8 @@ public class AdminPanelServlet extends HttpServlet {
 	        stmt.setInt(7, rating);
 	        stmt.setString(8, description);
 	        stmt.setDate(9, publicationDate);
-	        stmt.setInt(10, bookId);
+	        stmt.setString(10, image);
+	        stmt.setInt(11, bookId);
 
 	        int rowsAffected = stmt.executeUpdate();
 	        if (rowsAffected > 0) {
@@ -422,6 +467,40 @@ public class AdminPanelServlet extends HttpServlet {
 	    }
 	    return bookUpdated;
 	}
+	
+	private void editInventory(HttpServletRequest request, HttpServletResponse response)
+	        throws ServletException, IOException {
+	    int bookId = Integer.parseInt(request.getParameter("book_id"));
+	    double price = Double.parseDouble(request.getParameter("price"));
+	    int quantity = Integer.parseInt(request.getParameter("quantity"));
+
+	    try {
+	    	Class.forName("com.mysql.jdbc.Driver");
+	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+	        String updateQuery = "UPDATE books SET price = ?, quantity = ? WHERE book_id = ?";
+	        PreparedStatement stmt = conn.prepareStatement(updateQuery);
+	        stmt.setDouble(1, price);
+	        stmt.setInt(2, quantity);
+	        stmt.setInt(3, bookId);
+	        int rowsAffected = stmt.executeUpdate();
+
+	        if (rowsAffected > 0) {
+	        	stmt.close();
+	            response.sendRedirect("AdminPanelServlet?p=editInventory&success=Inventory%20updated%20successfully");
+	            return;
+	        } else {
+	        	stmt.close();
+	            response.sendRedirect("AdminPanelServlet?p=editInventory&error=Failed%20to%20update%20inventory");
+	            return;
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        response.sendRedirect("AdminPanelServlet?p=editInventory&error=" + e.getMessage());
+	        return;
+	    }
+	}
+
+
 
 
 }

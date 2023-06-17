@@ -16,7 +16,7 @@ List<Book> books = (List<Book>) request.getAttribute("books");
 <body>
 	<h1 class="text-2xl font-bold mb-4 ms-5">Edit Book</h1>
 	<div class="container mx-auto mt-5">
-		<form action="AdminPanelServlet" method="post" class="card">
+		<form action="AdminPanelServlet" method="post" class="card" onsubmit="return encodeImage()" id = "form">
 			<!-- Didnt realise html only supports POST and GET so ?action is a workaround -->
 			<input type="hidden" name="action" value="editBook">
 			<div class="card-body space-y-6">
@@ -136,13 +136,17 @@ List<Book> books = (List<Book>) request.getAttribute("books");
 								class="input input-bordered">
 						</div>
 					</div>
+					<input type="hidden" id="image" name="image">
 					<div class="form-control">
-						<label class="label"> <span class="label-text">Image</span>
-						</label> <input type="file" class="file-input file-input-bordered w-full">
+						<label class="label"> <span class="label-text">Image</span></label>
+						<input type="file" id="imageInput" accept="image/jpeg, image/png"
+							class="file-input file-input-bordered w-full" required> <small
+							class="text-gray-500">Accepted file types: JPEG, PNG.
+							Maximum file size: 5MB.</small>
 					</div>
-
 				</div>
-				<button type="submit" class="btn btn-primary">Save</button>
+				<button type="submit" class="btn btn-primary"
+					onclick="return validateForm();">Insert</button>
 			</div>
 		</form>
 	</div>
@@ -186,9 +190,10 @@ List<Book> books = (List<Book>) request.getAttribute("books");
 				ratingInput.value = "<%=book.getRating()%>";
 				descriptionInput.value = "<%=book.getDescription()%>";
 				publisherIdSelect.value = "<%=book.getPublisherId()%>";
-				genreIdSelect.value = "<%=book.getGenreId()%>";
-				return;
-			}
+				genreIdSelect.value = "<%=book.getGenreId()%>
+		";
+					return;
+				}
 	<%}%>
 		}
 		}
@@ -226,6 +231,54 @@ List<Book> books = (List<Book>) request.getAttribute("books");
 				document.getElementsByName("new_genre_name")[0].required = false;
 				document.getElementsByName("new_genre_name")[0].value = "";
 			}
+		}
+
+		function encodeImage() {
+			var imageInput = document.getElementById("imageInput");
+			var file = imageInput.files[0];
+			var reader = new FileReader();
+
+			reader.onload = function(e) {
+				var encodedImage = reader.result.split(',')[1];
+				document.getElementById("image").value = encodedImage;
+			}
+
+			reader.readAsDataURL(file);
+
+			return true;
+		}
+		function validateForm() {
+			var imageInput = document.getElementById("imageInput");
+			var file = imageInput.files[0];
+			var maxSize = 5 * 1024 * 1024; // 5MB
+
+			if (!file) {
+				alert("Please select an image file.");
+				return false;
+			}
+
+			if (file.size > maxSize) {
+				alert("File size exceeds the maximum limit of 5MB.");
+				return false;
+			}
+
+			var fileType = file.type;
+			var validTypes = [ "image/jpeg", "image/png" ];
+			if (!validTypes.includes(fileType)) {
+				alert("Invalid file type. Only JPEG and PNG files are accepted.");
+				return false;
+			}
+
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var encodedImage = reader.result.split(',')[1];
+				document.getElementById("image").value = encodedImage;
+
+				document.getElementById("form").submit();
+			};
+			reader.readAsDataURL(file);
+
+			return false;
 		}
 	</script>
 

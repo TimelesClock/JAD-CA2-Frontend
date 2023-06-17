@@ -68,7 +68,8 @@
 	</div>
 	<div class="flex justify-center mt-10">
 		<div class="join">
-			<a href="BookServlet?page=<%=currentPage - 1%><%=search != null ? ("&books=" + search) : ""%>"
+			<a
+				href="BookServlet?page=<%=currentPage - 1%><%=search != null ? ("&books=" + search) : ""%>"
 				class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
 			<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
 				href="BookServlet?page=<%=currentPage + 1%><%=search != null ? ("&books=" + search) : ""%>"
@@ -83,19 +84,20 @@
 		if (books != null) {
 			for (Book book : books) {
 		%>
-		<div class="card md:w-72 lg:w-96 h-1/6 bg-base-100 shadow-xl m-2 border border-base-300">
+		<div
+			class="card md:w-72 lg:w-96 h-1/6 bg-base-100 shadow-xl m-2 border border-base-300">
 			<%
-			if (!book.getImageBase64().equals("")) {
+			if (book.getImage() != null && !book.getImage().equals("")) {
 			%>
-			<figure class = "w-full h-80">
-				<img src="data:image/jpeg;base64,<%=book.getImageBase64()%>"
-					alt="Book img" class = "w-full h-full">
+			<figure class="w-full h-80">
+				<img src="data:image/jpeg;base64,<%=book.getImage()%>"
+					alt="Book img" class="w-full h-full">
 			</figure>
 			<%
 			} else {
 			%>
-			<figure class = "w-full h-80">
-				<img src="https://picsum.photos/200/300" alt="Book img" class = "w-full h-full">
+			<figure class="w-full h-80">
+				<span class="book-title"><%=book.getTitle()%></span>
 			</figure>
 			<%
 			}
@@ -105,9 +107,10 @@
 				<h2 class="card-title line-clamp-1">
 					<%=book.getTitle()%>
 				</h2>
-				<p><%=book.getDescription().length() > 100 ? book.getDescription().substring(0, 100) + "..." : book.getDescription()%></p>
-				<div class="card-actions justify-end">					
-					<form class="btn btn-primary" action="BookDetailsServlet" method="get">
+				<p class = "line-clamp-2"><%=book.getDescription().length() > 100 ? book.getDescription().substring(0, 100) + "..." : book.getDescription()%></p>
+				<div class="card-actions justify-end">
+					<form class="btn btn-primary" action="BookDetailsServlet"
+						method="get">
 						<input type="hidden" name="bookId" value='<%=book.getBookId()%>'>
 						<input type="submit" value="SHOW DETAILS" />
 					</form>
@@ -121,7 +124,8 @@
 	</div>
 	<div class="flex justify-center mt-10 mb-20">
 		<div class="join">
-			<a href="BookServlet?page=<%=currentPage - 1%><%=search != null ? ("&books=" + search) : ""%>"
+			<a
+				href="BookServlet?page=<%=currentPage - 1%><%=search != null ? ("&books=" + search) : ""%>"
 				class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
 			<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
 				href="BookServlet?page=<%=currentPage + 1%><%=search != null ? ("&books=" + search) : ""%>"
