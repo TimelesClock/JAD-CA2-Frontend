@@ -20,13 +20,8 @@
 					<button type="submit" class="btn btn-outline">Admin Panel</button>
 				</form>
 				<%
-				} else if (loginSession.getAttribute("role") != null && loginSession.getAttribute("role").equals("customer")) {
+				} else {
 				%>
-				<form action="CustomerPanelServlet" method="get" class="mx-2">
-					<input type="hidden" name="action" value="login">
-					<button type="submit" class="btn btn-outline">Customer
-						Panel</button>
-				</form>
 				<%@include file="customerHeader.jsp"%>
 				<%
 				}

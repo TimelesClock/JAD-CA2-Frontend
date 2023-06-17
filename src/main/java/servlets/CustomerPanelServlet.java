@@ -34,7 +34,7 @@ public class CustomerPanelServlet extends HttpServlet {
 				getProfile(request, response, userId);
 			}
 		} else {
-			response.sendRedirect("BookServlet");
+			response.sendRedirect("AuthenticateServlet");
 		}		
 	}
 

@@ -22,7 +22,17 @@
 			<ul tabindex="0"
 				class="menu dropdown-content p-2 shadow bg-base-100 rounded-box w-52 mt-4">
 				<li class="font-bold items-center mt-2">
+					<%
+					if (username != null) {
+					%>
 					<%=username%>
+					<%
+					} else {
+					%>
+					<button type="button" onclick="window.location.href='login.jsp';">Sign In / Register</button>
+					<%
+					}
+					%>
 					<div class="divider m-0 px-0"></div>
 				</li>
 				<li>
