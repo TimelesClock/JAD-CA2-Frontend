@@ -1,6 +1,5 @@
 package servlets;
 import java.io.IOException;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -77,10 +76,7 @@ public class BookServlet extends HttpServlet {
                 book.setDescription(rs.getString("description"));
                 book.setPublisherId(rs.getInt("publisher_id"));
                 book.setGenreId(rs.getInt("genre_id"));
-                Blob blob = rs.getBlob("image");
-                if (blob != null) {
-                    book.setImage(blob.getBytes(1, (int) blob.length()));
-                }
+                book.setImage(rs.getString("image"));
 
                 books.add(book);
             }

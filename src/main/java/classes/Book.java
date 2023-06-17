@@ -2,8 +2,6 @@ package classes;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Base64;
-
 public class Book {
     private int bookId;
     private String title;
@@ -16,26 +14,20 @@ public class Book {
     private String description;
     private int publisherId;
     private int genreId;
-    private byte[] image;
+    private String image;
 
     // Constructor
     public Book() {
     }
     
     //Methods
-    public String getImageBase64() {
-    	if (image != null) {
-    		return Base64.getEncoder().encodeToString(image);
-    	}else {
-    		return "";
-    	}
-        
-    }
+    
+    //Wow, such empty
 
     // Setters
     
 
-    public void setImage(byte[] image) {
+    public void setImage(String image) {
         this.image = image;
     }
     
@@ -84,7 +76,7 @@ public class Book {
     }
 
     // Getters
-    public byte[] getImage() {
+    public String getImage() {
         return image;
     }
     
