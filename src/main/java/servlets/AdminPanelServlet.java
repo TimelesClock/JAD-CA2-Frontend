@@ -1,5 +1,6 @@
 package servlets;
 
+import util.DatabaseUtil;
 import classes.Author;
 import classes.User;
 import classes.Book;
@@ -16,6 +17,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -50,32 +52,32 @@ public class AdminPanelServlet extends HttpServlet {
 		if (session != null && session.getAttribute("role") != null && session.getAttribute("role").equals("admin")) {
 			String context = request.getParameter("p");
 			if (context == null) {
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			} else if (context.equals("addBook")) {
 				addContext(request, response, false);
 			} else if (context.equals("editBook")) {
 				addContext(request, response, true);
 			} else if (context.equals("deleteBook")) {
 				addBookContext(request);
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 
 			} else if (context.equals("viewInventory")) {
 				addBookContext(request);
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			} else if (context.equals("editInventory")) {
 				addBookContext(request);
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			}else if (context.equals("viewCustomer")) {
 				addUserContext(request);
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			}else if (context.equals("editCustomer")) {
 				addUserContext(request);
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			}else if (context.equals("deleteCustomer")) {
 				addUserContext(request);
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			}else {
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			}
 
 		} else {
@@ -86,8 +88,8 @@ public class AdminPanelServlet extends HttpServlet {
 	private void addContext(HttpServletRequest request, HttpServletResponse response, Boolean edit)
 			throws ServletException, IOException {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 
 			// Fetch Authors
 			String authorQuery = "SELECT * FROM authors";
@@ -141,8 +143,8 @@ public class AdminPanelServlet extends HttpServlet {
 			request.setAttribute("publishers", publishers);
 			request.setAttribute("genres", genres);
 
-			request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
-		} catch (ClassNotFoundException | SQLException e) {
+			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -150,8 +152,8 @@ public class AdminPanelServlet extends HttpServlet {
 
 	private void addBookContext(HttpServletRequest request) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			String bookQuery = "SELECT * FROM books";
 			Statement bookStmt = conn.createStatement();
 			ResultSet bookRs = bookStmt.executeQuery(bookQuery);
@@ -183,8 +185,8 @@ public class AdminPanelServlet extends HttpServlet {
 	
 	private void addUserContext(HttpServletRequest request) {
 	    try {
-	        Class.forName("com.mysql.jdbc.Driver");
-	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+	    	ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 	        String userQuery = "SELECT * FROM Users WHERE role = 'customer'";
 	        Statement userStmt = conn.createStatement();
 	        ResultSet userRs = userStmt.executeQuery(userQuery);
@@ -215,7 +217,7 @@ public class AdminPanelServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String action = request.getParameter("action");
 		if (action == null) {
-			request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 		} else if (action.equals("addBook")) {
 			addBook(request, response);
 		} else if (action.equals("editBook")) {
@@ -231,7 +233,7 @@ public class AdminPanelServlet extends HttpServlet {
 		} else if (action.equals("deleteCustomer")) {
 			deleteCustomer(request, response);
 		} else {
-			request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 		}
 
 	}
@@ -329,8 +331,8 @@ public class AdminPanelServlet extends HttpServlet {
 		String image = request.getParameter("image");
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 
 			int newAuthorId = authorId;
 			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
@@ -359,7 +361,7 @@ public class AdminPanelServlet extends HttpServlet {
 
 			conn.close();
 			response.sendRedirect("AdminPanelServlet?p=editBook&success=Book%20Updated%20Successfully");
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 			response.sendRedirect("AdminPanelServlet?p=editBook&err=" + e.getMessage());

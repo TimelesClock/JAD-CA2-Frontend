@@ -97,7 +97,7 @@
 			} else {
 			%>
 			<figure class="w-full h-80">
-				<span class=""><%=book.getTitle()%></span>
+				<span class="	"><%=book.getTitle()%></span>
 			</figure>
 			<%
 			}

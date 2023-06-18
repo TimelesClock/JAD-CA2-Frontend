@@ -28,7 +28,7 @@ public class AuthenticateServlet extends HttpServlet {
     	if (session != null && session.getAttribute("role")!=null) {
     		response.sendRedirect("BookServlet");
     	} else {
-    		request.getRequestDispatcher("/login.jsp").forward(request, response);
+    		request.getRequestDispatcher("/Admin/login.jsp").forward(request, response);
     	}
     }
 
