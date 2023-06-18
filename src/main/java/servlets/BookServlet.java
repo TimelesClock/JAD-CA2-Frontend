@@ -70,8 +70,6 @@ public class BookServlet extends HttpServlet {
                 if (maxPrice != null && !maxPrice.isEmpty()) {
                     query += " AND b.price <= ?";
                 }
-                System.out.println(query);
-                System.out.println(genre);
 
                 PreparedStatement pst = conn.prepareStatement(query);
                 int parameterIndex = 1;
@@ -141,7 +139,7 @@ public class BookServlet extends HttpServlet {
                 }
                 pst.setInt(parameterIndex++, offset);
                 pst.setInt(parameterIndex, limit);
-
+                //Query builder ftw
                 rs = pst.executeQuery();
             } else {
                 query = "SELECT COUNT(*) FROM Books b INNER JOIN Genres g ON b.genre_id = g.genre_id";
