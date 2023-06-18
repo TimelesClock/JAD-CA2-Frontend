@@ -12,8 +12,6 @@
 	rel="stylesheet">
 </head>
 <body>
-	Sanity Check #023
-
 	<%@page import="java.sql.Date"%>
 
 	<%@include file="header.jsp"%>
@@ -74,16 +72,15 @@
 							type="hidden" name="bookId" value="<%=bookId%>">
 						<div class="flex flex-row items-center mb-5">
 							<span class="me-2">Quantity </span>
-							<div
-								class="form-control mt-1 flex flex-row max-w-min border rounded-xl">
+							<div class="form-control mt-1 flex flex-row max-w-min rounded-xl">
 								<span
-									class="cursor-pointer rounded-l bg-base-200 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50" id="decrease">
-									- </span> 
-									<input
+									class="cursor-pointer rounded-l bg-base-200 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"
+									id="decrease"> - </span> <input
 									class="input h-8 w-20 border border-base-200 bg-base-200 text-center text-xs outline-none rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-									type="number" name="quantity" id="quantity" value="1" min="1" /> <span
-									class="cursor-pointer rounded-r bg-base-200 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50" id="increase">
-									+ </span>
+									type="number" name="quantity" id="quantity" value="1" min="1" />
+								<span
+									class="cursor-pointer rounded-r bg-base-200 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"
+									id="increase"> + </span>
 							</div>
 							<p class="ms-4">
 								<%=quantity%>
@@ -159,7 +156,8 @@
 								.addEventListener(
 										'click',
 										function() {
-											var quantityInput = document.getElementById("quantity");
+											var quantityInput = document
+													.getElementById("quantity");
 											console.log("input", quantityInput);
 											console.log("value",
 													quantityInput.value);
@@ -178,7 +176,8 @@
 								.addEventListener(
 										'click',
 										function() {
-											var quantityInput = document.getElementById("quantity");
+											var quantityInput = document
+													.getElementById("quantity");
 											console.log("input", quantityInput);
 											console.log("value",
 													quantityInput.value);
@@ -187,7 +186,9 @@
 											else
 												quantityValue = 1;
 
-											if (quantityValue < <%=quantity%>) {
+											if (quantityValue <
+					<%=quantity%>
+						) {
 												quantityValue++;
 												quantityInput.value = quantityValue;
 											}
@@ -283,6 +284,9 @@
 	<%
 	}
 	%>
-	<%@include file="footer.html"%>
+	<div class = "mt-72">
+		<%@include file="footer.html"%>
+	</div>
+
 </body>
 </html>
