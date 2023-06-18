@@ -77,12 +77,12 @@
 							<div
 								class="form-control mt-1 flex flex-row max-w-min border rounded-xl">
 								<span
-									class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50" id="decrease">
+									class="cursor-pointer rounded-l bg-base-200 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50" id="decrease">
 									- </span> 
 									<input
-									class="input h-8 w-20 border bg-white text-center text-xs outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+									class="input h-8 w-20 border border-base-200 bg-base-200 text-center text-xs outline-none rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 									type="number" name="quantity" id="quantity" value="1" min="1" /> <span
-									class="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50" id="increase">
+									class="cursor-pointer rounded-r bg-base-200 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50" id="increase">
 									+ </span>
 							</div>
 							<p class="ms-4">

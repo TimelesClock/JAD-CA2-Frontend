@@ -231,6 +231,7 @@ public class CustomerPanelServlet extends HttpServlet {
 
 	private void addToCart(HttpServletRequest request, HttpServletResponse response, int userId)
 			throws ServletException, IOException {
+		int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
 		try {
 			Integer bookId = Integer.parseInt(request.getParameter("bookId"));
 			Integer quantity = Integer.parseInt(request.getParameter("quantity"));
@@ -249,19 +250,20 @@ public class CustomerPanelServlet extends HttpServlet {
 				request.setAttribute("success", "Added To Cart");
 				getProfile(request, response, userId);
 			} else {
-				request.setAttribute("err", "Something Went Wrong");
+				response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
 			}
 
 			pst.close();
 			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			request.setAttribute("err", e.getMessage());
+			response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
 		}
 	}
 	
 	private void deleteFromCart(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
 		try {
 			Integer cartId = Integer.parseInt(request.getParameter("cartId"));
 
@@ -272,16 +274,16 @@ public class CustomerPanelServlet extends HttpServlet {
 			pst.setInt(1, cartId);
 			int rowsAffected = pst.executeUpdate();
 			if (rowsAffected > 0) {
-				response.sendRedirect("CustomerPanelServlet?p=myCart&success=Deleted%20From%20Cart");
+				response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&success=Deleted%20From%20Cart");
 			} else {
-				response.sendRedirect("CustomerPanelServlet?p=myCart&err=Something%20Went%20Wrong");
+				response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
 			}
 
 			pst.close();
 			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			request.setAttribute("err", e.getMessage());
+			response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
 		}
 	}
 

@@ -1,5 +1,6 @@
 <%@ page import="java.util.*"%>
 <%@ page import="classes.Book"%>
+<%@ page import="classes.Genre"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -16,15 +17,24 @@
 	<%@include file="header.jsp"%>
 	<%!int currentPage = 1;
 	int totalPages = 1;
-	String search;%>
-	<%
-
+	String search;
+	String genre;
+	String minRating;
+	String maxRating;
+	String minPrice;
+	String maxPrice;
 	%>
+
 	<%
 	try {
 		search = request.getParameter("books");
+		genre = request.getParameter("genre");
+		genre = request.getParameter("minRating");
+		genre = request.getParameter("maxRating");
+		genre = request.getParameter("minPrice");
+		genre = request.getParameter("maxPrice");
 		String pageNum = request.getParameter("page");
-		String totalPageRaw = request.getAttribute("totalPages").toString();
+		String totalPageRaw = request.getAttribute("totalPages") != null? request.getAttribute("totalPages").toString():"";
 		currentPage = pageNum != null ? Integer.parseInt(pageNum) : 1;
 		totalPages = totalPageRaw != null ? Integer.parseInt(totalPageRaw) : totalPages;
 	} catch (NumberFormatException e) {
@@ -77,7 +87,128 @@
 		</div>
 	</div>
 
-	<div class="flex flex-wrap my-10 lg:px-32 justify-between">
+	<div class="flex flex-row">
+	<div class=" w-full flex  h-min m-5 position-relative bg-base-200 rounded">
+                    <form
+                        id="filters"
+                        class="position-lg-fixed me-lg-5 mx-auto"
+                    >
+                    	<input class = "hidden" name = "bookName" value = "<%=search!=null?search:""%>">
+                        <h2 class="flex flex-row p-3 text-xl font-bold" id="filter-title">Filter</h2>
+                        <div class="flex flex-row filter-box rounded">
+                            <div class="flex m-2 rounded">
+                                <button
+                                    class="btn btn-primary px-3"
+                                    type="submit"
+                                    id="filter-submit"
+                                >
+                                    Apply Filter
+                                </button>
+                            </div>
+                            <div class="flex m-2 rounded">
+                                <button
+                                    class="btn btn-error px-3"
+                                    type="reset"
+                                    id="filter-reset"
+                                >
+                                    Reset
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr class="hr" />
+
+                        <div class="flex-row mt-3 ps-3 pb-3 filter-box rounded">
+                            <select
+                                class="form-select rounded-xl p-2"
+                                aria-label=""
+                                id="genre"
+                                name = "genre"
+                            >
+                                <option
+                                    class="genre-option"
+                                    selected
+                                >
+                                    Genre
+                                </option>
+                                <% 
+                                @SuppressWarnings("unchecked")
+                        		List<Genre> genres = (List<Genre>) request.getAttribute("genres");
+                                for (Genre item : genres) {
+                                %>
+                                <option
+                                    class="genre-option"
+                                >
+                                    <%=item.getName()%>
+                                </option>
+                                <%
+                                }
+                                %>
+                            </select>
+                        </div>
+
+                        <div class="filter-box ps-3 pb-4 rounded">
+                            <h3>Rating</h3>
+                            <div class="flex flex-row mt-2 justify-start">
+                                <div class="flex w-20 me-2">
+                                    <input
+                                        class="form-control w-full rounded-xl p-2"
+                                        type="text"
+                                        placeholder="Min"
+                                        pattern="[-+]?[0-9]*[.,]?[0-9]+"
+                                        title="Please enter numbers."
+                                        id="minRating"
+                                        name = "minRating"
+                                    />
+                                </div>
+                                <div class="flex w-20">
+                                    <input
+                                        class="form-control w-full rounded-xl p-2"
+                                        type="text"
+                                        placeholder="Max"
+                                        pattern="[-+]?[0-9]*[.,]?[0-9]+"
+                                        title="Please enter numbers."
+                                        id="maxRating"
+                                        name = "maxRating"
+                                        
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="hr" />
+
+                        <div class="my-3 filter-box ps-3 pb-4 rounded">
+                            <h3>Price</h3>
+                            <div class="flex flex-row mt-2 justify-start">
+                                <div class="flex w-20 me-2">
+                                    <input
+                                        class="form-control w-full rounded-xl p-2"
+                                        type="text"
+                                        placeholder="Min"
+                                        pattern="[-+]?[0-9]*[.,]?[0-9]+"
+                                        title="Please enter numbers."
+                                        id="minPrice"
+                                        name = "minPrice"
+                                    />
+                                </div>
+                                <div class="flex w-20">
+                                    <input
+                                        class="form-control w-full rounded-xl p-2"
+                                        type="text"
+                                        placeholder="Max"
+                                        pattern="[-+]?[0-9]*[.,]?[0-9]+"
+                                        title="Please enter numbers."
+                                        id="maxPrice"
+                                        name = "maxPrice"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+	<div class="flex flex-wrap my-10 justify-evenly">
 		<%
 		@SuppressWarnings("unchecked")
 		List<Book> books = (List<Book>) request.getAttribute("books");
@@ -121,6 +252,7 @@
 		}
 		}
 		%>
+	</div>
 	</div>
 	<div class="flex justify-center mt-10 mb-20">
 		<div class="join">
