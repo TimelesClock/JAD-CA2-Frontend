@@ -102,7 +102,7 @@
 						<button type="button" class="tab tab-lg tab-lifted text-gray-400"
 							id="productTab">Product Details</button>
 						<button type="button" class="tab tab-lg tab-lifted text-gray-400"
-							id="reviewsTab">Reviews</button>
+							id="ratingsTab">Rating</button>
 					</div>
 
 					<div class="tab-content" id="descriptionContent">
@@ -126,7 +126,7 @@
 							</tbody>
 						</table>
 					</div>
-					<div class="tab-content hidden" id="reviewsContent">
+					<div class="tab-content hidden" id="ratingsContent">
 						Rating:
 						<div class="rating flex flex-row">
 							<%
@@ -204,7 +204,7 @@
 													.getElementById('productContent').classList
 													.add('hidden');
 											document
-													.getElementById('reviewsContent').classList
+													.getElementById('ratingsContent').classList
 													.add('hidden');
 											document
 													.getElementById('descriptionTab').classList
@@ -213,7 +213,7 @@
 													.getElementById('productTab').classList
 													.remove('tab-active');
 											document
-													.getElementById('reviewsTab').classList
+													.getElementById('ratingsTab').classList
 													.remove('tab-active');
 										});
 
@@ -229,7 +229,7 @@
 													.getElementById('descriptionContent').classList
 													.add('hidden');
 											document
-													.getElementById('reviewsContent').classList
+													.getElementById('ratingsContent').classList
 													.add('hidden');
 											document
 													.getElementById('productTab').classList
@@ -238,16 +238,16 @@
 													.getElementById('descriptionTab').classList
 													.remove('tab-active');
 											document
-													.getElementById('reviewsTab').classList
+													.getElementById('ratingsTab').classList
 													.remove('tab-active');
 										});
 						document
-								.getElementById('reviewsTab')
+								.getElementById('ratingsTab')
 								.addEventListener(
 										'click',
 										function() {
 											document
-													.getElementById('reviewsContent').classList
+													.getElementById('ratingsContent').classList
 													.remove('hidden');
 											document
 													.getElementById('descriptionContent').classList
@@ -256,7 +256,7 @@
 													.getElementById('productContent').classList
 													.add('hidden');
 											document
-													.getElementById('reviewsTab').classList
+													.getElementById('ratingsTab').classList
 													.add('tab-active');
 											document
 													.getElementById('descriptionTab').classList
