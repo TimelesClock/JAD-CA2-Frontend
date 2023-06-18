@@ -39,12 +39,7 @@ public class BookDetailsServlet extends HttpServlet {
             
             if (rs.next()) {
 	            request.setAttribute("bookId", bookId);
-	            Blob image = rs.getBlob("image");
-	            if (image != null) {
-	                request.setAttribute("image", (image.getBytes(1, (int) image.length())));
-	            } else {
-	            	request.setAttribute("image", image);
-	            }
+	            String image = rs.getString("image");
 	            request.setAttribute("title", rs.getString("title"));
 	            request.setAttribute("author", rs.getString("author"));
 	            request.setAttribute("price", rs.getDouble("price"));

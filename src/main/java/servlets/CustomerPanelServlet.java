@@ -29,7 +29,7 @@ public class CustomerPanelServlet extends HttpServlet {
 			String context = request.getParameter("function");
 			int userId = (int) session.getAttribute("userId");
 			if (context == null) {
-				request.getRequestDispatcher("customerHeader.jsp").forward(request, response);
+				response.sendRedirect("BookServlet");
 			} else if (context.equals("myProfile")) {
 				getProfile(request, response, userId);
 			}
@@ -74,9 +74,11 @@ public class CustomerPanelServlet extends HttpServlet {
 				request.getRequestDispatcher("customerHeader.jsp").forward(request, response);
 			} else if (context.equals("editProfile")) {
 				editProfile(request, response, session, userId);
+			} else if (context.equals("addToCart")) {
+				addToCart(request, response, userId);
 			}
 		} else {
-			response.sendRedirect("BookServlet");
+			response.sendRedirect("AuthenticateServlet");
 		}
 	}
 	
@@ -99,6 +101,39 @@ public class CustomerPanelServlet extends HttpServlet {
 	        if (rowsAffected > 0) {
 	        	request.setAttribute("success", "Profile Updated Successfully");
 	        	session.setAttribute("username", username);
+	        	getProfile(request, response, userId);
+	        } else {
+	        	request.setAttribute("err", "Something Went Wrong");
+	        }
+	        
+	        pst.close();
+            con.close();
+		} catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("err", e.getMessage());
+        }
+	}
+	
+	private void addToCart(HttpServletRequest request, HttpServletResponse response, int userId)
+			throws ServletException, IOException {
+		Integer bookId = Integer.parseInt(request.getParameter("bookId"));
+		Integer quantity = Integer.parseInt(request.getParameter("quantity"));
+		
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+            String query = "INSERT INTO cart (user_id, book_id, quantity)\r\n"
+            		+ "VALUES (?, ?, ?)\r\n"
+            		+ "ON DUPLICATE KEY UPDATE\r\n"
+            		+ "    quantity = quantity + ?;";
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setInt(1, userId);
+            pst.setInt(2, bookId);
+            pst.setInt(3, quantity);
+            pst.setInt(4, quantity);
+            int rowsAffected = pst.executeUpdate();
+	        if (rowsAffected > 0) {
+	        	request.setAttribute("success", "Added To Cart");
 	        	getProfile(request, response, userId);
 	        } else {
 	        	request.setAttribute("err", "Something Went Wrong");

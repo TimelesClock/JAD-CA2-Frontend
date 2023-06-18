@@ -67,7 +67,7 @@ public class AuthenticateServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 int timeout = 24 * 60 * 60; // 24 hours
                 session.setMaxInactiveInterval(timeout);
-                session.setAttribute("userId", rs.getInt("id"));
+                session.setAttribute("userId", rs.getInt("user_id"));
                 session.setAttribute("username", rs.getString("name"));
                 session.setAttribute("role", rs.getString("role"));
             } else {
