@@ -20,7 +20,7 @@
 	int totalPages = 1;
 	String search;%>
 
-	<div class="h-screen bg-gray-100 pt-20">
+	<div class=" bg-base-100 pt-20">
 		<h1 class="mb-10 text-center text-2xl font-bold">Shopping Cart</h1>
 		<div
 			class="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
@@ -36,7 +36,7 @@
 					System.out.println(item.getTitle());
 				%>
 				<div
-					class="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
+					class="justify-between mb-6 rounded-lg bg-base-200 p-6 shadow-md sm:flex sm:justify-start">
 					<%
 					if (item.getImage() != null && !item.getImage().equals("")) {
 					%>
@@ -49,20 +49,20 @@
 					%>
 					<div class="sm:ml-4 sm:flex sm:w-full sm:justify-between">
 						<div class="mt-5 sm:mt-0">
-							<h2 class="text-lg font-bold text-gray-900"><%=item.getTitle()%></h2>
-							<p class="mt-1 text-xs text-gray-700">
+							<h2 class="text-lg font-bold"><%=item.getTitle()%></h2>
+							<p class="mt-1 text-xs">
 								By
 								<%=item.getAuthor()%></p>
 						</div>
 						<div
 							class="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
-							<div class="flex items-center border-gray-100">
+							<div class="flex items-center border-base-200">
 								<span
-									class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"
+									class="cursor-pointer rounded-l bg-base-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"
 									id="decrease"> - </span> <input
-									class="h-8 w-8 border bg-white text-center text-xs outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+									class="h-8 w-8 border border-base-100 bg-base-100 text-center text-xs outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 									type="number" value="<%=item.getQuantity()%>" min="1" /> <span
-									class="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"
+									class="cursor-pointer rounded-r bg-base-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"
 									id="increase"> + </span>
 								<script>
 									document
@@ -128,15 +128,15 @@
 			</div>
 			<!-- Sub total -->
 			<div
-				class="mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3">
+				class="mt-6 h-full rounded-lg border bg-base-100 p-6 shadow-xl md:mt-0 md:w-1/3">
 				<h1 class="mb-3 text-xl text-start font-bold">Summary</h1>
 				<div class="mb-2 flex justify-between">
-					<p class="text-gray-700">Total Items</p>
-					<p class="text-gray-700"><%=totalRecords%></p>
+					<p class="">Total Items</p>
+					<p class=""><%=totalRecords%></p>
 				</div>
 				<div class="mb-2 flex justify-between">
-					<p class="text-gray-700">Subtotal</p>
-					<p class="text-gray-700">
+					<p class="">Subtotal</p>
+					<p class="">
 						$<%=subtotal%></p>
 				</div>
 				<hr class="my-4" />
