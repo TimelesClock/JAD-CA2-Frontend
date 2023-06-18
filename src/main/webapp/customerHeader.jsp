@@ -6,7 +6,7 @@
 	<div class="flex flex-row items-center">
 
 		<form action="CustomerPanelServlet" method="get">
-			<input type="hidden" name="function" value="myCart">
+			<input type="hidden" name="p" value="myCart">
 			<button type="submit">
 				<svg xmlns="http://www.w3.org/2000/svg"
 					class="w-10 h-10 mx-2 stroke-slate-800 fill-none"
@@ -42,13 +42,13 @@
 				</li>
 				<li>
 					<form action="CustomerPanelServlet" method="get">
-						<input type="hidden" name="function" value="myProfile">
+						<input type="hidden" name="p" value="myProfile">
 						<button type="submit">My Profile</button>
 					</form>
 				</li>
 				<li>
 					<form action="CustomerPanelServlet" method="get">
-						<input type="hidden" name="function" value="changePasswordForm">
+						<input type="hidden" name="p" value="changePasswordForm">
 						<button type="submit">Change Password</button>
 					</form>
 				</li>

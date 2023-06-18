@@ -1,7 +1,7 @@
 <%@ page import="java.util.*"%>
 <%@ page import="classes.Cart"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,11 +12,13 @@
 	rel="stylesheet">
 </head>
 <body>
-	Sanity Check #025
-	<%=session.getAttribute("userId")%>
+	Sanity Check #026
 	<%@page import="java.sql.Date"%>
 
 	<%@include file="header.jsp"%>
+	<%!int currentPage = 1;
+	int totalPages = 1;
+	String search;%>
 
 	<div class="h-screen bg-gray-100 pt-20">
 		<h1 class="mb-10 text-center text-2xl font-bold">Shopping Cart</h1>
@@ -70,12 +72,7 @@
 													function() {
 														var quantityInput = document
 																.getElementById("quantity");
-														console.log("input",
-																quantityInput);
-														console
-																.log(
-																		"value",
-																		quantityInput.value);
+														
 														if (quantityInput.value != null)
 															quantityValue = parseInt(quantityInput.value);
 														else
@@ -93,12 +90,7 @@
 													function() {
 														var quantityInput = document
 																.getElementById("quantity");
-														console.log("input",
-																quantityInput);
-														console
-																.log(
-																		"value",
-																		quantityInput.value);
+														
 														if (quantityInput.value != null)
 															quantityValue = parseInt(quantityInput.value);
 														else
@@ -160,10 +152,33 @@
 					class="disabled mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">Check
 					out</button>
 			</div>
+		
+	
+	
+	<%
+	try {
+		String pageNum = request.getParameter("page");
+		String totalPageRaw = request.getAttribute("totalPages").toString();
+		int currentPage = pageNum != null ? Integer.parseInt(pageNum) : 1;
+		int totalPages = totalPageRaw != null ? Integer.parseInt(totalPageRaw) : 1;
+	%>
+		<div class="flex justify-center mt-10 mb-20">
+			<div class="join">
+				<a href="CustomerPanelServlet?page=<%=currentPage - 1%>" 
+				class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">
+					«
+				</a>
+				<a href="#" class="join-item btn">Page <%=currentPage%></a> 
+				<a href="CustomerPanelServlet?page=<%=currentPage + 1%>"
+					class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
+			</div>
 		</div>
+	<%
+	} catch (NumberFormatException e) {
+		String err = e.getMessage();
+	}
+	%>
 	</div>
-
-
 	<%
 	} catch (Exception e) {
 	String err = e.getMessage();
@@ -178,7 +193,6 @@
 	}
 	%>
 	<%@include file="footer.html"%>
-	
 	
 </body>
 </html>

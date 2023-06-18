@@ -34,7 +34,7 @@ public class CustomerPanelServlet extends HttpServlet {
 
 		if (session != null && session.getAttribute("role") != null
 				&& session.getAttribute("role").equals("customer")) {
-			String context = request.getParameter("function");
+			String context = request.getParameter("p");
 			int userId = (int) session.getAttribute("userId");
 			if (context == null) {
 				response.sendRedirect("BookServlet");
@@ -55,7 +55,7 @@ public class CustomerPanelServlet extends HttpServlet {
 		try {
 			ServletContext context = getServletContext();
 	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "SELECT email, phone FROM users WHERE id = ?";
+			String query = "SELECT email, phone FROM users WHERE user_id = ?";
 			PreparedStatement pst = conn.prepareStatement(query);
 			pst.setInt(1, userId);
 			ResultSet rs = pst.executeQuery();
@@ -80,7 +80,7 @@ public class CustomerPanelServlet extends HttpServlet {
 		List<Cart> cartItems = new ArrayList<>();
 		// Get page and limit from request, or set default values
         int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
-        int limit = 10;
+        int limit = 5;
         int offset = (page - 1) * limit;
         int totalRecords = 0;
         double subtotal = 0;
@@ -147,7 +147,7 @@ public class CustomerPanelServlet extends HttpServlet {
 
 		if (session != null && session.getAttribute("role") != null
 				&& session.getAttribute("role").equals("customer")) {
-			String context = request.getParameter("function");
+			String context = request.getParameter("p");
 			int userId = (int) session.getAttribute("userId");
 			if (context == null) {
 				request.getRequestDispatcher("customerHeader.jsp").forward(request, response);
@@ -174,7 +174,7 @@ public class CustomerPanelServlet extends HttpServlet {
 
 			ServletContext context = getServletContext();
 	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "UPDATE users SET name = ?, email = ?, phone = ? WHERE id = ?;";
+			String query = "UPDATE users SET name = ?, email = ?, phone = ? WHERE user_id = ?;";
 			PreparedStatement pst = conn.prepareStatement(query);
 			pst.setString(1, username);
 			pst.setString(2, email);
@@ -182,11 +182,10 @@ public class CustomerPanelServlet extends HttpServlet {
 			pst.setInt(4, userId);
 			int rowsAffected = pst.executeUpdate();
 			if (rowsAffected > 0) {
-				request.setAttribute("success", "Profile Updated Successfully");
 				session.setAttribute("username", username);
-				getProfile(request, response, userId);
+				response.sendRedirect("CustomerPanelServlet?p=myProfile&success=Profile%20Updated%20Successfully");
 			} else {
-				request.setAttribute("err", "Something Went Wrong");
+				response.sendRedirect("CustomerPanelServlet?p=myProfile&err=Something%20Went%20Wrong");
 			}
 
 			pst.close();
@@ -204,9 +203,9 @@ public class CustomerPanelServlet extends HttpServlet {
 			String passwordCheck = request.getParameter("passwordCheck");
 
 			if (password.length() < 8) {
-				request.setAttribute("err", "Your password must have a minimum length of 8 characters");
+				response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&err=Minimum%20Length%20Of%208%20Characters");
 			} else if (!password.equals(passwordCheck)) {
-				request.setAttribute("err", "The passwords you entered do not match");
+				response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&err=Passwords%20Entered%20Do%20Not%20Match");
 			} else {
 				ServletContext context = getServletContext();
 		    	Connection conn = DatabaseUtil.getConnection(context);
@@ -216,9 +215,9 @@ public class CustomerPanelServlet extends HttpServlet {
 				pst.setInt(2, userId);
 				int rowsAffected = pst.executeUpdate();
 				if (rowsAffected > 0) {
-					request.setAttribute("success", "Password Changed Successfully");
+					response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&success=Password%20Changed%20Successfully");
 				} else {
-					request.setAttribute("err", "Something Went Wrong");
+					response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&err=Something%20Went%20Wrong");
 				}
 
 				pst.close();
@@ -226,9 +225,8 @@ public class CustomerPanelServlet extends HttpServlet {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			request.setAttribute("err", e.getMessage());
+			response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&err=Something%20Went%20Wrong");
 		}
-		request.getRequestDispatcher("customerChangePassword.jsp").forward(request, response);
 	}
 
 	private void addToCart(HttpServletRequest request, HttpServletResponse response, int userId)
@@ -274,9 +272,9 @@ public class CustomerPanelServlet extends HttpServlet {
 			pst.setInt(1, cartId);
 			int rowsAffected = pst.executeUpdate();
 			if (rowsAffected > 0) {
-				request.setAttribute("success", "Deleted From Cart");
+				response.sendRedirect("CustomerPanelServlet?p=myCart&success=Deleted%20From%20Cart");
 			} else {
-				request.setAttribute("err", "Something Went Wrong");
+				response.sendRedirect("CustomerPanelServlet?p=myCart&err=Something%20Went%20Wrong");
 			}
 
 			pst.close();

@@ -23,7 +23,7 @@
 		<form action="CustomerPanelServlet" method="post" class="card w-full"
 			id="profileForm">
 			<h1 class="text-2xl font-bold">My Profile</h1>
-			<input type="hidden" name="function" value="editProfile">
+			<input type="hidden" name="p" value="editProfile">
 			<div class="form-control">
 				<label class="label"> <span class="label-text">Username</span>
 				</label> <input type="text" name="username" class="input input-bordered"
@@ -44,7 +44,7 @@
 		</form>
 		<%
 		try {
-			String success = (String) request.getAttribute("success");
+			String success = (String) request.getParameter("success");
 			if (success != null) {
 				
 		%>
@@ -52,7 +52,7 @@
 		<%
 			}
 		} catch (Exception e) {
-			String err = (String) request.getAttribute("err");
+			String err = (String) request.getParameter("err");
 			%>
 		<!-- Error Message -->
 		<div class="toast toast-top toast-center justify-center">
