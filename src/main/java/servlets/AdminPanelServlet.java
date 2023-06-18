@@ -251,8 +251,8 @@ public class AdminPanelServlet extends HttpServlet {
 		Date publicationDate = Date.valueOf(request.getParameter("publication_date"));
 		String image = request.getParameter("image");
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 
 			int newAuthorId = authorId;
 			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
@@ -287,7 +287,7 @@ public class AdminPanelServlet extends HttpServlet {
 
 			conn.close();
 			response.sendRedirect("AdminPanelServlet?p=addBook&success=Book%20Added%20Successfully");
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 			response.sendRedirect("AdminPanelServlet?p=addBook&err=" + e.getMessage());
@@ -371,8 +371,8 @@ public class AdminPanelServlet extends HttpServlet {
 	private void deleteBook(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			int bookId = Integer.parseInt(request.getParameter("book_id"));
 
 			String query = "DELETE FROM Books WHERE book_id = ?";
@@ -388,7 +388,7 @@ public class AdminPanelServlet extends HttpServlet {
 
 			stmt.close();
 			conn.close();
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("AdminPanelServlet?p=deleteBook&err=" + e.getMessage());
 
@@ -508,8 +508,8 @@ public class AdminPanelServlet extends HttpServlet {
 		int quantity = Integer.parseInt(request.getParameter("quantity"));
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			String updateQuery = "UPDATE books SET price = ?, quantity = ? WHERE book_id = ?";
 			PreparedStatement stmt = conn.prepareStatement(updateQuery);
 			stmt.setDouble(1, price);
@@ -542,8 +542,8 @@ public class AdminPanelServlet extends HttpServlet {
 	    String role = "customer";
 
 	    try {
-	        Class.forName("com.mysql.jdbc.Driver");
-	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+	    	ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 
 	        String checkQuery = "SELECT COUNT(*) FROM Users WHERE email = ?";
 	        PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
@@ -577,7 +577,7 @@ public class AdminPanelServlet extends HttpServlet {
 	        }
 
 	        conn.close();
-	    } catch (ClassNotFoundException | SQLException e) {
+	    } catch (Exception e) {
 	        e.printStackTrace();
 	        response.sendRedirect("AdminPanelServlet?p=addCustomer&error=" + e.getMessage());
 	    }
@@ -591,10 +591,9 @@ public class AdminPanelServlet extends HttpServlet {
 	    String phone = request.getParameter("phone");
 
 	    try {
-	        Class.forName("com.mysql.jdbc.Driver");
-	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+	    	ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 	        
-	        // Check if password is empty or null
 	        if (password == null || password.isEmpty()) {
 	            String updateQuery = "UPDATE Users SET name = ?, email = ?, phone = ? WHERE user_id = ?";
 	            PreparedStatement stmt = conn.prepareStatement(updateQuery);
@@ -643,8 +642,8 @@ public class AdminPanelServlet extends HttpServlet {
 	private void deleteCustomer(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			int customerId = Integer.parseInt(request.getParameter("customer_id"));
 
 			String query = "DELETE FROM Users WHERE user_id = ?";
@@ -660,7 +659,7 @@ public class AdminPanelServlet extends HttpServlet {
 
 			stmt.close();
 			conn.close();
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("AdminPanelServlet?p=deleteCustomer&err=" + e.getMessage());
 

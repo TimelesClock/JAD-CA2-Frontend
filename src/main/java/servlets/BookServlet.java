@@ -6,12 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import classes.Book;
+import util.DatabaseUtil;
 @WebServlet("/BookServlet")
 public class BookServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -29,35 +32,35 @@ public class BookServlet extends HttpServlet {
         int offset = (page - 1) * limit;
         int totalRecords;
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+        	ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
             String query = "";
             ResultSet rs,ts;
             
 
             if (bookName != null) {
                 query = "SELECT COUNT(*) FROM Books b INNER JOIN Genres g ON b.genre_id = g.genre_id WHERE b.title LIKE ?";
-                PreparedStatement pst = con.prepareStatement(query);
+                PreparedStatement pst = conn.prepareStatement(query);
                 pst.setString(1, "%"+bookName+"%");
                 ts = pst.executeQuery();
                 ts.next();
                 totalRecords = ts.getInt(1);
 
                 query = "SELECT * FROM Books b INNER JOIN Genres g ON b.genre_id = g.genre_id WHERE b.title LIKE ? LIMIT ?,?";
-                pst = con.prepareStatement(query);
+                pst = conn.prepareStatement(query);
                 pst.setString(1, "%"+bookName+"%");
                 pst.setInt(2, offset);
                 pst.setInt(3, limit);
                 rs = pst.executeQuery();
             } else {
                 query = "SELECT COUNT(*) FROM Books b INNER JOIN Genres g ON b.genre_id = g.genre_id";
-                PreparedStatement pst = con.prepareStatement(query);
+                PreparedStatement pst = conn.prepareStatement(query);
                 ts = pst.executeQuery();
                 ts.next();
                 totalRecords = ts.getInt(1);
 
                 query = "SELECT * FROM Books b INNER JOIN Genres g ON b.genre_id = g.genre_id LIMIT ?, ?";
-                pst = con.prepareStatement(query);
+                pst = conn.prepareStatement(query);
                 pst.setInt(1, offset);
                 pst.setInt(2, limit);
                 rs = pst.executeQuery();
@@ -81,7 +84,7 @@ public class BookServlet extends HttpServlet {
                 books.add(book);
             }
             
-            con.close();
+            conn.close();
             // Calculate total pages
             int totalPages = (int) Math.ceil((double) totalRecords / limit);
             request.setAttribute("totalPages", totalPages);
