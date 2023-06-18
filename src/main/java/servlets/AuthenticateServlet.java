@@ -71,15 +71,14 @@ public class AuthenticateServlet extends HttpServlet {
                 session.setAttribute("username", rs.getString("name"));
                 session.setAttribute("role", rs.getString("role"));
             } else {
-                request.setAttribute("err", "Invalid email or password");
-                response.sendRedirect("BookServlet");
+                response.sendRedirect("AuthenticateServlet?err=Invalid%20email%20or%20password");
+                return;
             }
             response.sendRedirect("BookServlet");
             conn.close();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
-            request.setAttribute("err", "An error occurred");
-            response.sendRedirect("BookServlet");
+            response.sendRedirect("AuthenticateServlet?err=Something%20went%20wrong");
         }
     }
 

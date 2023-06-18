@@ -52,6 +52,7 @@ public class AdminPanelServlet extends HttpServlet {
 			if (context == null) {
 				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
 			} else if (context.equals("addBook")) {
+<<<<<<< HEAD
 				addContext(request, response,false);
 			}else if (context.equals("editBook")) {
 				addContext(request,response,true);
@@ -66,6 +67,22 @@ public class AdminPanelServlet extends HttpServlet {
 				}
 			    
 			}else {
+=======
+				addContext(request, response, false);
+			} else if (context.equals("editBook")) {
+				addContext(request, response, true);
+			} else if (context.equals("deleteBook")) {
+				addBookContext(request);
+				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+
+			} else if (context.equals("viewInventory")) {
+				addBookContext(request);
+				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+			} else if (context.equals("editInventory")) {
+				addBookContext(request);
+				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+			} else {
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
 			}
 
@@ -74,70 +91,71 @@ public class AdminPanelServlet extends HttpServlet {
 		}
 	}
 
-	private void addContext(HttpServletRequest request, HttpServletResponse response,Boolean edit)
+	private void addContext(HttpServletRequest request, HttpServletResponse response, Boolean edit)
 			throws ServletException, IOException {
 		try {
-		    Class.forName("com.mysql.jdbc.Driver");
-		    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
 
-		    // Fetch Authors
-		    String authorQuery = "SELECT * FROM authors";
-		    Statement authorStmt = conn.createStatement();
-		    ResultSet authorRs = authorStmt.executeQuery(authorQuery);
-		    List<Author> authors = new ArrayList<>();
-		    while (authorRs.next()) {
-		        int authorId = authorRs.getInt("author_id");
-		        String authorName = authorRs.getString("name");
-		        Author author = new Author(authorId, authorName);
-		        authors.add(author);
-		    }
-		    authorRs.close();
-		    authorStmt.close();
+			// Fetch Authors
+			String authorQuery = "SELECT * FROM authors";
+			Statement authorStmt = conn.createStatement();
+			ResultSet authorRs = authorStmt.executeQuery(authorQuery);
+			List<Author> authors = new ArrayList<>();
+			while (authorRs.next()) {
+				int authorId = authorRs.getInt("author_id");
+				String authorName = authorRs.getString("name");
+				Author author = new Author(authorId, authorName);
+				authors.add(author);
+			}
+			authorRs.close();
+			authorStmt.close();
 
-		    // Fetch Publishers
-		    String publisherQuery = "SELECT * FROM publishers";
-		    Statement publisherStmt = conn.createStatement();
-		    ResultSet publisherRs = publisherStmt.executeQuery(publisherQuery);
-		    List<Publisher> publishers = new ArrayList<>();
-		    while (publisherRs.next()) {
-		        int publisherId = publisherRs.getInt("publisher_id");
-		        String publisherName = publisherRs.getString("name");
-		        Publisher publisher = new Publisher(publisherId, publisherName);
-		        publishers.add(publisher);
-		    }
-		    publisherRs.close();
-		    publisherStmt.close();
+			// Fetch Publishers
+			String publisherQuery = "SELECT * FROM publishers";
+			Statement publisherStmt = conn.createStatement();
+			ResultSet publisherRs = publisherStmt.executeQuery(publisherQuery);
+			List<Publisher> publishers = new ArrayList<>();
+			while (publisherRs.next()) {
+				int publisherId = publisherRs.getInt("publisher_id");
+				String publisherName = publisherRs.getString("name");
+				Publisher publisher = new Publisher(publisherId, publisherName);
+				publishers.add(publisher);
+			}
+			publisherRs.close();
+			publisherStmt.close();
 
-		    // Fetch Genres
-		    String genreQuery = "SELECT * FROM genres";
-		    Statement genreStmt = conn.createStatement();
-		    ResultSet genreRs = genreStmt.executeQuery(genreQuery);
-		    List<Genre> genres = new ArrayList<>();
-		    while (genreRs.next()) {
-		        int genreId = genreRs.getInt("genre_id");
-		        String genreName = genreRs.getString("name");
-		        Genre genre = new Genre(genreId, genreName);
-		        genres.add(genre);
-		    }
-		    genreRs.close();
-		    genreStmt.close();
-		    
-		    if (edit) {
-		    	addBookContext(request);
-		    }
+			// Fetch Genres
+			String genreQuery = "SELECT * FROM genres";
+			Statement genreStmt = conn.createStatement();
+			ResultSet genreRs = genreStmt.executeQuery(genreQuery);
+			List<Genre> genres = new ArrayList<>();
+			while (genreRs.next()) {
+				int genreId = genreRs.getInt("genre_id");
+				String genreName = genreRs.getString("name");
+				Genre genre = new Genre(genreId, genreName);
+				genres.add(genre);
+			}
+			genreRs.close();
+			genreStmt.close();
 
-		    conn.close();
+			if (edit) {
+				addBookContext(request);
+			}
 
-		    request.setAttribute("authors", authors);
-		    request.setAttribute("publishers", publishers);
-		    request.setAttribute("genres", genres);
+			conn.close();
 
-		    request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+			request.setAttribute("authors", authors);
+			request.setAttribute("publishers", publishers);
+			request.setAttribute("genres", genres);
+
+			request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
 		} catch (ClassNotFoundException | SQLException e) {
-		    e.printStackTrace();
+			e.printStackTrace();
 		}
 
 	}
+<<<<<<< HEAD
 	
 	private void addBookContext(HttpServletRequest request) throws SQLException, ClassNotFoundException {
 		// Fetch Books
@@ -169,6 +187,40 @@ public class AdminPanelServlet extends HttpServlet {
     	bookRs.close();
     	bookStmt.close();
     	request.setAttribute("books",books);
+=======
+
+	private void addBookContext(HttpServletRequest request) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			String bookQuery = "SELECT * FROM books";
+			Statement bookStmt = conn.createStatement();
+			ResultSet bookRs = bookStmt.executeQuery(bookQuery);
+			List<Book> books = new ArrayList<>();
+			while (bookRs.next()) {
+				Book book = new Book();
+				book.setBookId(bookRs.getInt("book_id"));
+				book.setTitle(bookRs.getString("title"));
+				book.setAuthorId(bookRs.getInt("author_id"));
+				book.setPrice(bookRs.getBigDecimal("price"));
+				book.setQuantity(bookRs.getInt("quantity"));
+				book.setPublicationDate(bookRs.getTimestamp("publication_date"));
+				book.setISBN(bookRs.getString("ISBN"));
+				book.setRating(bookRs.getInt("rating"));
+				book.setDescription(bookRs.getString("description"));
+				book.setPublisherId(bookRs.getInt("publisher_id"));
+				book.setGenreId(bookRs.getInt("genre_id"));
+				book.setImage(bookRs.getString("image"));
+				books.add(book);
+			}
+			bookRs.close();
+			bookStmt.close();
+			request.setAttribute("books", books);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 	}
 
 	/**
@@ -178,6 +230,7 @@ public class AdminPanelServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String action = request.getParameter("action");
+<<<<<<< HEAD
         if (action != null && action.equals("addBook")) {
             addBook(request, response);
         }else if (action != null && action.equals("editBook")) {
@@ -186,10 +239,28 @@ public class AdminPanelServlet extends HttpServlet {
         else {
         	request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
         }
+=======
+		if (action == null) {
+			request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+		} else if (action.equals("addBook")) {
+			addBook(request, response);
+		} else if (action.equals("editBook")) {
+			editBook(request, response);
+		} else if (action.equals("deleteBook")) {
+			deleteBook(request, response);
+		} else if (action.equals("editInventory")) {
+			editInventory(request, response);
+		} else if (action.equals("addCustomer")) {
+			addCustomer(request, response);
+		} else {
+			request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+		}
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 	}
-	
+
 	private void addBook(HttpServletRequest request, HttpServletResponse response)
+<<<<<<< HEAD
 	        throws ServletException, IOException {
 	    String title = request.getParameter("title");
 	    int authorId = Integer.parseInt(request.getParameter("author_id"));
@@ -203,70 +274,93 @@ public class AdminPanelServlet extends HttpServlet {
 	    try {
 	        Class.forName("com.mysql.jdbc.Driver");
 	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+=======
+			throws ServletException, IOException {
+		String title = request.getParameter("title");
+		int authorId = Integer.parseInt(request.getParameter("author_id"));
+		String newAuthorName = request.getParameter("new_author_name");
+		double price = Double.parseDouble(request.getParameter("price"));
+		int quantity = Integer.parseInt(request.getParameter("quantity"));
+		String ISBN = request.getParameter("ISBN");
+		int rating = Integer.parseInt(request.getParameter("rating"));
+		String description = request.getParameter("description");
+		Date publicationDate = Date.valueOf(request.getParameter("publication_date"));
+		String image = request.getParameter("image");
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
-	        int newAuthorId = authorId;
-	        int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
-	        int newPublisherId = Integer.parseInt(request.getParameter("publisher_id"));
+			int newAuthorId = authorId;
+			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
+			int newPublisherId = Integer.parseInt(request.getParameter("publisher_id"));
 
-	        // Insert new author if authorId is 0
-	        if (authorId == 0) {
-	            newAuthorId = insertNewAuthor(newAuthorName, conn);
-	        }
+			// Insert new author if authorId is 0
+			if (authorId == 0) {
+				newAuthorId = insertNewAuthor(newAuthorName, conn);
+			}
 
-	        // Insert new genre if genreId is 0 
-	        if (newGenreId == 0) {
-	            String newGenreName = request.getParameter("new_genre_name");
-	            newGenreId = insertNewGenre(newGenreName, conn);
-	        }
+			// Insert new genre if genreId is 0
+			if (newGenreId == 0) {
+				String newGenreName = request.getParameter("new_genre_name");
+				newGenreId = insertNewGenre(newGenreName, conn);
+			}
 
-	        // Insert new publisher if publisherId is 0
-	        if (newPublisherId == 0) {
-	            String newPublisherName = request.getParameter("new_publisher_name");
-	            newPublisherId = insertNewPublisher(newPublisherName, conn);
-	        }
+			// Insert new publisher if publisherId is 0
+			if (newPublisherId == 0) {
+				String newPublisherName = request.getParameter("new_publisher_name");
+				newPublisherId = insertNewPublisher(newPublisherName, conn);
+			}
 
+<<<<<<< HEAD
 	        // Perform book insertion
 	        boolean bookInserted = insertBook(title, newAuthorId, price, quantity, newPublisherId, newGenreId, ISBN, rating, description, publicationDate, conn);
+=======
+			// Perform book insertion
+			boolean bookInserted = insertBook(title, newAuthorId, price, quantity, newPublisherId, newGenreId, ISBN,
+					rating, description, publicationDate, image, conn);
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
-	        if (bookInserted) {
-	        	request.setAttribute("success", "Book Added Successfully");
-	        } else {
-	        	request.setAttribute("err", "Something Went Wrong");
-	        }
+			if (bookInserted) {
+				request.setAttribute("success", "Book Added Successfully");
+			} else {
+				request.setAttribute("err", "Something Went Wrong");
+			}
 
-	        conn.close();
-	        response.sendRedirect("AdminPanelServlet?p=addBook&success=Book%20Added%20Successfully");
-	    } catch (ClassNotFoundException | SQLException e) {
-	        e.printStackTrace();
-	        request.setAttribute("err", e.getMessage());
-	        response.sendRedirect("AdminPanelServlet?p=addBook&err="+e.getMessage());
-	    }
+			conn.close();
+			response.sendRedirect("AdminPanelServlet?p=addBook&success=Book%20Added%20Successfully");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			request.setAttribute("err", e.getMessage());
+			response.sendRedirect("AdminPanelServlet?p=addBook&err=" + e.getMessage());
+		}
 	}
 
 	private int insertNewAuthor(String authorName, Connection conn) {
-	    int newAuthorId = -1;
-	    try {
-	        String query = "INSERT INTO authors (name) VALUES (?)";
-	        PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-	        stmt.setString(1, authorName);
-	        int rowsAffected = stmt.executeUpdate();
+		int newAuthorId = -1;
+		try {
+			String query = "INSERT INTO authors (name) VALUES (?)";
+			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, authorName);
+			int rowsAffected = stmt.executeUpdate();
 
-	        if (rowsAffected > 0) {
-	            ResultSet rs = stmt.getGeneratedKeys();
-	            if (rs.next()) {
-	                newAuthorId = rs.getInt(1);
-	            }
-	            rs.close();
-	        }
+			if (rowsAffected > 0) {
+				ResultSet rs = stmt.getGeneratedKeys();
+				if (rs.next()) {
+					newAuthorId = rs.getInt(1);
+				}
+				rs.close();
+			}
 
-	        stmt.close();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return newAuthorId;
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return newAuthorId;
 	}
-	
+
 	private void editBook(HttpServletRequest request, HttpServletResponse response)
+<<<<<<< HEAD
 	        throws ServletException, IOException {
 	    int bookId = Integer.parseInt(request.getParameter("book_id"));
 	    String title = request.getParameter("title");
@@ -281,28 +375,40 @@ public class AdminPanelServlet extends HttpServlet {
 	    try {
 	        Class.forName("com.mysql.jdbc.Driver");
 	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+=======
+			throws ServletException, IOException {
+		int bookId = Integer.parseInt(request.getParameter("book_id"));
+		String title = request.getParameter("title");
+		int authorId = Integer.parseInt(request.getParameter("author_id"));
+		String newAuthorName = request.getParameter("new_author_name");
+		double price = Double.parseDouble(request.getParameter("price"));
+		String ISBN = request.getParameter("ISBN");
+		int rating = Integer.parseInt(request.getParameter("rating"));
+		String description = request.getParameter("description");
+		Date publicationDate = Date.valueOf(request.getParameter("publication_date"));
+		String image = request.getParameter("image");
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
-	        int newAuthorId = authorId;
-	        int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
-	        int newPublisherId = Integer.parseInt(request.getParameter("publisher_id"));
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
 
-	        // Insert new author if authorId is 0
-	        if (authorId == 0) {
-	            newAuthorId = insertNewAuthor(newAuthorName, conn);
-	        }
+			int newAuthorId = authorId;
+			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
+			int newPublisherId = Integer.parseInt(request.getParameter("publisher_id"));
 
-	        // Insert new genre if genreId is 0 
-	        if (newGenreId == 0) {
-	            String newGenreName = request.getParameter("new_genre_name");
-	            newGenreId = insertNewGenre(newGenreName, conn);
-	        }
+			// Insert new author if authorId is 0
+			if (authorId == 0) {
+				newAuthorId = insertNewAuthor(newAuthorName, conn);
+			}
 
-	        // Insert new publisher if publisherId is 0
-	        if (newPublisherId == 0) {
-	            String newPublisherName = request.getParameter("new_publisher_name");
-	            newPublisherId = insertNewPublisher(newPublisherName, conn);
-	        }
+			// Insert new genre if genreId is 0
+			if (newGenreId == 0) {
+				String newGenreName = request.getParameter("new_genre_name");
+				newGenreId = insertNewGenre(newGenreName, conn);
+			}
 
+<<<<<<< HEAD
 	        // Perform book update
 	        boolean bookUpdated = updateBook(bookId, title, newAuthorId, price, newPublisherId, newGenreId, ISBN, rating, description, publicationDate, conn);
 
@@ -311,62 +417,104 @@ public class AdminPanelServlet extends HttpServlet {
 	        } else {
 	            request.setAttribute("err", "Something Went Wrong");
 	        }
+=======
+			// Insert new publisher if publisherId is 0
+			if (newPublisherId == 0) {
+				String newPublisherName = request.getParameter("new_publisher_name");
+				newPublisherId = insertNewPublisher(newPublisherName, conn);
+			}
 
-	        conn.close();
-	        response.sendRedirect("AdminPanelServlet?p=editBook&success=Book%20Updated%20Successfully");
-	    } catch (ClassNotFoundException | SQLException e) {
-	        e.printStackTrace();
-	        request.setAttribute("err", e.getMessage());
-	        response.sendRedirect("AdminPanelServlet?p=editBook&err=" + e.getMessage());
-	    }
+			// Perform book update
+			updateBook(bookId, title, newAuthorId, price, newPublisherId, newGenreId, ISBN, rating, description,
+					publicationDate, image, conn);
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
+
+			conn.close();
+			response.sendRedirect("AdminPanelServlet?p=editBook&success=Book%20Updated%20Successfully");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			request.setAttribute("err", e.getMessage());
+			response.sendRedirect("AdminPanelServlet?p=editBook&err=" + e.getMessage());
+		}
 	}
+<<<<<<< HEAD
+=======
+
+	private void deleteBook(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			int bookId = Integer.parseInt(request.getParameter("book_id"));
+
+			String query = "DELETE FROM Books WHERE book_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setInt(1, bookId);
+
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected > 0) {
+				response.sendRedirect("AdminPanelServlet?p=deleteBook&success=Book%20Deleted%20Successfully");
+			} else {
+				response.sendRedirect("AdminPanelServlet?p=deleteBook&err=Book%20was%20not%20deleted");
+			}
+
+			stmt.close();
+			conn.close();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			response.sendRedirect("AdminPanelServlet?p=deleteBook&err=" + e.getMessage());
+
+		}
+	}
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 	private int insertNewGenre(String genreName, Connection conn) {
-	    int newGenreId = -1;
-	    try {
-	        String query = "INSERT INTO genres (name) VALUES (?)";
-	        PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-	        stmt.setString(1, genreName);
-	        int rowsAffected = stmt.executeUpdate();
+		int newGenreId = -1;
+		try {
+			String query = "INSERT INTO genres (name) VALUES (?)";
+			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, genreName);
+			int rowsAffected = stmt.executeUpdate();
 
-	        if (rowsAffected > 0) {
-	            ResultSet rs = stmt.getGeneratedKeys();
-	            if (rs.next()) {
-	                newGenreId = rs.getInt(1);
-	            }
-	            rs.close();
-	        }
+			if (rowsAffected > 0) {
+				ResultSet rs = stmt.getGeneratedKeys();
+				if (rs.next()) {
+					newGenreId = rs.getInt(1);
+				}
+				rs.close();
+			}
 
-	        stmt.close();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return newGenreId;
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return newGenreId;
 	}
 
 	private int insertNewPublisher(String publisherName, Connection conn) {
-	    int newPublisherId = -1;
-	    try {
-	        String query = "INSERT INTO publishers (name) VALUES (?)";
-	        PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-	        stmt.setString(1, publisherName);
-	        int rowsAffected = stmt.executeUpdate();
+		int newPublisherId = -1;
+		try {
+			String query = "INSERT INTO publishers (name) VALUES (?)";
+			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, publisherName);
+			int rowsAffected = stmt.executeUpdate();
 
-	        if (rowsAffected > 0) {
-	            ResultSet rs = stmt.getGeneratedKeys();
-	            if (rs.next()) {
-	                newPublisherId = rs.getInt(1);
-	            }
-	            rs.close();
-	        }
+			if (rowsAffected > 0) {
+				ResultSet rs = stmt.getGeneratedKeys();
+				if (rs.next()) {
+					newPublisherId = rs.getInt(1);
+				}
+				rs.close();
+			}
 
-	        stmt.close();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return newPublisherId;
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return newPublisherId;
 	}
 
+<<<<<<< HEAD
 	private boolean insertBook(String title, int authorId, double price, int quantity, int publisherId, int genreId, String ISBN, int rating, String description, Date publicationDate, Connection conn) {
 	    boolean bookInserted = false;
 	    try {
@@ -387,14 +535,39 @@ public class AdminPanelServlet extends HttpServlet {
 	        if (rowsAffected > 0) {
 	            bookInserted = true;
 	        }
+=======
+	private boolean insertBook(String title, int authorId, double price, int quantity, int publisherId, int genreId,
+			String ISBN, int rating, String description, Date publicationDate, String image, Connection conn) {
+		boolean bookInserted = false;
+		try {
+			String query = "INSERT INTO Books (title, author_id, price, quantity, publisher_id, genre_id, ISBN, rating, description, publication_date,image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setString(1, title);
+			stmt.setInt(2, authorId);
+			stmt.setDouble(3, price);
+			stmt.setInt(4, quantity);
+			stmt.setInt(5, publisherId);
+			stmt.setInt(6, genreId);
+			stmt.setString(7, ISBN);
+			stmt.setInt(8, rating);
+			stmt.setString(9, description);
+			stmt.setDate(10, publicationDate);
+			stmt.setString(11, image);
 
-	        stmt.close();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return bookInserted;
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected > 0) {
+				bookInserted = true;
+			}
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
+
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return bookInserted;
 	}
 
+<<<<<<< HEAD
 	private boolean updateBook(int bookId, String title, int authorId, double price, int publisherId, int genreId, String ISBN, int rating, String description, Date publicationDate, Connection conn) {
 	    boolean bookUpdated = false;
 	    try {
@@ -410,18 +583,122 @@ public class AdminPanelServlet extends HttpServlet {
 	        stmt.setString(8, description);
 	        stmt.setDate(9, publicationDate);
 	        stmt.setInt(10, bookId);
+=======
+	private boolean updateBook(int bookId, String title, int authorId, double price, int publisherId, int genreId,
+			String ISBN, int rating, String description, Date publicationDate, String image, Connection conn) {
+		boolean bookUpdated = false;
+		try {
+			String query = "UPDATE Books SET title = ?, author_id = ?, price = ?, publisher_id = ?, genre_id = ?, ISBN = ?, rating = ?, description = ?, publication_date = ?,image = ? WHERE book_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setString(1, title);
+			stmt.setInt(2, authorId);
+			stmt.setDouble(3, price);
+			stmt.setInt(4, publisherId);
+			stmt.setInt(5, genreId);
+			stmt.setString(6, ISBN);
+			stmt.setInt(7, rating);
+			stmt.setString(8, description);
+			stmt.setDate(9, publicationDate);
+			stmt.setString(10, image);
+			stmt.setInt(11, bookId);
 
-	        int rowsAffected = stmt.executeUpdate();
-	        if (rowsAffected > 0) {
-	            bookUpdated = true;
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected > 0) {
+				bookUpdated = true;
+			}
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
+
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return bookUpdated;
+	}
+
+	private void editInventory(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		int bookId = Integer.parseInt(request.getParameter("book_id"));
+		double price = Double.parseDouble(request.getParameter("price"));
+		int quantity = Integer.parseInt(request.getParameter("quantity"));
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			String updateQuery = "UPDATE books SET price = ?, quantity = ? WHERE book_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(updateQuery);
+			stmt.setDouble(1, price);
+			stmt.setInt(2, quantity);
+			stmt.setInt(3, bookId);
+			int rowsAffected = stmt.executeUpdate();
+
+			if (rowsAffected > 0) {
+				stmt.close();
+				response.sendRedirect("AdminPanelServlet?p=editInventory&success=Inventory%20updated%20successfully");
+				return;
+			} else {
+				stmt.close();
+				response.sendRedirect("AdminPanelServlet?p=editInventory&error=Failed%20to%20update%20inventory");
+				return;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect("AdminPanelServlet?p=editInventory&error=" + e.getMessage());
+			return;
+		}
+	}
+<<<<<<< HEAD
+=======
+	
+	private void addCustomer(HttpServletRequest request, HttpServletResponse response)
+	        throws ServletException, IOException {
+	    String name = request.getParameter("name");
+	    String email = request.getParameter("email");
+	    String password = request.getParameter("password");
+	    String phone = request.getParameter("phone");
+	    String role = "customer";
+
+	    try {
+	        Class.forName("com.mysql.jdbc.Driver");
+	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+
+	        String checkQuery = "SELECT COUNT(*) FROM Users WHERE email = ?";
+	        PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+	        checkStmt.setString(1, email);
+	        ResultSet resultSet = checkStmt.executeQuery();
+	        resultSet.next();
+	        int count = resultSet.getInt(1);
+	        checkStmt.close();
+
+	        if (count > 0) {
+	            response.sendRedirect("AdminPanelServlet?p=addCustomer&error=Duplicate%20Email");
+	            conn.close();
+	            return;
 	        }
 
+	        String insertQuery = "INSERT INTO Users (name, email, password, role, phone) VALUES (?, ?, MD5(?), ?, ?)";
+	        PreparedStatement stmt = conn.prepareStatement(insertQuery);
+	        stmt.setString(1, name);
+	        stmt.setString(2, email);
+	        stmt.setString(3, password);
+	        stmt.setString(4, role);
+	        stmt.setString(5, phone);
+
+	        int rowsAffected = stmt.executeUpdate();
 	        stmt.close();
-	    } catch (SQLException e) {
+
+	        if (rowsAffected > 0) {
+	            response.sendRedirect("AdminPanelServlet?p=addCustomer&success=Customer%20Added%20Successfully");
+	        } else {
+	            response.sendRedirect("AdminPanelServlet?p=addCustomer&err=Failed%20to%20Add%20Customer");
+	        }
+
+	        conn.close();
+	    } catch (ClassNotFoundException | SQLException e) {
 	        e.printStackTrace();
+	        response.sendRedirect("AdminPanelServlet?p=addCustomer&error=" + e.getMessage());
 	    }
-	    return bookUpdated;
 	}
+>>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 
 }

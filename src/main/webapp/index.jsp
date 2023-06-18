@@ -77,7 +77,7 @@
 		</div>
 	</div>
 
-	<div class="flex flex-wrap my-10 px-80 justify-between">
+	<div class="flex flex-wrap my-10 lg:px-32 justify-between">
 		<%
 		@SuppressWarnings("unchecked")
 		List<Book> books = (List<Book>) request.getAttribute("books");
@@ -85,7 +85,7 @@
 			for (Book book : books) {
 		%>
 		<div
-			class="card md:w-72 lg:w-96 h-1/6 bg-base-100 shadow-xl m-2 border border-base-300">
+			class="card lg:m-1 lg:w-72 xl:w-96 h-1/6 bg-base-100 shadow-xl m-2 border border-base-300">
 			<%
 			if (book.getImage() != null && !book.getImage().equals("")) {
 			%>
@@ -97,7 +97,7 @@
 			} else {
 			%>
 			<figure class="w-full h-80">
-				<span class="book-title"><%=book.getTitle()%></span>
+				<span class=""><%=book.getTitle()%></span>
 			</figure>
 			<%
 			}

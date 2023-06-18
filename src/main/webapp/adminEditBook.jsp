@@ -16,7 +16,8 @@ List<Book> books = (List<Book>) request.getAttribute("books");
 <body>
 	<h1 class="text-2xl font-bold mb-4 ms-5">Edit Book</h1>
 	<div class="container mx-auto mt-5">
-		<form action="AdminPanelServlet" method="post" class="card" onsubmit="return encodeImage()" id = "form">
+		<form action="AdminPanelServlet" method="post" class="card"
+			onsubmit="return encodeImage()" id="form">
 			<!-- Didnt realise html only supports POST and GET so ?action is a workaround -->
 			<input type="hidden" name="action" value="editBook">
 			<div class="card-body space-y-6">
@@ -190,10 +191,9 @@ List<Book> books = (List<Book>) request.getAttribute("books");
 				ratingInput.value = "<%=book.getRating()%>";
 				descriptionInput.value = "<%=book.getDescription()%>";
 				publisherIdSelect.value = "<%=book.getPublisherId()%>";
-				genreIdSelect.value = "<%=book.getGenreId()%>
-		";
-					return;
-				}
+				genreIdSelect.value = "<%=book.getGenreId()%>";
+				return;
+			}
 	<%}%>
 		}
 		}
