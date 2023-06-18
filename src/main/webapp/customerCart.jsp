@@ -27,7 +27,7 @@
 				try {
 					@SuppressWarnings("unchecked")
 					int totalRecords = (int) request.getAttribute("totalRecords");
-					double subtotal = (int) request.getAttribute("subtotal");
+					double subtotal = (double) request.getAttribute("subtotal");
 					List<Cart> cartItems = (List<Cart>) request.getAttribute("cart");
 					if (cartItems != null) {
 						for (Cart item : cartItems) {
