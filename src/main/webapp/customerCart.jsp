@@ -33,7 +33,6 @@
 					List<Cart> cartItems = (List<Cart>) request.getAttribute("cart");
 					if (cartItems != null) {
 						for (Cart item : cartItems) {
-					System.out.println(item.getTitle());
 				%>
 				<div
 					class="justify-between mb-6 rounded-lg bg-base-200 p-6 shadow-md sm:flex sm:justify-start">
@@ -59,34 +58,36 @@
 							<div class="flex items-center border-base-200">
 								<span
 									class="cursor-pointer rounded-l bg-base-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"
-									id="<%="decrease"+item.getBookId()%>"> - </span> <input
+									id="<%="decrease" + item.getBookId()%>"> - </span> <input
 									class="h-8 w-8 border border-base-100 bg-base-100 text-center text-xs outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-									type="number" name="quantity" id="<%=item.getBookId()%>" value="<%=item.getQuantity()%>" min="1" /> <span
+									type="number" name="quantity" id="<%=item.getBookId()%>"
+									value="<%=item.getQuantity()%>" min="1" /> <span
 									class="cursor-pointer rounded-r bg-base-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"
-									id="<%="increase"+item.getBookId()%>"> + </span>
-								
+									id="<%="increase" + item.getBookId()%>"> + </span>
+
 							</div>
 							<div class="flex items-center space-x-4">
 								<p class="text-sm">
 									$<%=item.getPrice()%></p>
 								<form action="CustomerPanelServlet" method="post">
 									<input type="hidden" name="p" value="deleteFromCart">
-									<button type="submit" name="cartId" value="<%=item.getBookId()%>">
+									<button type="submit" name="cartId"
+										value="<%=item.getBookId()%>">
 										<svg xmlns="http://www.w3.org/2000/svg" fill="none"
 											viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
 											class="h-5 w-5 cursor-pointer duration-150 hover:text-red-500">
-		                  					<path stroke-linecap="round" stroke-linejoin="round"
-												d="M6 18L18 6M6 6l12 12" />
+		                  					<path stroke-linecap="round"
+												stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
 						                </svg>
-						           	</button>
-				                </form>
+									</button>
+								</form>
 							</div>
 						</div>
 					</div>
 				</div>
 				<script>
 									document
-											.getElementById("<%="decrease"+item.getBookId()%>")
+											.getElementById("<%="decrease" + item.getBookId()%>")
 											.addEventListener(
 													'click',
 													function() {
@@ -104,24 +105,26 @@
 														}
 													});
 									document
-											.getElementById("<%="increase"+item.getBookId()%>")
+											.getElementById("<%="increase" + item.getBookId()%>")
 											.addEventListener(
 													'click',
 													function() {
 														var quantityInput = document
 																.getElementById("<%=item.getCartId()%>");
-														
-														if (quantityInput.value != null)
-															quantityValue = parseInt(quantityInput.value);
-														else
-															quantityValue = 1;
 
-														if (quantityValue < <%=item.getMax()%>) {
-															quantityValue++;
-															quantityInput.value = quantityValue;
-														}
-													});
-								</script>
+										if (quantityInput.value != null)
+											quantityValue = parseInt(quantityInput.value);
+										else
+											quantityValue = 1;
+
+										if (quantityValue <
+				<%=item.getMax()%>
+					) {
+											quantityValue++;
+											quantityInput.value = quantityValue;
+										}
+									});
+				</script>
 				<%
 				}
 				}
@@ -153,9 +156,9 @@
 					class="disabled mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">Check
 					out</button>
 			</div>
-			</div>
-	
-	
+		</div>
+	</div>
+
 	<%
 	try {
 		String pageNum = request.getParameter("page");
@@ -163,20 +166,18 @@
 		int currentPage = pageNum != null ? Integer.parseInt(pageNum) : 1;
 		int totalPages = totalPageRaw != null ? Integer.parseInt(totalPageRaw) : 1;
 	%>
-		<div class="flex justify-center mt-10 mb-20">
-			<div class="join">
-				<a href="CustomerPanelServlet?p=myCart&page=<%=currentPage - 1%>" 
+	<div class="flex justify-center mt-10 mb-20">
+		<div class="join">
+			<a href="CustomerPanelServlet?p=myCart&page=<%=currentPage - 1%>"
 				class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">
-					«
-				</a>
-				<a href="#" class="join-item btn">Page <%=currentPage%></a> 
-				<a href="CustomerPanelServlet?p=myCart&page=<%=currentPage + 1%>"
-					class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
-			</div>
+				« </a> <a href="#" class="join-item btn">Page <%=currentPage%></a> <a
+				href="CustomerPanelServlet?p=myCart&page=<%=currentPage + 1%>"
+				class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
 		</div>
+	</div>
 	<%
 	} catch (NumberFormatException e) {
-		String err = e.getMessage();
+	String err = e.getMessage();
 	}
 	%>
 
@@ -194,6 +195,6 @@
 	}
 	%>
 	<%@include file="footer.html"%>
-	
+
 </body>
 </html>

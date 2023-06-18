@@ -12,8 +12,6 @@
 	rel="stylesheet">
 </head>
 <body>
-	Sanity Check #023
-
 	<%@page import="java.sql.Date"%>
 
 	<%@include file="header.jsp"%>

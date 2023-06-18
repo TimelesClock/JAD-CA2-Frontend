@@ -10,7 +10,6 @@
 	rel="stylesheet">
 </head>
 <body>
-	Sanity Check #008
 	<%@include file="header.jsp"%>
 
 	<%
