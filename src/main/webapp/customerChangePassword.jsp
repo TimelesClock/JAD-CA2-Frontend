@@ -10,7 +10,7 @@
 	rel="stylesheet">
 </head>
 <body>
-	Sanity Check #007
+	Sanity Check #008
 	<%@include file="header.jsp"%>
 
 	<%
@@ -21,23 +21,18 @@
 	%>
 	<div class="flex flex-col items-center w-full p-5 rounded-xl space-y-6">
 		<form action="CustomerPanelServlet" method="post" class="card w-full"
-			id="profileForm">
-			<h1 class="text-2xl font-bold">My Profile</h1>
-			<input type="hidden" name="function" value="editProfile">
+			id="changePasswordForm">
+			<h1 class="text-2xl font-bold">Change Password</h1>
+			<input type="hidden" name="function" value="changePassword">
 			<div class="form-control">
-				<label class="label"> <span class="label-text">Username</span>
-				</label> <input type="text" name="username" class="input input-bordered"
-					value=<%=username%> required>
+				<label class="label"> <span class="label-text">New Password</span>
+				</label> <input type="text" name="password" class="input input-bordered"
+					required>
 			</div>
 			<div class="form-control">
-				<label class="label"> <span class="label-text">Email</span>
-				</label> <input type="text" name="email" class="input input-bordered"
-					value=<%=email%> required>
-			</div>
-			<div class="form-control">
-				<label class="label"> <span class="label-text">Phone</span>
-				</label> <input type="number" name="phone" class="input input-bordered"
-					value=<%=Integer.parseInt(phone)%> required>
+				<label class="label"> <span class="label-text">Please key in your new password again</span>
+				</label> <input type="text" name="passwordCheck" class="input input-bordered"
+					required>
 			</div>
 			<button type="submit" class="btn btn-primary mt-5">Save
 				Changes</button>
@@ -45,11 +40,16 @@
 		<%
 		try {
 			String success = (String) request.getAttribute("success");
+			String err = (String) request.getAttribute("err");
 			if (success != null) {
 				
 		%>
 		<p class=""><%=success%></p>
 		<%
+			} else if (err != null) {
+		%>
+		<p class=""><%=err%></p>	
+		<%	
 			}
 		} catch (Exception e) {
 			String err = (String) request.getAttribute("err");

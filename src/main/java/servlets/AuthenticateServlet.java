@@ -6,12 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import util.DatabaseUtil;
 
 
 @WebServlet("/AuthenticateServlet")
@@ -28,7 +31,7 @@ public class AuthenticateServlet extends HttpServlet {
     	if (session != null && session.getAttribute("role")!=null) {
     		response.sendRedirect("BookServlet");
     	} else {
-    		request.getRequestDispatcher("/login.jsp").forward(request, response);
+    		request.getRequestDispatcher("/Admin/login.jsp").forward(request, response);
     	}
     }
 
@@ -54,8 +57,8 @@ public class AuthenticateServlet extends HttpServlet {
     private void login(HttpServletRequest request, HttpServletResponse response, String email, String password)
             throws ServletException, IOException {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+        	ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 
             String query = "SELECT * FROM Users WHERE email = ? AND password = MD5(?)";
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -76,7 +79,7 @@ public class AuthenticateServlet extends HttpServlet {
             }
             response.sendRedirect("BookServlet");
             conn.close();
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("AuthenticateServlet?err=Something%20went%20wrong");
         }
@@ -85,8 +88,8 @@ public class AuthenticateServlet extends HttpServlet {
     private void register(HttpServletRequest request, HttpServletResponse response, String email, String password,String name,String phone)
             throws ServletException, IOException {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+        	ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 
             // Check if the email already exists
             String checkQuery = "SELECT * FROM Users WHERE email = ?";
@@ -126,7 +129,7 @@ public class AuthenticateServlet extends HttpServlet {
             response.sendRedirect("BookServlet");
 
             conn.close();
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("err", "An error occurred");
             request.getRequestDispatcher("login.jsp").forward(request, response);

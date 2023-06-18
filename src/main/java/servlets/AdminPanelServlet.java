@@ -1,6 +1,8 @@
 package servlets;
 
+import util.DatabaseUtil;
 import classes.Author;
+import classes.User;
 import classes.Book;
 import classes.Publisher;
 import classes.Genre;
@@ -16,6 +18,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -50,7 +53,7 @@ public class AdminPanelServlet extends HttpServlet {
 		if (session != null && session.getAttribute("role") != null && session.getAttribute("role").equals("admin")) {
 			String context = request.getParameter("p");
 			if (context == null) {
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			} else if (context.equals("addBook")) {
 <<<<<<< HEAD
 				addContext(request, response,false);
@@ -73,17 +76,32 @@ public class AdminPanelServlet extends HttpServlet {
 				addContext(request, response, true);
 			} else if (context.equals("deleteBook")) {
 				addBookContext(request);
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 
 			} else if (context.equals("viewInventory")) {
 				addBookContext(request);
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			} else if (context.equals("editInventory")) {
 				addBookContext(request);
+<<<<<<< HEAD
 				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
 			} else {
 >>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+=======
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+			}else if (context.equals("viewCustomer")) {
+				addUserContext(request);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+			}else if (context.equals("editCustomer")) {
+				addUserContext(request);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+			}else if (context.equals("deleteCustomer")) {
+				addUserContext(request);
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+			}else {
+				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+>>>>>>> 1b315eb540b16025d4a8138ad2860703318196ca
 			}
 
 		} else {
@@ -94,8 +112,8 @@ public class AdminPanelServlet extends HttpServlet {
 	private void addContext(HttpServletRequest request, HttpServletResponse response, Boolean edit)
 			throws ServletException, IOException {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 
 			// Fetch Authors
 			String authorQuery = "SELECT * FROM authors";
@@ -149,8 +167,8 @@ public class AdminPanelServlet extends HttpServlet {
 			request.setAttribute("publishers", publishers);
 			request.setAttribute("genres", genres);
 
-			request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
-		} catch (ClassNotFoundException | SQLException e) {
+			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -191,8 +209,8 @@ public class AdminPanelServlet extends HttpServlet {
 
 	private void addBookContext(HttpServletRequest request) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			String bookQuery = "SELECT * FROM books";
 			Statement bookStmt = conn.createStatement();
 			ResultSet bookRs = bookStmt.executeQuery(bookQuery);
@@ -222,6 +240,32 @@ public class AdminPanelServlet extends HttpServlet {
 
 >>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 	}
+	
+	private void addUserContext(HttpServletRequest request) {
+	    try {
+	    	ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
+	        String userQuery = "SELECT * FROM Users WHERE role = 'customer'";
+	        Statement userStmt = conn.createStatement();
+	        ResultSet userRs = userStmt.executeQuery(userQuery);
+	        List<User> users = new ArrayList<>();
+	        while (userRs.next()) {
+	            User user = new User();
+	            user.setUserId(userRs.getInt("user_id"));
+	            user.setName(userRs.getString("name"));
+	            user.setEmail(userRs.getString("email"));
+	            user.setRole(userRs.getString("role"));
+	            user.setPhone(userRs.getString("phone"));
+	            users.add(user);
+	        }
+	        userRs.close();
+	        userStmt.close();
+	        request.setAttribute("users", users);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -241,7 +285,7 @@ public class AdminPanelServlet extends HttpServlet {
         }
 =======
 		if (action == null) {
-			request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 		} else if (action.equals("addBook")) {
 			addBook(request, response);
 		} else if (action.equals("editBook")) {
@@ -252,8 +296,12 @@ public class AdminPanelServlet extends HttpServlet {
 			editInventory(request, response);
 		} else if (action.equals("addCustomer")) {
 			addCustomer(request, response);
+		} else if (action.equals("editCustomer")) {
+			editCustomer(request, response);
+		} else if (action.equals("deleteCustomer")) {
+			deleteCustomer(request, response);
 		} else {
-			request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
+			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 		}
 >>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
@@ -287,9 +335,14 @@ public class AdminPanelServlet extends HttpServlet {
 		Date publicationDate = Date.valueOf(request.getParameter("publication_date"));
 		String image = request.getParameter("image");
 		try {
+<<<<<<< HEAD
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
 >>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
+=======
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
+>>>>>>> 1b315eb540b16025d4a8138ad2860703318196ca
 
 			int newAuthorId = authorId;
 			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
@@ -329,7 +382,7 @@ public class AdminPanelServlet extends HttpServlet {
 
 			conn.close();
 			response.sendRedirect("AdminPanelServlet?p=addBook&success=Book%20Added%20Successfully");
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 			response.sendRedirect("AdminPanelServlet?p=addBook&err=" + e.getMessage());
@@ -390,8 +443,8 @@ public class AdminPanelServlet extends HttpServlet {
 >>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 
 			int newAuthorId = authorId;
 			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
@@ -431,7 +484,7 @@ public class AdminPanelServlet extends HttpServlet {
 
 			conn.close();
 			response.sendRedirect("AdminPanelServlet?p=editBook&success=Book%20Updated%20Successfully");
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 			response.sendRedirect("AdminPanelServlet?p=editBook&err=" + e.getMessage());
@@ -443,8 +496,8 @@ public class AdminPanelServlet extends HttpServlet {
 	private void deleteBook(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			int bookId = Integer.parseInt(request.getParameter("book_id"));
 
 			String query = "DELETE FROM Books WHERE book_id = ?";
@@ -460,7 +513,7 @@ public class AdminPanelServlet extends HttpServlet {
 
 			stmt.close();
 			conn.close();
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("AdminPanelServlet?p=deleteBook&err=" + e.getMessage());
 
@@ -622,8 +675,8 @@ public class AdminPanelServlet extends HttpServlet {
 		int quantity = Integer.parseInt(request.getParameter("quantity"));
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			String updateQuery = "UPDATE books SET price = ?, quantity = ? WHERE book_id = ?";
 			PreparedStatement stmt = conn.prepareStatement(updateQuery);
 			stmt.setDouble(1, price);
@@ -658,8 +711,8 @@ public class AdminPanelServlet extends HttpServlet {
 	    String role = "customer";
 
 	    try {
-	        Class.forName("com.mysql.jdbc.Driver");
-	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+	    	ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 
 	        String checkQuery = "SELECT COUNT(*) FROM Users WHERE email = ?";
 	        PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
@@ -693,12 +746,94 @@ public class AdminPanelServlet extends HttpServlet {
 	        }
 
 	        conn.close();
-	    } catch (ClassNotFoundException | SQLException e) {
+	    } catch (Exception e) {
 	        e.printStackTrace();
 	        response.sendRedirect("AdminPanelServlet?p=addCustomer&error=" + e.getMessage());
 	    }
 	}
 >>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
+	private void editCustomer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    int customerId = Integer.parseInt(request.getParameter("customer_id"));
+	    String name = request.getParameter("name");
+	    String email = request.getParameter("email");
+	    String password = request.getParameter("password");
+	    String phone = request.getParameter("phone");
+
+	    try {
+	    	ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
+	        
+	        if (password == null || password.isEmpty()) {
+	            String updateQuery = "UPDATE Users SET name = ?, email = ?, phone = ? WHERE user_id = ?";
+	            PreparedStatement stmt = conn.prepareStatement(updateQuery);
+	            stmt.setString(1, name);
+	            stmt.setString(2, email);
+	            stmt.setString(3, phone);
+	            stmt.setInt(4, customerId);
+	            int rowsAffected = stmt.executeUpdate();
+
+	            if (rowsAffected > 0) {
+	                stmt.close();
+	                response.sendRedirect("AdminPanelServlet?p=editCustomer&success=Customer%20updated%20successfully");
+	                return;
+	            } else {
+	                stmt.close();
+	                response.sendRedirect("AdminPanelServlet?p=editCustomer&error=Failed%20to%20update%20customer");
+	                return;
+	            }
+	        } else {
+	            String updateQuery = "UPDATE Users SET name = ?, email = ?, password = MD5(?), phone = ? WHERE user_id = ?";
+	            PreparedStatement stmt = conn.prepareStatement(updateQuery);
+	            stmt.setString(1, name);
+	            stmt.setString(2, email);
+	            stmt.setString(3, password);
+	            stmt.setString(4, phone);
+	            stmt.setInt(5, customerId);
+	            int rowsAffected = stmt.executeUpdate();
+
+	            if (rowsAffected > 0) {
+	                stmt.close();
+	                response.sendRedirect("AdminPanelServlet?p=editCustomer&success=Customer%20updated%20successfully");
+	                return;
+	            } else {
+	                stmt.close();
+	                response.sendRedirect("AdminPanelServlet?p=editCustomer&error=Failed%20to%20update%20customer");
+	                return;
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        response.sendRedirect("AdminPanelServlet?p=editCustomer&error=" + e.getMessage());
+	        return;
+	    }
+	}
+	
+	private void deleteCustomer(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
+			int customerId = Integer.parseInt(request.getParameter("customer_id"));
+
+			String query = "DELETE FROM Users WHERE user_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setInt(1, customerId);
+
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected > 0) {
+				response.sendRedirect("AdminPanelServlet?p=deleteCustomer&success=Customer%20Deleted%20Successfully");
+			} else {
+				response.sendRedirect("AdminPanelServlet?p=deleteCustomer&err=Customer%20was%20not%20deleted");
+			}
+
+			stmt.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect("AdminPanelServlet?p=deleteCustomer&err=" + e.getMessage());
+
+		}
+	}
 
 }

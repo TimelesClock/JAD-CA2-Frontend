@@ -12,7 +12,7 @@
 	rel="stylesheet">
 </head>
 <body>
-	Sanity Check #020
+	Sanity Check #023
 
 	<%@page import="java.sql.Date"%>
 
@@ -36,9 +36,22 @@
 	<div class="max-w-7xl mx-auto px-4">
 		<div class=" flex flex-col w-full lg:flex-row">
 			<div class="grid flex-shrink-0 place-items-center my-20 lg:pr-6">
-				<figure>
-					<img src="data:image/jpeg;base64,<%=image%>" alt="Book img">
+				<%
+				if (image != null && !image.equals("")) {
+				%>
+				<figure class="w-full h-80">
+					<img src="data:image/jpeg;base64,<%=image%>" alt="Book img"
+						class="w-full h-full">
 				</figure>
+				<%
+				} else {
+				%>
+				<figure class="w-full h-80">
+					<span class=""><%=title%></span>
+				</figure>
+				<%
+				}
+				%>
 			</div>
 			<div class="divider lg:divider-horizontal"></div>
 			<div class="grid flex-shrink my-20">
@@ -59,23 +72,27 @@
 					<form action="CustomerPanelServlet" method="post">
 						<input type="hidden" name="function" value="addToCart"> <input
 							type="hidden" name="bookId" value="<%=bookId%>">
-						<div class="flex flex-row">
-							<span class="">Quantity </span>
+						<div class="flex flex-row items-center mb-5">
+							<span class="me-2">Quantity </span>
 							<div
 								class="form-control mt-1 flex flex-row max-w-min border rounded-xl">
-								<button class="p-2" id="decrease">-</button>
-								<input type="number"
-									class="input text-center w-20 input-bordered [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-									name="quantity" value="1" min="1">
-								<button class="p-2" id="increase">+</button>
+								<span
+									class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50" id="decrease">
+									- </span> 
+									<input
+									class="input h-8 w-20 border bg-white text-center text-xs outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+									type="number" name="quantity" id="quantity" value="1" min="1" /> <span
+									class="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50" id="increase">
+									+ </span>
 							</div>
+							<p class="ms-4">
+								<%=quantity%>
+								available
+							</p>
 						</div>
-						<p class="mb-5">
-							<%=quantity%>
-							available
-						</p>
+
 						<div class="form-control">
-							<button type="submit" class="btn btn-primary w-[200px]">
+							<button type="submit" class="btn btn-primary w-full">
 								Add to Cart</button>
 						</div>
 					</form>
@@ -111,17 +128,28 @@
 					</div>
 					<div class="tab-content hidden" id="reviewsContent">
 						Rating:
-						<%=rating%>
-						/ 5
-						<div class="rating">
-							<input type="radio" name="rating-2"
-								class="mask mask-star-2 bg-orange-400" /> <input type="radio"
-								name="rating-2" class="mask mask-star-2 bg-orange-400" /> <input
-								type="radio" name="rating-2"
-								class="mask mask-star-2 bg-orange-400" /> <input type="radio"
-								name="rating-2" class="mask mask-star-2 bg-orange-400" /> <input
-								type="radio" name="rating-2"
-								class="mask mask-star-2 bg-orange-400" />
+						<div class="rating flex flex-row">
+							<%
+							for (int i = 1; i <= 5; i++) {
+								if (i <= rating) {
+							%>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+								stroke-width="0" class="w-8 h-8 fill-amber-400">
+  								<path stroke-linecap="round" stroke-linejoin="round"
+									d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+							</svg>
+							<%
+							} else {
+							%>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+								stroke-width="1" class="w-8 h-8 stroke-slate-800 fill-none">
+  								<path stroke-linecap="round" stroke-linejoin="round"
+									d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+							</svg>
+							<%
+							}
+							}
+							%>
 						</div>
 					</div>
 
@@ -131,8 +159,7 @@
 								.addEventListener(
 										'click',
 										function() {
-											var quantityInput = document
-													.querySelector('.input[name="quantity"]');
+											var quantityInput = document.getElementById("quantity");
 											console.log("input", quantityInput);
 											console.log("value",
 													quantityInput.value);
@@ -151,8 +178,7 @@
 								.addEventListener(
 										'click',
 										function() {
-											var quantityInput = document
-													.querySelector('.input[name="quantity"]');
+											var quantityInput = document.getElementById("quantity");
 											console.log("input", quantityInput);
 											console.log("value",
 													quantityInput.value);
@@ -240,17 +266,6 @@
 											document
 													.getElementById('productTab').classList
 													.remove('tab-active');
-										});
-						document
-								.addEventListener(
-										'DOMContentLoaded',
-										function() {
-											var ratingElements = document
-													.querySelectorAll('.rating');
-											var element = ratingElements[
-					<%=rating%>
-						- 1];
-											element.classList.add('checked');
 										});
 					</script>
 				</div>
