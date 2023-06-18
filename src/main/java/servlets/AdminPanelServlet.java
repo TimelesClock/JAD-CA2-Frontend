@@ -7,7 +7,6 @@ import classes.Book;
 import classes.Publisher;
 import classes.Genre;
 import java.io.IOException;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -55,22 +54,6 @@ public class AdminPanelServlet extends HttpServlet {
 			if (context == null) {
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			} else if (context.equals("addBook")) {
-<<<<<<< HEAD
-				addContext(request, response,false);
-			}else if (context.equals("editBook")) {
-				addContext(request,response,true);
-				
-			}else if (context.equals("deleteBook")) {
-				try {
-					addBookContext(request);
-					request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
-				}catch(Exception e) {
-					e.printStackTrace();
-					request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
-				}
-			    
-			}else {
-=======
 				addContext(request, response, false);
 			} else if (context.equals("editBook")) {
 				addContext(request, response, true);
@@ -83,12 +66,6 @@ public class AdminPanelServlet extends HttpServlet {
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			} else if (context.equals("editInventory")) {
 				addBookContext(request);
-<<<<<<< HEAD
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
-			} else {
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
-				request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
-=======
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			}else if (context.equals("viewCustomer")) {
 				addUserContext(request);
@@ -101,7 +78,6 @@ public class AdminPanelServlet extends HttpServlet {
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			}else {
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
->>>>>>> 1b315eb540b16025d4a8138ad2860703318196ca
 			}
 
 		} else {
@@ -173,39 +149,6 @@ public class AdminPanelServlet extends HttpServlet {
 		}
 
 	}
-<<<<<<< HEAD
-	
-	private void addBookContext(HttpServletRequest request) throws SQLException, ClassNotFoundException {
-		// Fetch Books
-		Class.forName("com.mysql.jdbc.Driver");
-	    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
-    	String bookQuery = "SELECT * FROM books";
-    	Statement bookStmt = conn.createStatement();
-    	ResultSet bookRs = bookStmt.executeQuery(bookQuery);
-    	List<Book> books = new ArrayList<>();
-    	while (bookRs.next()) {
-    		Book book = new Book();
-    		book.setBookId(bookRs.getInt("book_id"));
-    		book.setTitle(bookRs.getString("title"));
-    		book.setAuthorId(bookRs.getInt("author_id"));
-    		book.setPrice(bookRs.getBigDecimal("price"));
-    		book.setQuantity(bookRs.getInt("quantity"));
-    		book.setPublicationDate(bookRs.getTimestamp("publication_date"));
-    		book.setISBN(bookRs.getString("ISBN"));
-    		book.setRating(bookRs.getInt("rating"));
-    		book.setDescription(bookRs.getString("description"));
-    		book.setPublisherId(bookRs.getInt("publisher_id"));
-    		book.setGenreId(bookRs.getInt("genre_id"));
-    		Blob blob = bookRs.getBlob("image");
-    		if (blob != null) {
-    		    book.setImage(blob.getBytes(1, (int) blob.length()));
-    		}
-    	    books.add(book);
-    	}
-    	bookRs.close();
-    	bookStmt.close();
-    	request.setAttribute("books",books);
-=======
 
 	private void addBookContext(HttpServletRequest request) {
 		try {
@@ -238,7 +181,6 @@ public class AdminPanelServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 	}
 	
 	private void addUserContext(HttpServletRequest request) {
@@ -274,16 +216,6 @@ public class AdminPanelServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String action = request.getParameter("action");
-<<<<<<< HEAD
-        if (action != null && action.equals("addBook")) {
-            addBook(request, response);
-        }else if (action != null && action.equals("editBook")) {
-        	editBook(request,response);
-        }
-        else {
-        	request.getRequestDispatcher("adminPanel.jsp").forward(request, response);
-        }
-=======
 		if (action == null) {
 			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 		} else if (action.equals("addBook")) {
@@ -303,26 +235,10 @@ public class AdminPanelServlet extends HttpServlet {
 		} else {
 			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 		}
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 	}
 
 	private void addBook(HttpServletRequest request, HttpServletResponse response)
-<<<<<<< HEAD
-	        throws ServletException, IOException {
-	    String title = request.getParameter("title");
-	    int authorId = Integer.parseInt(request.getParameter("author_id"));
-	    String newAuthorName = request.getParameter("new_author_name");
-	    double price = Double.parseDouble(request.getParameter("price"));
-	    int quantity = Integer.parseInt(request.getParameter("quantity"));
-	    String ISBN = request.getParameter("ISBN");
-	    int rating = Integer.parseInt(request.getParameter("rating"));
-	    String description = request.getParameter("description");
-	    Date publicationDate = Date.valueOf(request.getParameter("publication_date"));
-	    try {
-	        Class.forName("com.mysql.jdbc.Driver");
-	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
-=======
 			throws ServletException, IOException {
 		String title = request.getParameter("title");
 		int authorId = Integer.parseInt(request.getParameter("author_id"));
@@ -335,14 +251,8 @@ public class AdminPanelServlet extends HttpServlet {
 		Date publicationDate = Date.valueOf(request.getParameter("publication_date"));
 		String image = request.getParameter("image");
 		try {
-<<<<<<< HEAD
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
-=======
 			ServletContext context = getServletContext();
 	    	Connection conn = DatabaseUtil.getConnection(context);
->>>>>>> 1b315eb540b16025d4a8138ad2860703318196ca
 
 			int newAuthorId = authorId;
 			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
@@ -353,7 +263,7 @@ public class AdminPanelServlet extends HttpServlet {
 				newAuthorId = insertNewAuthor(newAuthorName, conn);
 			}
 
-			// Insert new genre if genreId is 0
+			// Insert new genre if genreId  0
 			if (newGenreId == 0) {
 				String newGenreName = request.getParameter("new_genre_name");
 				newGenreId = insertNewGenre(newGenreName, conn);
@@ -365,14 +275,9 @@ public class AdminPanelServlet extends HttpServlet {
 				newPublisherId = insertNewPublisher(newPublisherName, conn);
 			}
 
-<<<<<<< HEAD
-	        // Perform book insertion
-	        boolean bookInserted = insertBook(title, newAuthorId, price, quantity, newPublisherId, newGenreId, ISBN, rating, description, publicationDate, conn);
-=======
 			// Perform book insertion
 			boolean bookInserted = insertBook(title, newAuthorId, price, quantity, newPublisherId, newGenreId, ISBN,
 					rating, description, publicationDate, image, conn);
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 			if (bookInserted) {
 				request.setAttribute("success", "Book Added Successfully");
@@ -413,22 +318,6 @@ public class AdminPanelServlet extends HttpServlet {
 	}
 
 	private void editBook(HttpServletRequest request, HttpServletResponse response)
-<<<<<<< HEAD
-	        throws ServletException, IOException {
-	    int bookId = Integer.parseInt(request.getParameter("book_id"));
-	    String title = request.getParameter("title");
-	    int authorId = Integer.parseInt(request.getParameter("author_id"));
-	    String newAuthorName = request.getParameter("new_author_name");
-	    double price = Double.parseDouble(request.getParameter("price"));
-	    String ISBN = request.getParameter("ISBN");
-	    int rating = Integer.parseInt(request.getParameter("rating"));
-	    String description = request.getParameter("description");
-	    Date publicationDate = Date.valueOf(request.getParameter("publication_date"));
-	    
-	    try {
-	        Class.forName("com.mysql.jdbc.Driver");
-	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
-=======
 			throws ServletException, IOException {
 		int bookId = Integer.parseInt(request.getParameter("book_id"));
 		String title = request.getParameter("title");
@@ -440,7 +329,6 @@ public class AdminPanelServlet extends HttpServlet {
 		String description = request.getParameter("description");
 		Date publicationDate = Date.valueOf(request.getParameter("publication_date"));
 		String image = request.getParameter("image");
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 		try {
 			ServletContext context = getServletContext();
@@ -461,26 +349,14 @@ public class AdminPanelServlet extends HttpServlet {
 				newGenreId = insertNewGenre(newGenreName, conn);
 			}
 
-<<<<<<< HEAD
-	        // Perform book update
-	        boolean bookUpdated = updateBook(bookId, title, newAuthorId, price, newPublisherId, newGenreId, ISBN, rating, description, publicationDate, conn);
-
-	        if (bookUpdated) {
-	            request.setAttribute("success", "Book Updated Successfully");
-	        } else {
-	            request.setAttribute("err", "Something Went Wrong");
-	        }
-=======
-			// Insert new publisher if publisherId is 0
+			// Insert new publisher if publisherId  0
 			if (newPublisherId == 0) {
 				String newPublisherName = request.getParameter("new_publisher_name");
 				newPublisherId = insertNewPublisher(newPublisherName, conn);
 			}
 
-			// Perform book update
 			updateBook(bookId, title, newAuthorId, price, newPublisherId, newGenreId, ISBN, rating, description,
 					publicationDate, image, conn);
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 			conn.close();
 			response.sendRedirect("AdminPanelServlet?p=editBook&success=Book%20Updated%20Successfully");
@@ -490,8 +366,6 @@ public class AdminPanelServlet extends HttpServlet {
 			response.sendRedirect("AdminPanelServlet?p=editBook&err=" + e.getMessage());
 		}
 	}
-<<<<<<< HEAD
-=======
 
 	private void deleteBook(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -519,7 +393,6 @@ public class AdminPanelServlet extends HttpServlet {
 
 		}
 	}
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 	private int insertNewGenre(String genreName, Connection conn) {
 		int newGenreId = -1;
@@ -567,28 +440,6 @@ public class AdminPanelServlet extends HttpServlet {
 		return newPublisherId;
 	}
 
-<<<<<<< HEAD
-	private boolean insertBook(String title, int authorId, double price, int quantity, int publisherId, int genreId, String ISBN, int rating, String description, Date publicationDate, Connection conn) {
-	    boolean bookInserted = false;
-	    try {
-	        String query = "INSERT INTO Books (title, author_id, price, quantity, publisher_id, genre_id, ISBN, rating, description, publication_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-	        PreparedStatement stmt = conn.prepareStatement(query);
-	        stmt.setString(1, title);
-	        stmt.setInt(2, authorId);
-	        stmt.setDouble(3, price);
-	        stmt.setInt(4, quantity);
-	        stmt.setInt(5, publisherId);
-	        stmt.setInt(6, genreId);
-	        stmt.setString(7, ISBN);
-	        stmt.setInt(8, rating);
-	        stmt.setString(9, description);
-	        stmt.setDate(10, publicationDate);
-
-	        int rowsAffected = stmt.executeUpdate();
-	        if (rowsAffected > 0) {
-	            bookInserted = true;
-	        }
-=======
 	private boolean insertBook(String title, int authorId, double price, int quantity, int publisherId, int genreId,
 			String ISBN, int rating, String description, Date publicationDate, String image, Connection conn) {
 		boolean bookInserted = false;
@@ -611,7 +462,6 @@ public class AdminPanelServlet extends HttpServlet {
 			if (rowsAffected > 0) {
 				bookInserted = true;
 			}
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 			stmt.close();
 		} catch (SQLException e) {
@@ -620,23 +470,6 @@ public class AdminPanelServlet extends HttpServlet {
 		return bookInserted;
 	}
 
-<<<<<<< HEAD
-	private boolean updateBook(int bookId, String title, int authorId, double price, int publisherId, int genreId, String ISBN, int rating, String description, Date publicationDate, Connection conn) {
-	    boolean bookUpdated = false;
-	    try {
-	        String query = "UPDATE Books SET title = ?, author_id = ?, price = ?, publisher_id = ?, genre_id = ?, ISBN = ?, rating = ?, description = ?, publication_date = ? WHERE book_id = ?";
-	        PreparedStatement stmt = conn.prepareStatement(query);
-	        stmt.setString(1, title);
-	        stmt.setInt(2, authorId);
-	        stmt.setDouble(3, price);
-	        stmt.setInt(4, publisherId);
-	        stmt.setInt(5, genreId);
-	        stmt.setString(6, ISBN);
-	        stmt.setInt(7, rating);
-	        stmt.setString(8, description);
-	        stmt.setDate(9, publicationDate);
-	        stmt.setInt(10, bookId);
-=======
 	private boolean updateBook(int bookId, String title, int authorId, double price, int publisherId, int genreId,
 			String ISBN, int rating, String description, Date publicationDate, String image, Connection conn) {
 		boolean bookUpdated = false;
@@ -659,7 +492,6 @@ public class AdminPanelServlet extends HttpServlet {
 			if (rowsAffected > 0) {
 				bookUpdated = true;
 			}
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 			stmt.close();
 		} catch (SQLException e) {
@@ -699,8 +531,6 @@ public class AdminPanelServlet extends HttpServlet {
 			return;
 		}
 	}
-<<<<<<< HEAD
-=======
 	
 	private void addCustomer(HttpServletRequest request, HttpServletResponse response)
 	        throws ServletException, IOException {
@@ -751,7 +581,6 @@ public class AdminPanelServlet extends HttpServlet {
 	        response.sendRedirect("AdminPanelServlet?p=addCustomer&error=" + e.getMessage());
 	    }
 	}
->>>>>>> 3c46273f20cd55644cd22da463fa3f4eaec2583e
 
 	private void editCustomer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    int customerId = Integer.parseInt(request.getParameter("customer_id"));

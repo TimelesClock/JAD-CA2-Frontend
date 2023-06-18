@@ -27,7 +27,7 @@
 				try {
 					@SuppressWarnings("unchecked")
 					int totalRecords = (int) request.getAttribute("totalRecords");
-					int subtotal = (int) request.getAttribute("subtotal");
+					double subtotal = (int) request.getAttribute("subtotal");
 					List<Cart> cartItems = (List<Cart>) request.getAttribute("cart");
 					if (cartItems != null) {
 						for (Cart item : cartItems) {
@@ -56,22 +56,75 @@
 							class="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
 							<div class="flex items-center border-gray-100">
 								<span
-									class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50">
-									- </span> <input
+									class="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"
+									id="decrease"> - </span> <input
 									class="h-8 w-8 border bg-white text-center text-xs outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 									type="number" value="<%=item.getQuantity()%>" min="1" /> <span
-									class="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50">
-									+ </span>
+									class="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"
+									id="increase"> + </span>
+								<script>
+									document
+											.getElementById('decrease')
+											.addEventListener(
+													'click',
+													function() {
+														var quantityInput = document
+																.getElementById("quantity");
+														console.log("input",
+																quantityInput);
+														console
+																.log(
+																		"value",
+																		quantityInput.value);
+														if (quantityInput.value != null)
+															quantityValue = parseInt(quantityInput.value);
+														else
+															quantityValue = 1;
+
+														if (quantityValue > 1) {
+															quantityValue--;
+															quantityInput.value = quantityValue;
+														}
+													});
+									document
+											.getElementById('increase')
+											.addEventListener(
+													'click',
+													function() {
+														var quantityInput = document
+																.getElementById("quantity");
+														console.log("input",
+																quantityInput);
+														console
+																.log(
+																		"value",
+																		quantityInput.value);
+														if (quantityInput.value != null)
+															quantityValue = parseInt(quantityInput.value);
+														else
+															quantityValue = 1;
+
+														if (quantityValue < <%=item.getMax()%>) {
+															quantityValue++;
+															quantityInput.value = quantityValue;
+														}
+													});
+								</script>
 							</div>
 							<div class="flex items-center space-x-4">
 								<p class="text-sm">
 									$<%=item.getPrice()%></p>
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none"
-									viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-									class="h-5 w-5 cursor-pointer duration-150 hover:text-red-500">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-										d="M6 18L18 6M6 6l12 12" />
-                </svg>
+								<form action="CustomerPanelServlet" method="post">
+									<input type="hidden" name="function" value="deleteFromCart">
+									<button type="submit" name="cartId" value="<%=item.getCartId()%>">
+										<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+											viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+											class="h-5 w-5 cursor-pointer duration-150 hover:text-red-500">
+		                  					<path stroke-linecap="round" stroke-linejoin="round"
+												d="M6 18L18 6M6 6l12 12" />
+						                </svg>
+						           	</button>
+				                </form>
 							</div>
 						</div>
 					</div>
@@ -99,7 +152,8 @@
 					<p class="text-lg font-bold">Total</p>
 					<div class="">
 						<p class="mb-1 text-lg font-bold">
-							$<%=subtotal%></p>
+							$<%=subtotal%>
+						</p>
 					</div>
 				</div>
 				<button
@@ -124,5 +178,7 @@
 	}
 	%>
 	<%@include file="footer.html"%>
+	
+	
 </body>
 </html>

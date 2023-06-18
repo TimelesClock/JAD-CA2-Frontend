@@ -8,6 +8,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import classes.Cart;
+import util.DatabaseUtil;
+
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -50,10 +53,10 @@ public class CustomerPanelServlet extends HttpServlet {
 	private void getProfile(HttpServletRequest request, HttpServletResponse response, int userId)
 			throws ServletException, IOException {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			String query = "SELECT email, phone FROM users WHERE id = ?";
-			PreparedStatement pst = con.prepareStatement(query);
+			PreparedStatement pst = conn.prepareStatement(query);
 			pst.setInt(1, userId);
 			ResultSet rs = pst.executeQuery();
 
@@ -64,7 +67,7 @@ public class CustomerPanelServlet extends HttpServlet {
 				response.sendRedirect("AuthenticateServlet");
 			}
 
-			con.close();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
@@ -80,29 +83,29 @@ public class CustomerPanelServlet extends HttpServlet {
         int limit = 10;
         int offset = (page - 1) * limit;
         int totalRecords = 0;
-        int subtotal = 0;
+        double subtotal = 0;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			String query = "SELECT COUNT(*), CAST(SUM(b.price*c.quantity) AS DECIMAL(7, 2)) AS subtotal\r\n"
 					+ "FROM cart c\r\n"
 					+ "INNER JOIN books b ON c.book_id = b.book_id\r\n"
 					+ "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
 					+ "WHERE user_id = ?;";
-            PreparedStatement pst = con.prepareStatement(query);
+            PreparedStatement pst = conn.prepareStatement(query);
             pst.setInt(1, userId);
             ResultSet ts = pst.executeQuery();
             ts.next();
             totalRecords = ts.getInt(1);
             subtotal = ts.getInt(2);
             
-            query = "SELECT b.image, b.book_id, b.title, a.name AS author, b.price, b.quantity AS max, c.quantity\r\n"
+            query = "SELECT c.cart_id, b.image, b.book_id, b.title, a.name AS author, b.price, b.quantity AS max, c.quantity\r\n"
             		+ "FROM cart c\r\n"
             		+ "INNER JOIN books b ON c.book_id = b.book_id\r\n"
             		+ "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
             		+ "WHERE user_id = ?\r\n"
             		+ "LIMIT ?, ?;\r\n";
-			pst = con.prepareStatement(query);
+			pst = conn.prepareStatement(query);
 			pst.setInt(1, userId);
 			pst.setInt(2, offset);
             pst.setInt(3, limit);
@@ -110,6 +113,7 @@ public class CustomerPanelServlet extends HttpServlet {
 
 			while (rs.next()) {
 				Cart item = new Cart();
+				item.setCartId(rs.getInt("cart_id"));
 				item.setBookId(rs.getInt("book_id"));
 				item.setTitle(rs.getString("title"));
 				item.setAuthor(rs.getString("author"));
@@ -121,7 +125,7 @@ public class CustomerPanelServlet extends HttpServlet {
 				cartItems.add(item);
 			}
 
-			con.close();
+			conn.close();
 			// Calculate total pages
             int totalPages = (int) Math.ceil((double) totalRecords / limit);
             request.setAttribute("totalPages", totalPages);
@@ -153,6 +157,8 @@ public class CustomerPanelServlet extends HttpServlet {
 				changePassword(request, response, userId);
 			} else if (context.equals("addToCart")) {
 				addToCart(request, response, userId);
+			} else if (context.equals("deleteFromCart")) {
+				deleteFromCart(request, response);
 			}
 		} else {
 			response.sendRedirect("AuthenticateServlet");
@@ -166,10 +172,10 @@ public class CustomerPanelServlet extends HttpServlet {
 			String email = request.getParameter("email");
 			String phone = request.getParameter("phone");
 
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			String query = "UPDATE users SET name = ?, email = ?, phone = ? WHERE id = ?;";
-			PreparedStatement pst = con.prepareStatement(query);
+			PreparedStatement pst = conn.prepareStatement(query);
 			pst.setString(1, username);
 			pst.setString(2, email);
 			pst.setString(3, phone);
@@ -184,7 +190,7 @@ public class CustomerPanelServlet extends HttpServlet {
 			}
 
 			pst.close();
-			con.close();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
@@ -202,10 +208,10 @@ public class CustomerPanelServlet extends HttpServlet {
 			} else if (!password.equals(passwordCheck)) {
 				request.setAttribute("err", "The passwords you entered do not match");
 			} else {
-				Class.forName("com.mysql.jdbc.Driver");
-				Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+				ServletContext context = getServletContext();
+		    	Connection conn = DatabaseUtil.getConnection(context);
 				String query = "UPDATE users SET password = MD5(?) WHERE user_id = ?;";
-				PreparedStatement pst = con.prepareStatement(query);
+				PreparedStatement pst = conn.prepareStatement(query);
 				pst.setString(1, password);
 				pst.setInt(2, userId);
 				int rowsAffected = pst.executeUpdate();
@@ -216,7 +222,7 @@ public class CustomerPanelServlet extends HttpServlet {
 				}
 
 				pst.close();
-				con.close();
+				conn.close();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -231,11 +237,11 @@ public class CustomerPanelServlet extends HttpServlet {
 			Integer bookId = Integer.parseInt(request.getParameter("bookId"));
 			Integer quantity = Integer.parseInt(request.getParameter("quantity"));
 
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
 			String query = "INSERT INTO cart (user_id, book_id, quantity)\r\n" + "VALUES (?, ?, ?)\r\n"
 					+ "ON DUPLICATE KEY UPDATE\r\n" + "    quantity = quantity + ?;";
-			PreparedStatement pst = con.prepareStatement(query);
+			PreparedStatement pst = conn.prepareStatement(query);
 			pst.setInt(1, userId);
 			pst.setInt(2, bookId);
 			pst.setInt(3, quantity);
@@ -249,7 +255,32 @@ public class CustomerPanelServlet extends HttpServlet {
 			}
 
 			pst.close();
-			con.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("err", e.getMessage());
+		}
+	}
+	
+	private void deleteFromCart(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			Integer cartId = Integer.parseInt(request.getParameter("cartId"));
+
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
+			String query = "DELETE FROM cart WHERE cart_id = ?;";
+			PreparedStatement pst = conn.prepareStatement(query);
+			pst.setInt(1, cartId);
+			int rowsAffected = pst.executeUpdate();
+			if (rowsAffected > 0) {
+				request.setAttribute("success", "Deleted From Cart");
+			} else {
+				request.setAttribute("err", "Something Went Wrong");
+			}
+
+			pst.close();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());

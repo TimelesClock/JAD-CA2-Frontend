@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Cart {
+	private int cartId;
 	private int bookId;
 	private String title;
 	private String author;
@@ -12,6 +13,14 @@ public class Cart {
 	private int quantity;
 	private String image;
 
+	public int getCartId() {
+		return cartId;
+	}
+
+	public void setCartId(int cartId) {
+		this.cartId = cartId;
+	}
+	
 	public int getBookId() {
 		return bookId;
 	}

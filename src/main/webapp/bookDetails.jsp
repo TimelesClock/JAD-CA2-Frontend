@@ -187,9 +187,7 @@
 											else
 												quantityValue = 1;
 
-											if (quantityValue <
-					<%=quantity%>
-						) {
+											if (quantityValue < <%=quantity%>) {
 												quantityValue++;
 												quantityInput.value = quantityValue;
 											}

@@ -7,11 +7,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import util.DatabaseUtil;
 
 @WebServlet("/BookDetailsServlet")
 public class BookDetailsServlet extends HttpServlet {
@@ -24,15 +27,15 @@ public class BookDetailsServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			int bookId = (int) Integer.parseInt(request.getParameter("bookId"));
-        	Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/jad", "root", "root");
+			ServletContext context = getServletContext();
+	    	Connection conn = DatabaseUtil.getConnection(context);
             String query = "SELECT b.image, b.title, a.name AS author, b.price, b.quantity, p.name AS publisher, b.publication_date, b.ISBN, g.name AS genre, b.rating, b.description \r\n"
             		+ "FROM books b\r\n"
             		+ "LEFT JOIN authors a ON a.author_id = b.author_id\r\n"
             		+ "LEFT JOIN publishers p ON p.publisher_id = b.publisher_id\r\n"
             		+ "LEFT JOIN genres g ON g.genre_id = b.genre_id\r\n"
             		+ "WHERE book_id = ?;";
-            PreparedStatement pst = con.prepareStatement(query);
+            PreparedStatement pst = conn.prepareStatement(query);
             pst.setInt(1, bookId);
             ResultSet rs = pst.executeQuery();
             
@@ -53,7 +56,7 @@ public class BookDetailsServlet extends HttpServlet {
             	response.sendRedirect("BookServlet");
             }
             
-            con.close();
+            conn.close();
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("err", e.getMessage());
