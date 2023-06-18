@@ -50,20 +50,30 @@
 		<ul class="p-2 space-y-2 menu">
 			<li>
 				<form action="AdminPanelServlet" method="get" class="mx-2 p-0">
+					<input type="hidden" name="p" value="viewCustomer">
+					<button type="submit" class="w-full h-full p-3">View
+						Customer</button>
+				</form>
+			</li>
+			<li>
+				<form action="AdminPanelServlet" method="get" class="mx-2 p-0">
 					<input type="hidden" name="p" value="addCustomer">
-					<button type="submit" class="w-full h-full p-3">Add Customer</button>
+					<button type="submit" class="w-full h-full p-3">Add
+						Customer</button>
 				</form>
 			</li>
 			<li>
 				<form action="AdminPanelServlet" method="get" class="mx-2 p-0">
 					<input type="hidden" name="p" value="editCustomer">
-					<button type="submit" class="w-full h-full p-3">Edit Customer</button>
+					<button type="submit" class="w-full h-full p-3">Edit
+						Customer</button>
 				</form>
 			</li>
 			<li>
 				<form action="AdminPanelServlet" method="get" class="mx-2 p-0">
 					<input type="hidden" name="p" value="deleteCustomer">
-					<button type="submit" class="w-full h-full p-3">Delete Customer</button>
+					<button type="submit" class="w-full h-full p-3">Delete
+						Customer</button>
 				</form>
 			</li>
 		</ul>
