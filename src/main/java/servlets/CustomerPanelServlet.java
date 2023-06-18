@@ -55,7 +55,7 @@ public class CustomerPanelServlet extends HttpServlet {
 		try {
 			ServletContext context = getServletContext();
 	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "SELECT email, phone FROM users WHERE id = ?";
+			String query = "SELECT email, phone FROM users WHERE user_id = ?";
 			PreparedStatement pst = conn.prepareStatement(query);
 			pst.setInt(1, userId);
 			ResultSet rs = pst.executeQuery();
