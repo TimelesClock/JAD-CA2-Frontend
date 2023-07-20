@@ -17,6 +17,7 @@
 		String username = (String) session.getAttribute("username");
 		String email = (String) request.getAttribute("email");
 		String phone = (String) request.getAttribute("phone");
+		
 	%>
 	<div class="flex flex-col items-center w-full p-5 rounded-xl space-y-6">
 		<form action="CustomerPanelServlet" method="post" class="card w-full"
