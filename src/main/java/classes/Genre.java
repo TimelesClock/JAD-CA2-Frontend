@@ -4,9 +4,15 @@ public class Genre {
     private int id;
     private String name;
 
-    public Genre(int id, String name) {
+    public Genre() {
+    }
+
+    public void setId(int id) {
         this.id = id;
-        this.name = name;
+    }
+
+    public void setName(String genreName) {
+        this.name = genreName;
     }
 
     public int getId() {

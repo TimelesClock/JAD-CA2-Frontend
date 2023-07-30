@@ -8,7 +8,7 @@ public class Book {
     private int authorId;
     private BigDecimal price;
     private int quantity;
-    private Timestamp publicationDate;
+    private String publicationDate;
     private String ISBN;
     private int rating;
     private String description;
@@ -51,7 +51,7 @@ public class Book {
         this.quantity = quantity;
     }
 
-    public void setPublicationDate(Timestamp publicationDate) {
+    public void setPublicationDate(String publicationDate) {
         this.publicationDate = publicationDate;
     }
 
@@ -100,7 +100,7 @@ public class Book {
         return quantity;
     }
 
-    public Timestamp getPublicationDate() {
+    public String getPublicationDate() {
         return publicationDate;
     }
 
