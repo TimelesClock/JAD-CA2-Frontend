@@ -32,18 +32,17 @@ public class AppUtil {
 		return res;
 	}
 	
-	public Response get(String url, Map<String, List<Object>> headers) {
+	//Overload cause java doesnt support optional params
+	public Response get(String url, Map<String, Object> headers) {
 	    Client client = ClientBuilder.newClient();
 	    WebTarget target = client.target(hostname + url);
 	    Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
 
 	    if (headers != null) {
-	        for (Map.Entry<String, List<Object>> entry : headers.entrySet()) {
+	        for (Map.Entry<String, Object> entry : headers.entrySet()) {
 	            String headerName = entry.getKey();
-	            List<Object> headerValues = entry.getValue();
-	            for (Object headerValue : headerValues) {
-	                invocationBuilder.header(headerName, headerValue);
-	            }
+	            Object headerValue = entry.getValue();
+	            invocationBuilder.header(headerName, headerValue);
 	        }
 	    }
 
@@ -61,19 +60,17 @@ public class AppUtil {
 		return res;
 	}
 	
-	public Response post(String url, JSONObject json, Map<String, List<Object>> headers) {
+	public Response post(String url, JSONObject json, Map<String, Object> headers) {
 	    Client client = ClientBuilder.newClient();
 	    WebTarget target = client.target(hostname + url);
 	    Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
 
 	    // Adding headers to the request
 	    if (headers != null) {
-	        for (Map.Entry<String, List<Object>> entry : headers.entrySet()) {
+	        for (Map.Entry<String, Object> entry : headers.entrySet()) {
 	            String headerName = entry.getKey();
-	            List<Object> headerValues = entry.getValue();
-	            for (Object headerValue : headerValues) {
-	                invocationBuilder.header(headerName, headerValue);
-	            }
+	            Object headerValue = entry.getValue();
+	            invocationBuilder.header(headerName, headerValue);
 	        }
 	    }
 

@@ -1,6 +1,6 @@
 <body>
 	<div class="w-2/12 h-screen shadow-xl">
-		<form action="BookServlet" method="get" class="mx-2 p-0">
+		<form action="home" method="get" class="mx-2 p-0">
 			<button type="submit" class="btn btn-outline w-full h-full">Back
 				To Homepage</button>
 		</form>

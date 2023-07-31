@@ -15,7 +15,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.HashMap;
+import util.*;
+import javax.ws.rs.core.Response;
+import javax.json.JsonObject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -47,13 +50,34 @@ public class AdminPanelServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		AppUtil app = new AppUtil();
 		HttpSession session = request.getSession(false);
-		if (session != null && session.getAttribute("token") != null) {
-			response.sendRedirect("BookServlet");
+		if (session == null || session.getAttribute("token") == null) {
+			response.sendRedirect("home");
 			return;
 		}
-		MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-		headers.add("Authorization", session.getAttribute("token"));
+		HashMap<String, Object> headers = new HashMap<>();
+		headers.put("Authorization", session.getAttribute("token"));
+		
+		Response res = app.get("isAdmin",headers);
+		
+		if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+			request.setAttribute("err", res.getStatus()+" POST request error");
+		}
+    	
+    	JsonObject data = JsonUtil.getData(res);
+    	
+    	if (data == null) {
+			request.setAttribute("err","Error in POST request");
+			request.getRequestDispatcher("login.jsp").forward(request, response);
+			return;
+		}
+    	
+    	if (data.getString("status") == "fail") {
+    		request.setAttribute("err", data.getString("message"));
+    		request.getRequestDispatcher("login.jsp").forward(request, response);
+    		return;
+    	}
 
 		if (session != null && session.getAttribute("token") != null) {
 			String context = request.getParameter("p");
@@ -94,10 +118,9 @@ public class AdminPanelServlet extends HttpServlet {
 	private void addContext(HttpServletRequest request, HttpServletResponse response, Boolean edit)
 			throws ServletException, IOException {
 		try {
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
+			AppUtil app = new AppUtil();
+			
 
-			// Fetch Authors
 			String authorQuery = "SELECT * FROM authors";
 			Statement authorStmt = conn.createStatement();
 			ResultSet authorRs = authorStmt.executeQuery(authorQuery);
