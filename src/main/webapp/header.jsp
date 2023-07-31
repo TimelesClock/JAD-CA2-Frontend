@@ -6,7 +6,7 @@
 <body>
 	<div class="navbar bg-base-100 shadow-xl">
 		<div class="flex-1">
-			<form action="BookServlet" method="get">
+			<form action="home" method="get">
 				<button type="submit" class="btn btn-ghost normal-case text-xl">SP
 					Books</button>
 			</form>
@@ -34,7 +34,7 @@
 			<div class="menu menu-horizontal px-1">
 				<%
 				HttpSession loginSession = request.getSession(false);
-				if (loginSession.getAttribute("role") != null && loginSession.getAttribute("role").equals("admin")) {
+				if (loginSession.getAttribute("token") != null) {
 				%>
 				<form action="AdminPanelServlet" method="get" class="mx-2">
 					<input type="hidden" name="action" value="login">
@@ -48,10 +48,10 @@
 				}
 				%>
 				<%
-				if (loginSession != null && loginSession.getAttribute("role") != null) {
+				if (loginSession != null && loginSession.getAttribute("token") != null) {
 				%>
 				<!-- Logout button -->
-				<form action="AuthenticateServlet" method="post" class="mx-2">
+				<form action="Login" method="post" class="mx-2">
 					<input type="hidden" name="action" value="logout">
 					<button type="submit" class="btn btn-outline btn-error">Logout</button>
 				</form>
@@ -59,7 +59,7 @@
 				} else {
 				%>
 				<!-- Login button -->
-				<form action="AuthenticateServlet" method="get" class="mx-2">
+				<form action="Login" method="get" class="mx-2">
 					<input type="hidden" name="action" value="login">
 					<button type="submit" class="btn btn-outline">Login</button>
 				</form>

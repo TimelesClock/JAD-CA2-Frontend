@@ -36,7 +36,7 @@
                 <div class="tab tab-bordered tab-active" id="loginTab">Login</div>
                 <div class="tab" id="registerTab">Register</div>
             </div>
-            <form action="AuthenticateServlet" method="post" class="card w-full" id="loginForm">
+            <form action="Login" method="post" class="card w-full" id="loginForm">
                 <h1 class="text-2xl font-bold">Login</h1>
                 <input type="hidden" name="action" value="login">
                 <div class="form-control">
@@ -51,7 +51,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary mt-5">Login</button>
             </form>
-            <form action="AuthenticateServlet" method="post" class="card w-full hidden"
+            <form action="Login" method="post" class="card w-full hidden"
                 id="registerForm">
                 <h1 class="text-2xl font-bold">Register</h1>
                 <input type="hidden" name="action" value="register">

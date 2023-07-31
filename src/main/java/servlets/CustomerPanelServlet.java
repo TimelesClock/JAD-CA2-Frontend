@@ -19,6 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
+
+import org.jose4j.json.internal.json_simple.JSONObject;
+
 import javax.ws.rs.core.GenericType;
 
 @WebServlet("/CustomerPanelServlet")
@@ -59,7 +62,7 @@ public class CustomerPanelServlet extends HttpServlet {
 		try {
 			AppUtil app = new AppUtil();
 			String url = "customer/getUserById/"+userId;
-			Response res = app.get(url,request);
+			Response res = app.get(url);
 			customer = (User) res.readEntity(new GenericType<User>() {});
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -82,18 +85,18 @@ public class CustomerPanelServlet extends HttpServlet {
 		try {
 			AppUtil app = new AppUtil();
 			String url = "customer/getCart/"+userId;
-			Response res = app.get(url,request);
+			Response res = app.get(url);
 			cartItems = (List<Cart>) res.readEntity(new GenericType<List<Cart>>() {});
 			
 			url = "customer/getTotalCartItems/"+userId;
-			res = app.get(url,request);
+			res = app.get(url);
 			totalRecords = (Integer) res.readEntity(new GenericType<Integer>() {});
 			
 			// Calculate total pages
             totalPages = (int) Math.ceil((double) totalRecords / limit);
             
             url = "customer/getSummary/"+userId;
-			res = app.get(url,request);
+			res = app.get(url);
 			subtotal = (Double) res.readEntity(new GenericType<Double>() {});
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -132,63 +135,59 @@ public class CustomerPanelServlet extends HttpServlet {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void editProfile(HttpServletRequest request, HttpServletResponse response, HttpSession session, int userId)
 			throws ServletException, IOException {
+		String username = request.getParameter("username");
+		String email = request.getParameter("email");
+		String phone = request.getParameter("phone");
+		int rowsAffected = 0;
 		try {
-			String username = request.getParameter("username");
-			String email = request.getParameter("email");
-			String phone = request.getParameter("phone");
-
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "UPDATE users SET name = ?, email = ?, phone = ? WHERE user_id = ?;";
-			PreparedStatement pst = conn.prepareStatement(query);
-			pst.setString(1, username);
-			pst.setString(2, email);
-			pst.setString(3, phone);
-			pst.setInt(4, userId);
-			int rowsAffected = pst.executeUpdate();
+			AppUtil app = new AppUtil();
+			JSONObject json = new JSONObject();
+			json.put("username", username);
+        	json.put("email", email);
+        	json.put("phone", phone);
+			String url = "customer/editUserById/"+userId;
+			Response res = app.put(url, json);
+			rowsAffected = (Integer) res.readEntity(new GenericType<Integer>() {});
+		
 			if (rowsAffected > 0) {
-				session.setAttribute("username", username);
+				session.setAttribute("username", username);;
 				response.sendRedirect("CustomerPanelServlet?p=myProfile&success=Profile%20Updated%20Successfully");
 			} else {
 				response.sendRedirect("CustomerPanelServlet?p=myProfile&err=Something%20Went%20Wrong");
 			}
-
-			pst.close();
-			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void changePassword(HttpServletRequest request, HttpServletResponse response, int userId)
 			throws ServletException, IOException {
+		String password = request.getParameter("password");
+		String passwordCheck = request.getParameter("passwordCheck");
+		int rowsAffected = 0;
 		try {
-			String password = request.getParameter("password");
-			String passwordCheck = request.getParameter("passwordCheck");
-
 			if (password.length() < 8) {
 				response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&err=Minimum%20Length%20Of%208%20Characters");
 			} else if (!password.equals(passwordCheck)) {
 				response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&err=Passwords%20Entered%20Do%20Not%20Match");
 			} else {
-				ServletContext context = getServletContext();
-		    	Connection conn = DatabaseUtil.getConnection(context);
-				String query = "UPDATE users SET password = MD5(?) WHERE user_id = ?;";
-				PreparedStatement pst = conn.prepareStatement(query);
-				pst.setString(1, password);
-				pst.setInt(2, userId);
-				int rowsAffected = pst.executeUpdate();
+				AppUtil app = new AppUtil();
+				JSONObject json = new JSONObject();
+	        	json.put("password", password);
+				String url = "customer/changeUserPasswordById/"+userId;
+				Response res = app.put(url, json);
+				rowsAffected = (Integer) res.readEntity(new GenericType<Integer>() {});
+				
 				if (rowsAffected > 0) {
 					response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&success=Password%20Changed%20Successfully");
 				} else {
 					response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&err=Something%20Went%20Wrong");
 				}
-
-				pst.close();
-				conn.close();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -196,32 +195,28 @@ public class CustomerPanelServlet extends HttpServlet {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addToCart(HttpServletRequest request, HttpServletResponse response, int userId)
 			throws ServletException, IOException {
 		int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+		Integer bookId = Integer.parseInt(request.getParameter("bookId"));
+		Integer quantity = Integer.parseInt(request.getParameter("quantity"));
+		int rowsAffected = 0;
 		try {
-			Integer bookId = Integer.parseInt(request.getParameter("bookId"));
-			Integer quantity = Integer.parseInt(request.getParameter("quantity"));
-
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "INSERT INTO cart (user_id, book_id, quantity)\r\n" + "VALUES (?, ?, ?)\r\n"
-					+ "ON DUPLICATE KEY UPDATE\r\n" + "    quantity = quantity + ?;";
-			PreparedStatement pst = conn.prepareStatement(query);
-			pst.setInt(1, userId);
-			pst.setInt(2, bookId);
-			pst.setInt(3, quantity);
-			pst.setInt(4, quantity);
-			int rowsAffected = pst.executeUpdate();
+			AppUtil app = new AppUtil();
+			JSONObject json = new JSONObject();
+			json.put("bookId", bookId);
+        	json.put("quantity", quantity);
+			String url = "customer/addToCart/"+userId;
+			Response res = app.post(url, json);
+			rowsAffected = (Integer) res.readEntity(new GenericType<Integer>() {});
+			
 			if (rowsAffected > 0) {
 				request.setAttribute("success", "Added To Cart");
 				getProfile(request, response, userId);
 			} else {
 				response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
 			}
-
-			pst.close();
-			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
@@ -231,23 +226,19 @@ public class CustomerPanelServlet extends HttpServlet {
 	private void deleteFromCart(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+		int cartId = Integer.parseInt(request.getParameter("cartId"));
+		int rowsAffected = 0;
 		try {
-			Integer cartId = Integer.parseInt(request.getParameter("cartId"));
+			AppUtil app = new AppUtil();
+			String url = "customer/deleteFromCart/"+cartId;
+			Response res = app.delete(url);
+			rowsAffected = (Integer) res.readEntity(new GenericType<Integer>() {});
 
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "DELETE FROM cart WHERE cart_id = ?;";
-			PreparedStatement pst = conn.prepareStatement(query);
-			pst.setInt(1, cartId);
-			int rowsAffected = pst.executeUpdate();
 			if (rowsAffected > 0) {
 				response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&success=Deleted%20From%20Cart");
 			} else {
 				response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
 			}
-
-			pst.close();
-			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");

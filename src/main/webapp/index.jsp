@@ -11,9 +11,6 @@
 	rel="stylesheet">
 </head>
 <body>
-	<%
-	pageContext.setAttribute("cartItems", 4);
-	%>
 	<%@include file="header.jsp"%>
 	<%!int currentPage = 1;
 	int totalPages = 1;
@@ -90,13 +87,14 @@
 							<%
 							@SuppressWarnings("unchecked")
 							List<Genre> genres = (List<Genre>) request.getAttribute("genres");
+							if (genres != null){
 							for (Genre item : genres) {
 							%>
 							<option class="genre-option">
 								<%=item.getName()%>
 							</option>
 							<%
-							}
+							}}
 							%>
 						</select>
 					</div>
