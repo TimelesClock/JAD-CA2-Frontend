@@ -28,16 +28,15 @@ public class AppUtil {
 		Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
 		Response res = invocationBuilder.get();
 		
-		
 		return res;
 	}
-	
-	//Overload cause java doesnt support optional params
+
 	public Response get(String url, Map<String, Object> headers) {
 	    Client client = ClientBuilder.newClient();
 	    WebTarget target = client.target(hostname + url);
 	    Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
 
+	    // Adding headers to the request
 	    if (headers != null) {
 	        for (Map.Entry<String, Object> entry : headers.entrySet()) {
 	            String headerName = entry.getKey();
@@ -50,7 +49,7 @@ public class AppUtil {
 	    return res;
 	}
 	
-	public Response post(String url,JSONObject json) {
+	public Response post(String url, JSONObject json) {
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(hostname+url);
 		Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
@@ -75,6 +74,63 @@ public class AppUtil {
 	    }
 
 	    Response res = invocationBuilder.post(Entity.entity(json, MediaType.APPLICATION_JSON));
+	    return res;
+	}
+	
+	public Response put(String url, JSONObject json) {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(hostname + url);
+        Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+        Response res = invocationBuilder.put(Entity.entity(json, MediaType.APPLICATION_JSON));
+
+        return res;
+    }
+	
+	public Response put(String url, JSONObject json, Map<String, List<Object>> headers) {
+	    Client client = ClientBuilder.newClient();
+	    WebTarget target = client.target(hostname + url);
+	    Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+
+	    // Adding headers to the request
+	    if (headers != null) {
+	        for (Map.Entry<String, List<Object>> entry : headers.entrySet()) {
+	            String headerName = entry.getKey();
+	            List<Object> headerValues = entry.getValue();
+	            for (Object headerValue : headerValues) {
+	                invocationBuilder.header(headerName, headerValue);
+	            }
+	        }
+	    }
+
+	    Response res = invocationBuilder.put(Entity.entity(json, MediaType.APPLICATION_JSON));
+	    return res;
+	}
+
+    public Response delete(String url) {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(hostname + url);
+        Invocation.Builder invocationBuilder = target.request();
+        Response res = invocationBuilder.delete();
+
+        return res;
+    }
+    
+    public Response delete(String url, Map<String, List<Object>> headers) {
+	    Client client = ClientBuilder.newClient();
+	    WebTarget target = client.target(hostname + url);
+	    Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+
+	    if (headers != null) {
+	        for (Map.Entry<String, List<Object>> entry : headers.entrySet()) {
+	            String headerName = entry.getKey();
+	            List<Object> headerValues = entry.getValue();
+	            for (Object headerValue : headerValues) {
+	                invocationBuilder.header(headerName, headerValue);
+	            }
+	        }
+	    }
+
+	    Response res = invocationBuilder.delete();
 	    return res;
 	}
 }

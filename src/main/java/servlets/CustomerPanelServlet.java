@@ -8,7 +8,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import classes.Cart;
-import util.DatabaseUtil;
+import classes.User;
+import util.AppUtil;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -17,6 +18,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Response;
+
+import org.jose4j.json.internal.json_simple.JSONObject;
+
+import javax.ws.rs.core.GenericType;
 
 @WebServlet("/CustomerPanelServlet")
 public class CustomerPanelServlet extends HttpServlet {
@@ -52,26 +58,17 @@ public class CustomerPanelServlet extends HttpServlet {
 
 	private void getProfile(HttpServletRequest request, HttpServletResponse response, int userId)
 			throws ServletException, IOException {
+		User customer = new User();
 		try {
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "SELECT email, phone FROM users WHERE user_id = ?";
-			PreparedStatement pst = conn.prepareStatement(query);
-			pst.setInt(1, userId);
-			ResultSet rs = pst.executeQuery();
-
-			if (rs.next()) {
-				request.setAttribute("email", rs.getString("email"));
-				request.setAttribute("phone", rs.getString("phone"));
-			} else {
-				response.sendRedirect("AuthenticateServlet");
-			}
-
-			conn.close();
+			AppUtil app = new AppUtil();
+			String url = "customer/getUserById/"+userId;
+			Response res = app.get(url);
+			customer = (User) res.readEntity(new GenericType<User>() {});
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 		}
+		request.setAttribute("customer", customer);
 		request.getRequestDispatcher("customerProfile.jsp").forward(request, response);
 	}
 
@@ -83,52 +80,24 @@ public class CustomerPanelServlet extends HttpServlet {
         int limit = 5;
         int offset = (page - 1) * limit;
         int totalRecords = 0;
+        int totalPages = 0;
         double subtotal = 0;
 		try {
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "SELECT COUNT(*), CAST(SUM(b.price*c.quantity) AS DECIMAL(7, 2)) AS subtotal\r\n"
-					+ "FROM cart c\r\n"
-					+ "INNER JOIN books b ON c.book_id = b.book_id\r\n"
-					+ "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
-					+ "WHERE user_id = ?;";
-            PreparedStatement pst = conn.prepareStatement(query);
-            pst.setInt(1, userId);
-            ResultSet ts = pst.executeQuery();
-            ts.next();
-            totalRecords = ts.getInt(1);
-            subtotal = ts.getInt(2);
-            
-            query = "SELECT c.cart_id, b.image, b.book_id, b.title, a.name AS author, b.price, b.quantity AS max, c.quantity\r\n"
-            		+ "FROM cart c\r\n"
-            		+ "INNER JOIN books b ON c.book_id = b.book_id\r\n"
-            		+ "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
-            		+ "WHERE user_id = ?\r\n"
-            		+ "LIMIT ?, ?;\r\n";
-			pst = conn.prepareStatement(query);
-			pst.setInt(1, userId);
-			pst.setInt(2, offset);
-            pst.setInt(3, limit);
-			ResultSet rs = pst.executeQuery();
-
-			while (rs.next()) {
-				Cart item = new Cart();
-				item.setCartId(rs.getInt("cart_id"));
-				item.setBookId(rs.getInt("book_id"));
-				item.setTitle(rs.getString("title"));
-				item.setAuthor(rs.getString("author"));
-				item.setPrice(rs.getBigDecimal("price"));
-				item.setMax(rs.getInt("max"));
-				item.setQuantity(rs.getInt("quantity"));
-				item.setImage(rs.getString("image"));
-
-				cartItems.add(item);
-			}
-
-			conn.close();
+			AppUtil app = new AppUtil();
+			String url = "customer/getCart/"+userId;
+			Response res = app.get(url);
+			cartItems = (List<Cart>) res.readEntity(new GenericType<List<Cart>>() {});
+			
+			url = "customer/getTotalCartItems/"+userId;
+			res = app.get(url);
+			totalRecords = (Integer) res.readEntity(new GenericType<Integer>() {});
+			
 			// Calculate total pages
-            int totalPages = (int) Math.ceil((double) totalRecords / limit);
-            request.setAttribute("totalPages", totalPages);
+            totalPages = (int) Math.ceil((double) totalRecords / limit);
+            
+            url = "customer/getSummary/"+userId;
+			res = app.get(url);
+			subtotal = (Double) res.readEntity(new GenericType<Double>() {});
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
@@ -137,6 +106,7 @@ public class CustomerPanelServlet extends HttpServlet {
 		request.setAttribute("totalRecords", totalRecords);
 		request.setAttribute("subtotal", subtotal);
         request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
         request.getRequestDispatcher("/customerCart.jsp").forward(request, response);
 	}
 
@@ -165,63 +135,59 @@ public class CustomerPanelServlet extends HttpServlet {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void editProfile(HttpServletRequest request, HttpServletResponse response, HttpSession session, int userId)
 			throws ServletException, IOException {
+		String username = request.getParameter("username");
+		String email = request.getParameter("email");
+		String phone = request.getParameter("phone");
+		int rowsAffected = 0;
 		try {
-			String username = request.getParameter("username");
-			String email = request.getParameter("email");
-			String phone = request.getParameter("phone");
-
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "UPDATE users SET name = ?, email = ?, phone = ? WHERE user_id = ?;";
-			PreparedStatement pst = conn.prepareStatement(query);
-			pst.setString(1, username);
-			pst.setString(2, email);
-			pst.setString(3, phone);
-			pst.setInt(4, userId);
-			int rowsAffected = pst.executeUpdate();
+			AppUtil app = new AppUtil();
+			JSONObject json = new JSONObject();
+			json.put("username", username);
+        	json.put("email", email);
+        	json.put("phone", phone);
+			String url = "customer/editUserById/"+userId;
+			Response res = app.put(url, json);
+			rowsAffected = (Integer) res.readEntity(new GenericType<Integer>() {});
+		
 			if (rowsAffected > 0) {
-				session.setAttribute("username", username);
+				session.setAttribute("username", username);;
 				response.sendRedirect("CustomerPanelServlet?p=myProfile&success=Profile%20Updated%20Successfully");
 			} else {
 				response.sendRedirect("CustomerPanelServlet?p=myProfile&err=Something%20Went%20Wrong");
 			}
-
-			pst.close();
-			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void changePassword(HttpServletRequest request, HttpServletResponse response, int userId)
 			throws ServletException, IOException {
+		String password = request.getParameter("password");
+		String passwordCheck = request.getParameter("passwordCheck");
+		int rowsAffected = 0;
 		try {
-			String password = request.getParameter("password");
-			String passwordCheck = request.getParameter("passwordCheck");
-
 			if (password.length() < 8) {
 				response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&err=Minimum%20Length%20Of%208%20Characters");
 			} else if (!password.equals(passwordCheck)) {
 				response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&err=Passwords%20Entered%20Do%20Not%20Match");
 			} else {
-				ServletContext context = getServletContext();
-		    	Connection conn = DatabaseUtil.getConnection(context);
-				String query = "UPDATE users SET password = MD5(?) WHERE user_id = ?;";
-				PreparedStatement pst = conn.prepareStatement(query);
-				pst.setString(1, password);
-				pst.setInt(2, userId);
-				int rowsAffected = pst.executeUpdate();
+				AppUtil app = new AppUtil();
+				JSONObject json = new JSONObject();
+	        	json.put("password", password);
+				String url = "customer/changeUserPasswordById/"+userId;
+				Response res = app.put(url, json);
+				rowsAffected = (Integer) res.readEntity(new GenericType<Integer>() {});
+				
 				if (rowsAffected > 0) {
 					response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&success=Password%20Changed%20Successfully");
 				} else {
 					response.sendRedirect("CustomerPanelServlet?p=changePasswordForm&err=Something%20Went%20Wrong");
 				}
-
-				pst.close();
-				conn.close();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -229,32 +195,28 @@ public class CustomerPanelServlet extends HttpServlet {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addToCart(HttpServletRequest request, HttpServletResponse response, int userId)
 			throws ServletException, IOException {
 		int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+		Integer bookId = Integer.parseInt(request.getParameter("bookId"));
+		Integer quantity = Integer.parseInt(request.getParameter("quantity"));
+		int rowsAffected = 0;
 		try {
-			Integer bookId = Integer.parseInt(request.getParameter("bookId"));
-			Integer quantity = Integer.parseInt(request.getParameter("quantity"));
-
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "INSERT INTO cart (user_id, book_id, quantity)\r\n" + "VALUES (?, ?, ?)\r\n"
-					+ "ON DUPLICATE KEY UPDATE\r\n" + "    quantity = quantity + ?;";
-			PreparedStatement pst = conn.prepareStatement(query);
-			pst.setInt(1, userId);
-			pst.setInt(2, bookId);
-			pst.setInt(3, quantity);
-			pst.setInt(4, quantity);
-			int rowsAffected = pst.executeUpdate();
+			AppUtil app = new AppUtil();
+			JSONObject json = new JSONObject();
+			json.put("bookId", bookId);
+        	json.put("quantity", quantity);
+			String url = "customer/addToCart/"+userId;
+			Response res = app.post(url, json);
+			rowsAffected = (Integer) res.readEntity(new GenericType<Integer>() {});
+			
 			if (rowsAffected > 0) {
 				request.setAttribute("success", "Added To Cart");
 				getProfile(request, response, userId);
 			} else {
 				response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
 			}
-
-			pst.close();
-			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
@@ -264,23 +226,19 @@ public class CustomerPanelServlet extends HttpServlet {
 	private void deleteFromCart(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+		int cartId = Integer.parseInt(request.getParameter("cartId"));
+		int rowsAffected = 0;
 		try {
-			Integer cartId = Integer.parseInt(request.getParameter("cartId"));
+			AppUtil app = new AppUtil();
+			String url = "customer/deleteFromCart/"+cartId;
+			Response res = app.delete(url);
+			rowsAffected = (Integer) res.readEntity(new GenericType<Integer>() {});
 
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "DELETE FROM cart WHERE cart_id = ?;";
-			PreparedStatement pst = conn.prepareStatement(query);
-			pst.setInt(1, cartId);
-			int rowsAffected = pst.executeUpdate();
 			if (rowsAffected > 0) {
 				response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&success=Deleted%20From%20Cart");
 			} else {
 				response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
 			}
-
-			pst.close();
-			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("CustomerPanelServlet?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");

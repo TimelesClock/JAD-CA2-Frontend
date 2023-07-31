@@ -46,6 +46,11 @@ public class BookServlet extends HttpServlet {
         List<Book> books = new ArrayList<>();
         List<Genre> genres = new ArrayList<>();
         String search = request.getParameter("books");
+        String genre = request.getParameter("genre");
+        String minRating = request.getParameter("minRating");
+        String maxRating = request.getParameter("maxRating");
+        String minPrice = request.getParameter("minPrice");
+        String maxPrice = request.getParameter("maxPrice");
         // Get page and limit from request, or set default values
         int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
         int limit = 15;
@@ -57,6 +62,22 @@ public class BookServlet extends HttpServlet {
         	if (search != null) {
         		url += "&search="+search;
         	}
+        	if (genre != null && !genre.isEmpty()) {
+                url += "&genre="+genre;
+            }
+            if (minRating != null && !minRating.isEmpty()) {
+                url += "&minRating="+minRating;
+            }
+            if (maxRating != null && !maxRating.isEmpty()) {
+                url += "&maxRating="+maxRating;
+            }
+            if (minPrice != null && !minPrice.isEmpty()) {
+                url += "&minPrice="+minPrice;
+            }
+            if (maxPrice != null && !maxPrice.isEmpty()) {
+                url += "&maxPrice="+maxPrice;
+            }
+        	
         	Response res = app.get(url);
         	
         	if (res.getStatus() != Response.Status.OK.getStatusCode()) {
