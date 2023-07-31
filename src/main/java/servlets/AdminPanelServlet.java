@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.HashMap;
 import util.*;
 import javax.ws.rs.core.Response;
+
+
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -26,6 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
@@ -58,26 +62,26 @@ public class AdminPanelServlet extends HttpServlet {
 		}
 		HashMap<String, Object> headers = new HashMap<>();
 		headers.put("Authorization", session.getAttribute("token"));
-		
-		Response res = app.get("isAdmin",headers);
-		
+
+		Response res = app.get("isAdmin", headers);
+
 		if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-			request.setAttribute("err", res.getStatus()+" POST request error");
+			request.setAttribute("err", res.getStatus() + " POST request error");
 		}
-    	
-    	JsonObject data = JsonUtil.getData(res);
-    	
-    	if (data == null) {
-			request.setAttribute("err","Error in POST request");
+
+		JsonObject data = JsonUtil.getData(res);
+
+		if (data == null) {
+			request.setAttribute("err", "Error in POST request");
 			request.getRequestDispatcher("login.jsp").forward(request, response);
 			return;
 		}
-    	
-    	if (data.getString("status") == "fail") {
-    		request.setAttribute("err", data.getString("message"));
-    		request.getRequestDispatcher("login.jsp").forward(request, response);
-    		return;
-    	}
+
+		if (data.getString("status") == "fail") {
+			request.setAttribute("err", data.getString("message"));
+			request.getRequestDispatcher("login.jsp").forward(request, response);
+			return;
+		}
 
 		if (session != null && session.getAttribute("token") != null) {
 			String context = request.getParameter("p");
@@ -97,16 +101,16 @@ public class AdminPanelServlet extends HttpServlet {
 			} else if (context.equals("editInventory")) {
 				addBookContext(request);
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			}else if (context.equals("viewCustomer")) {
+			} else if (context.equals("viewCustomer")) {
 				addUserContext(request);
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			}else if (context.equals("editCustomer")) {
+			} else if (context.equals("editCustomer")) {
 				addUserContext(request);
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			}else if (context.equals("deleteCustomer")) {
+			} else if (context.equals("deleteCustomer")) {
 				addUserContext(request);
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			}else {
+			} else {
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			}
 
@@ -119,54 +123,30 @@ public class AdminPanelServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			AppUtil app = new AppUtil();
+
+			List<Author> authors = new ArrayList<>();
+			Response res = app.get("author/getAuthors");
+
+			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+				request.setAttribute("err", res.getStatus() + " GET request error");
+
+			}
+			
+			authors = (ArrayList<Author>) res.readEntity(new GenericType<ArrayList<Author>>() {});
+			
+			List<Publisher> publishers = new ArrayList<>();
+			res = app.get("publisher/getPublishers");
+
+			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+				request.setAttribute("err", res.getStatus() + " GET request error");
+
+			}
+			
+			publishers = (ArrayList<Publisher>) res.readEntity(new GenericType<ArrayList<Publisher>>() {});
 			
 
-			String authorQuery = "SELECT * FROM authors";
-			Statement authorStmt = conn.createStatement();
-			ResultSet authorRs = authorStmt.executeQuery(authorQuery);
-			List<Author> authors = new ArrayList<>();
-			while (authorRs.next()) {
-				int authorId = authorRs.getInt("author_id");
-				String authorName = authorRs.getString("name");
-				Author author = new Author(authorId, authorName);
-				authors.add(author);
-			}
-			authorRs.close();
-			authorStmt.close();
 
-			// Fetch Publishers
-			String publisherQuery = "SELECT * FROM publishers";
-			Statement publisherStmt = conn.createStatement();
-			ResultSet publisherRs = publisherStmt.executeQuery(publisherQuery);
-			List<Publisher> publishers = new ArrayList<>();
-			while (publisherRs.next()) {
-				int publisherId = publisherRs.getInt("publisher_id");
-				String publisherName = publisherRs.getString("name");
-				Publisher publisher = new Publisher(publisherId, publisherName);
-				publishers.add(publisher);
-			}
-			publisherRs.close();
-			publisherStmt.close();
 
-			// Fetch Genres
-			String genreQuery = "SELECT * FROM genres";
-			Statement genreStmt = conn.createStatement();
-			ResultSet genreRs = genreStmt.executeQuery(genreQuery);
-			List<Genre> genres = new ArrayList<>();
-			while (genreRs.next()) {
-				int genreId = genreRs.getInt("genre_id");
-				String genreName = genreRs.getString("name");
-				Genre genre = new Genre(genreId, genreName);
-				genres.add(genre);
-			}
-			genreRs.close();
-			genreStmt.close();
-
-			if (edit) {
-				addBookContext(request);
-			}
-
-			conn.close();
 
 			request.setAttribute("authors", authors);
 			request.setAttribute("publishers", publishers);
@@ -182,7 +162,7 @@ public class AdminPanelServlet extends HttpServlet {
 	private void addBookContext(HttpServletRequest request) {
 		try {
 			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
+			Connection conn = DatabaseUtil.getConnection(context);
 			String bookQuery = "SELECT * FROM books";
 			Statement bookStmt = conn.createStatement();
 			ResultSet bookRs = bookStmt.executeQuery(bookQuery);
@@ -211,32 +191,31 @@ public class AdminPanelServlet extends HttpServlet {
 		}
 
 	}
-	
-	private void addUserContext(HttpServletRequest request) {
-	    try {
-	    	ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-	        String userQuery = "SELECT * FROM Users WHERE role = 'customer'";
-	        Statement userStmt = conn.createStatement();
-	        ResultSet userRs = userStmt.executeQuery(userQuery);
-	        List<User> users = new ArrayList<>();
-	        while (userRs.next()) {
-	            User user = new User();
-	            user.setUserId(userRs.getInt("user_id"));
-	            user.setName(userRs.getString("name"));
-	            user.setEmail(userRs.getString("email"));
-	            user.setRole(userRs.getString("role"));
-	            user.setPhone(userRs.getString("phone"));
-	            users.add(user);
-	        }
-	        userRs.close();
-	        userStmt.close();
-	        request.setAttribute("users", users);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	}
 
+	private void addUserContext(HttpServletRequest request) {
+		try {
+			ServletContext context = getServletContext();
+			Connection conn = DatabaseUtil.getConnection(context);
+			String userQuery = "SELECT * FROM Users WHERE role = 'customer'";
+			Statement userStmt = conn.createStatement();
+			ResultSet userRs = userStmt.executeQuery(userQuery);
+			List<User> users = new ArrayList<>();
+			while (userRs.next()) {
+				User user = new User();
+				user.setUserId(userRs.getInt("user_id"));
+				user.setName(userRs.getString("name"));
+				user.setEmail(userRs.getString("email"));
+				user.setRole(userRs.getString("role"));
+				user.setPhone(userRs.getString("phone"));
+				users.add(user);
+			}
+			userRs.close();
+			userStmt.close();
+			request.setAttribute("users", users);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -281,7 +260,7 @@ public class AdminPanelServlet extends HttpServlet {
 		String image = request.getParameter("image");
 		try {
 			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
+			Connection conn = DatabaseUtil.getConnection(context);
 
 			int newAuthorId = authorId;
 			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
@@ -292,7 +271,7 @@ public class AdminPanelServlet extends HttpServlet {
 				newAuthorId = insertNewAuthor(newAuthorName, conn);
 			}
 
-			// Insert new genre if genreId  0
+			// Insert new genre if genreId 0
 			if (newGenreId == 0) {
 				String newGenreName = request.getParameter("new_genre_name");
 				newGenreId = insertNewGenre(newGenreName, conn);
@@ -361,7 +340,7 @@ public class AdminPanelServlet extends HttpServlet {
 
 		try {
 			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
+			Connection conn = DatabaseUtil.getConnection(context);
 
 			int newAuthorId = authorId;
 			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
@@ -378,7 +357,7 @@ public class AdminPanelServlet extends HttpServlet {
 				newGenreId = insertNewGenre(newGenreName, conn);
 			}
 
-			// Insert new publisher if publisherId  0
+			// Insert new publisher if publisherId 0
 			if (newPublisherId == 0) {
 				String newPublisherName = request.getParameter("new_publisher_name");
 				newPublisherId = insertNewPublisher(newPublisherName, conn);
@@ -400,7 +379,7 @@ public class AdminPanelServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
+			Connection conn = DatabaseUtil.getConnection(context);
 			int bookId = Integer.parseInt(request.getParameter("book_id"));
 
 			String query = "DELETE FROM Books WHERE book_id = ?";
@@ -537,7 +516,7 @@ public class AdminPanelServlet extends HttpServlet {
 
 		try {
 			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
+			Connection conn = DatabaseUtil.getConnection(context);
 			String updateQuery = "UPDATE books SET price = ?, quantity = ? WHERE book_id = ?";
 			PreparedStatement stmt = conn.prepareStatement(updateQuery);
 			stmt.setDouble(1, price);
@@ -560,118 +539,119 @@ public class AdminPanelServlet extends HttpServlet {
 			return;
 		}
 	}
-	
+
 	private void addCustomer(HttpServletRequest request, HttpServletResponse response)
-	        throws ServletException, IOException {
-	    String name = request.getParameter("name");
-	    String email = request.getParameter("email");
-	    String password = request.getParameter("password");
-	    String phone = request.getParameter("phone");
-	    String role = "customer";
+			throws ServletException, IOException {
+		String name = request.getParameter("name");
+		String email = request.getParameter("email");
+		String password = request.getParameter("password");
+		String phone = request.getParameter("phone");
+		String role = "customer";
 
-	    try {
-	    	ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
+		try {
+			ServletContext context = getServletContext();
+			Connection conn = DatabaseUtil.getConnection(context);
 
-	        String checkQuery = "SELECT COUNT(*) FROM Users WHERE email = ?";
-	        PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
-	        checkStmt.setString(1, email);
-	        ResultSet resultSet = checkStmt.executeQuery();
-	        resultSet.next();
-	        int count = resultSet.getInt(1);
-	        checkStmt.close();
+			String checkQuery = "SELECT COUNT(*) FROM Users WHERE email = ?";
+			PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+			checkStmt.setString(1, email);
+			ResultSet resultSet = checkStmt.executeQuery();
+			resultSet.next();
+			int count = resultSet.getInt(1);
+			checkStmt.close();
 
-	        if (count > 0) {
-	            response.sendRedirect("AdminPanelServlet?p=addCustomer&error=Duplicate%20Email");
-	            conn.close();
-	            return;
-	        }
+			if (count > 0) {
+				response.sendRedirect("AdminPanelServlet?p=addCustomer&error=Duplicate%20Email");
+				conn.close();
+				return;
+			}
 
-	        String insertQuery = "INSERT INTO Users (name, email, password, role, phone) VALUES (?, ?, MD5(?), ?, ?)";
-	        PreparedStatement stmt = conn.prepareStatement(insertQuery);
-	        stmt.setString(1, name);
-	        stmt.setString(2, email);
-	        stmt.setString(3, password);
-	        stmt.setString(4, role);
-	        stmt.setString(5, phone);
+			String insertQuery = "INSERT INTO Users (name, email, password, role, phone) VALUES (?, ?, MD5(?), ?, ?)";
+			PreparedStatement stmt = conn.prepareStatement(insertQuery);
+			stmt.setString(1, name);
+			stmt.setString(2, email);
+			stmt.setString(3, password);
+			stmt.setString(4, role);
+			stmt.setString(5, phone);
 
-	        int rowsAffected = stmt.executeUpdate();
-	        stmt.close();
+			int rowsAffected = stmt.executeUpdate();
+			stmt.close();
 
-	        if (rowsAffected > 0) {
-	            response.sendRedirect("AdminPanelServlet?p=addCustomer&success=Customer%20Added%20Successfully");
-	        } else {
-	            response.sendRedirect("AdminPanelServlet?p=addCustomer&err=Failed%20to%20Add%20Customer");
-	        }
+			if (rowsAffected > 0) {
+				response.sendRedirect("AdminPanelServlet?p=addCustomer&success=Customer%20Added%20Successfully");
+			} else {
+				response.sendRedirect("AdminPanelServlet?p=addCustomer&err=Failed%20to%20Add%20Customer");
+			}
 
-	        conn.close();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        response.sendRedirect("AdminPanelServlet?p=addCustomer&error=" + e.getMessage());
-	    }
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect("AdminPanelServlet?p=addCustomer&error=" + e.getMessage());
+		}
 	}
 
-	private void editCustomer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    int customerId = Integer.parseInt(request.getParameter("customer_id"));
-	    String name = request.getParameter("name");
-	    String email = request.getParameter("email");
-	    String password = request.getParameter("password");
-	    String phone = request.getParameter("phone");
+	private void editCustomer(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		int customerId = Integer.parseInt(request.getParameter("customer_id"));
+		String name = request.getParameter("name");
+		String email = request.getParameter("email");
+		String password = request.getParameter("password");
+		String phone = request.getParameter("phone");
 
-	    try {
-	    	ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-	        
-	        if (password == null || password.isEmpty()) {
-	            String updateQuery = "UPDATE Users SET name = ?, email = ?, phone = ? WHERE user_id = ?";
-	            PreparedStatement stmt = conn.prepareStatement(updateQuery);
-	            stmt.setString(1, name);
-	            stmt.setString(2, email);
-	            stmt.setString(3, phone);
-	            stmt.setInt(4, customerId);
-	            int rowsAffected = stmt.executeUpdate();
+		try {
+			ServletContext context = getServletContext();
+			Connection conn = DatabaseUtil.getConnection(context);
 
-	            if (rowsAffected > 0) {
-	                stmt.close();
-	                response.sendRedirect("AdminPanelServlet?p=editCustomer&success=Customer%20updated%20successfully");
-	                return;
-	            } else {
-	                stmt.close();
-	                response.sendRedirect("AdminPanelServlet?p=editCustomer&error=Failed%20to%20update%20customer");
-	                return;
-	            }
-	        } else {
-	            String updateQuery = "UPDATE Users SET name = ?, email = ?, password = MD5(?), phone = ? WHERE user_id = ?";
-	            PreparedStatement stmt = conn.prepareStatement(updateQuery);
-	            stmt.setString(1, name);
-	            stmt.setString(2, email);
-	            stmt.setString(3, password);
-	            stmt.setString(4, phone);
-	            stmt.setInt(5, customerId);
-	            int rowsAffected = stmt.executeUpdate();
+			if (password == null || password.isEmpty()) {
+				String updateQuery = "UPDATE Users SET name = ?, email = ?, phone = ? WHERE user_id = ?";
+				PreparedStatement stmt = conn.prepareStatement(updateQuery);
+				stmt.setString(1, name);
+				stmt.setString(2, email);
+				stmt.setString(3, phone);
+				stmt.setInt(4, customerId);
+				int rowsAffected = stmt.executeUpdate();
 
-	            if (rowsAffected > 0) {
-	                stmt.close();
-	                response.sendRedirect("AdminPanelServlet?p=editCustomer&success=Customer%20updated%20successfully");
-	                return;
-	            } else {
-	                stmt.close();
-	                response.sendRedirect("AdminPanelServlet?p=editCustomer&error=Failed%20to%20update%20customer");
-	                return;
-	            }
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        response.sendRedirect("AdminPanelServlet?p=editCustomer&error=" + e.getMessage());
-	        return;
-	    }
+				if (rowsAffected > 0) {
+					stmt.close();
+					response.sendRedirect("AdminPanelServlet?p=editCustomer&success=Customer%20updated%20successfully");
+					return;
+				} else {
+					stmt.close();
+					response.sendRedirect("AdminPanelServlet?p=editCustomer&error=Failed%20to%20update%20customer");
+					return;
+				}
+			} else {
+				String updateQuery = "UPDATE Users SET name = ?, email = ?, password = MD5(?), phone = ? WHERE user_id = ?";
+				PreparedStatement stmt = conn.prepareStatement(updateQuery);
+				stmt.setString(1, name);
+				stmt.setString(2, email);
+				stmt.setString(3, password);
+				stmt.setString(4, phone);
+				stmt.setInt(5, customerId);
+				int rowsAffected = stmt.executeUpdate();
+
+				if (rowsAffected > 0) {
+					stmt.close();
+					response.sendRedirect("AdminPanelServlet?p=editCustomer&success=Customer%20updated%20successfully");
+					return;
+				} else {
+					stmt.close();
+					response.sendRedirect("AdminPanelServlet?p=editCustomer&error=Failed%20to%20update%20customer");
+					return;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect("AdminPanelServlet?p=editCustomer&error=" + e.getMessage());
+			return;
+		}
 	}
-	
+
 	private void deleteCustomer(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
 			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
+			Connection conn = DatabaseUtil.getConnection(context);
 			int customerId = Integer.parseInt(request.getParameter("customer_id"));
 
 			String query = "DELETE FROM Users WHERE user_id = ?";
