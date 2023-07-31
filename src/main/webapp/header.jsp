@@ -6,7 +6,7 @@
 <body>
 	<div class="navbar bg-base-100 shadow-xl">
 		<div class="flex-1">
-			<form action="BookServlet" method="get">
+			<form action="home" method="get">
 				<button type="submit" class="btn btn-ghost normal-case text-xl">SP
 					Books</button>
 			</form>
