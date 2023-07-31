@@ -8,7 +8,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import classes.Cart;
-import util.DatabaseUtil;
+import classes.User;
+import util.AppUtil;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -17,6 +18,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.GenericType;
 
 @WebServlet("/CustomerPanelServlet")
 public class CustomerPanelServlet extends HttpServlet {
@@ -52,26 +55,17 @@ public class CustomerPanelServlet extends HttpServlet {
 
 	private void getProfile(HttpServletRequest request, HttpServletResponse response, int userId)
 			throws ServletException, IOException {
+		User customer = new User();
 		try {
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "SELECT email, phone FROM users WHERE user_id = ?";
-			PreparedStatement pst = conn.prepareStatement(query);
-			pst.setInt(1, userId);
-			ResultSet rs = pst.executeQuery();
-
-			if (rs.next()) {
-				request.setAttribute("email", rs.getString("email"));
-				request.setAttribute("phone", rs.getString("phone"));
-			} else {
-				response.sendRedirect("AuthenticateServlet");
-			}
-
-			conn.close();
+			AppUtil app = new AppUtil();
+			String url = "customer/getUserById/"+userId;
+			Response res = app.get(url,request);
+			customer = (User) res.readEntity(new GenericType<User>() {});
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 		}
+		request.setAttribute("customer", customer);
 		request.getRequestDispatcher("customerProfile.jsp").forward(request, response);
 	}
 
@@ -83,52 +77,24 @@ public class CustomerPanelServlet extends HttpServlet {
         int limit = 5;
         int offset = (page - 1) * limit;
         int totalRecords = 0;
+        int totalPages = 0;
         double subtotal = 0;
 		try {
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-			String query = "SELECT COUNT(*), CAST(SUM(b.price*c.quantity) AS DECIMAL(7, 2)) AS subtotal\r\n"
-					+ "FROM cart c\r\n"
-					+ "INNER JOIN books b ON c.book_id = b.book_id\r\n"
-					+ "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
-					+ "WHERE user_id = ?;";
-            PreparedStatement pst = conn.prepareStatement(query);
-            pst.setInt(1, userId);
-            ResultSet ts = pst.executeQuery();
-            ts.next();
-            totalRecords = ts.getInt(1);
-            subtotal = ts.getInt(2);
-            
-            query = "SELECT c.cart_id, b.image, b.book_id, b.title, a.name AS author, b.price, b.quantity AS max, c.quantity\r\n"
-            		+ "FROM cart c\r\n"
-            		+ "INNER JOIN books b ON c.book_id = b.book_id\r\n"
-            		+ "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
-            		+ "WHERE user_id = ?\r\n"
-            		+ "LIMIT ?, ?;\r\n";
-			pst = conn.prepareStatement(query);
-			pst.setInt(1, userId);
-			pst.setInt(2, offset);
-            pst.setInt(3, limit);
-			ResultSet rs = pst.executeQuery();
-
-			while (rs.next()) {
-				Cart item = new Cart();
-				item.setCartId(rs.getInt("cart_id"));
-				item.setBookId(rs.getInt("book_id"));
-				item.setTitle(rs.getString("title"));
-				item.setAuthor(rs.getString("author"));
-				item.setPrice(rs.getBigDecimal("price"));
-				item.setMax(rs.getInt("max"));
-				item.setQuantity(rs.getInt("quantity"));
-				item.setImage(rs.getString("image"));
-
-				cartItems.add(item);
-			}
-
-			conn.close();
+			AppUtil app = new AppUtil();
+			String url = "customer/getCart/"+userId;
+			Response res = app.get(url,request);
+			cartItems = (List<Cart>) res.readEntity(new GenericType<List<Cart>>() {});
+			
+			url = "customer/getTotalCartItems/"+userId;
+			res = app.get(url,request);
+			totalRecords = (Integer) res.readEntity(new GenericType<Integer>() {});
+			
 			// Calculate total pages
-            int totalPages = (int) Math.ceil((double) totalRecords / limit);
-            request.setAttribute("totalPages", totalPages);
+            totalPages = (int) Math.ceil((double) totalRecords / limit);
+            
+            url = "customer/getSummary/"+userId;
+			res = app.get(url,request);
+			subtotal = (Double) res.readEntity(new GenericType<Double>() {});
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
@@ -137,6 +103,7 @@ public class CustomerPanelServlet extends HttpServlet {
 		request.setAttribute("totalRecords", totalRecords);
 		request.setAttribute("subtotal", subtotal);
         request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
         request.getRequestDispatcher("/customerCart.jsp").forward(request, response);
 	}
 
