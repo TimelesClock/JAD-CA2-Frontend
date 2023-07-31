@@ -29,14 +29,12 @@ import javax.ws.rs.core.Response;
 import java.io.StringReader;
 import org.jose4j.json.internal.json_simple.JSONObject;
 
-import classes.Author;
 import classes.Book;
 import classes.Genre;
-import classes.Publisher;
 import util.AppUtil;
 
 
-@WebServlet("/BookServlet")
+@WebServlet(urlPatterns = {"/home", ""})
 public class BookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -59,23 +57,34 @@ public class BookServlet extends HttpServlet {
         	if (search != null) {
         		url += "&search="+search;
         	}
-        	Response res = app.get(url,request);
+        	Response res = app.get(url);
+        	
+        	if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+    			request.setAttribute("err", "GET Request Error");
+    		}
 
     		books = (ArrayList<Book>) res.readEntity(new GenericType<ArrayList<Book>>() {});
     		
-    		res = app.get("books/getTotalBooks",request);
+    		res = app.get("books/getTotalBooks");
+    		if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+    			request.setAttribute("err", "GET Request Error");
+    		}
     		String result = (String) res.readEntity(String.class);
     		JsonReader jsonReader = Json.createReader(new StringReader(result));
     		JsonObject reply = jsonReader.readObject();
     		totalRecords = reply.getInt("totalBooks");
     		
-    		res = app.get("genre/getGenres", request);
+    		res = app.get("genre/getGenres");
+    		if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+    			request.setAttribute("err", "GET Request Error");
+    		}
     		genres = (ArrayList<Genre>) res.readEntity(new GenericType<ArrayList<Genre>>() {});
 			
             int totalPages = (int) Math.ceil((double) totalRecords / limit);
             request.setAttribute("totalPages", totalPages);
         } catch(Exception e) {
             e.printStackTrace();
+            System.out.println("error");
             request.setAttribute("err", e.getMessage());
         }
         request.setAttribute("books", books);

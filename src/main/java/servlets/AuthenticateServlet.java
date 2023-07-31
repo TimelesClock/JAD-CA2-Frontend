@@ -1,23 +1,23 @@
 package servlets;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
-import javax.servlet.ServletContext;
+import javax.ws.rs.core.Response;
+
+import org.jose4j.json.internal.json_simple.JSONObject;
+
+import javax.json.JsonObject;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import util.*;
 
-import util.DatabaseUtil;
 
 
-@WebServlet("/AuthenticateServlet")
+@WebServlet("/Login")
 public class AuthenticateServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
@@ -29,7 +29,7 @@ public class AuthenticateServlet extends HttpServlet {
             throws ServletException, IOException {
     	HttpSession session = request.getSession(false);
     	if (session != null && session.getAttribute("role")!=null) {
-    		response.sendRedirect("BookServlet");
+    		response.sendRedirect("home");
     	} else {
     		request.getRequestDispatcher("/login.jsp").forward(request, response);
     	}
@@ -45,7 +45,7 @@ public class AuthenticateServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (action.equals("logout")){
         	session.invalidate();
-        	response.sendRedirect("BookServlet");
+        	request.getRequestDispatcher("").forward(request,response);
         }
         else if (action.equals("login")) {
             login(request, response, email, password);
@@ -54,81 +54,80 @@ public class AuthenticateServlet extends HttpServlet {
         }
     }
 
-    private void login(HttpServletRequest request, HttpServletResponse response, String email, String password)
+    @SuppressWarnings("unchecked")
+	private void login(HttpServletRequest request, HttpServletResponse response, String email, String password)
             throws ServletException, IOException {
         try {
-        	ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
+        	AppUtil app = new AppUtil();
+        	JSONObject json = new JSONObject();
+        	json.put("email", email);
+        	json.put("password", password);
+        	Response res = app.post("login",json);
+        	
+        	if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+    			request.setAttribute("err", res.getStatus()+" POST request error");
+    		}
 
-            String query = "SELECT * FROM Users WHERE email = ? AND password = MD5(?)";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, email);
-            stmt.setString(2, password);
-            ResultSet rs = stmt.executeQuery();
+    		JsonObject data = JsonUtil.getData(res);
+    		
+    		if (data == null) {
+    			request.setAttribute("err","Error in POST request");
+    			request.getRequestDispatcher("login.jsp").forward(request, response);
+    			return;
+    		}
+    		
+    		if (data.getString("status").equals("success")) {
+    			HttpSession session = request.getSession();
+    			session.setAttribute("token", data.getString("token"));
+    			response.sendRedirect("home");
+    		}else {
+    			request.setAttribute("err",data.getString("message"));
+    			request.getRequestDispatcher("login.jsp").forward(request, response);
+    		}
 
-            if (rs.next()) {
-                HttpSession session = request.getSession();
-                int timeout = 24 * 60 * 60; // 24 hours
-                session.setMaxInactiveInterval(timeout);
-                session.setAttribute("userId", rs.getInt("user_id"));
-                session.setAttribute("username", rs.getString("name"));
-                session.setAttribute("role", rs.getString("role"));
-            } else {
-                response.sendRedirect("AuthenticateServlet?err=Invalid%20email%20or%20password");
-                return;
-            }
-            response.sendRedirect("BookServlet");
-            conn.close();
+            
+
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("AuthenticateServlet?err=Something%20went%20wrong");
+            request.setAttribute("err",e.getMessage());
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 
-    private void register(HttpServletRequest request, HttpServletResponse response, String email, String password,String name,String phone)
+    @SuppressWarnings("unchecked")
+	private void register(HttpServletRequest request, HttpServletResponse response, String email, String password,String name,String phone)
             throws ServletException, IOException {
         try {
-        	ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-
-            // Check if the email already exists
-            String checkQuery = "SELECT * FROM Users WHERE email = ?";
-            PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
-            checkStmt.setString(1, email);
-            ResultSet checkRs = checkStmt.executeQuery();
-
-            if (checkRs.next()) {
-                request.setAttribute("err", "Email already exists");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
-                conn.close();
-                return;
-            }
-
-            // Validate pw length
-            if (password.length() < 8) {
-                request.setAttribute("er", "Password should be at least 8 characters long");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
-                conn.close();
-                return;
-            }
-
-            // Insert new user into the db
-            String insertQuery = "INSERT INTO Users (name,email, password,role,phone) VALUES (?,?,MD5(?),?,?)";
-            PreparedStatement insertStmt = conn.prepareStatement(insertQuery);
-            insertStmt.setString(1, name);
-            insertStmt.setString(2, email);
-            insertStmt.setString(3, password);
-            insertStmt.setString(4, "customer");
-            insertStmt.setString(5, phone);
-            insertStmt.executeUpdate();
+        	AppUtil app = new AppUtil();
+        	JSONObject json = new JSONObject();
+        	json.put("email", email);
+        	json.put("password", password);
+        	json.put("name", name);
+        	json.put("phone", phone);
+        	Response res = app.post("register",json);
+        	
+        	if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+    			request.setAttribute("err", res.getStatus()+" POST request error");
+    		}
+        	
+        	JsonObject data = JsonUtil.getData(res);
+        	
+        	if (data == null) {
+    			request.setAttribute("err","Error in POST request");
+    			request.getRequestDispatcher("login.jsp").forward(request, response);
+    			return;
+    		}
+        	
+        	if (data.getString("status") == "fail") {
+        		request.setAttribute("err", data.getString("message"));
+        		request.getRequestDispatcher("login.jsp").forward(request, response);
+        		return;
+        	}
 
             HttpSession session = request.getSession();
-            int timeout = 24 * 60 * 60; // 24 hours
-            session.setMaxInactiveInterval(timeout);
-            session.setAttribute("role", "customer");
-            response.sendRedirect("BookServlet");
+            session.setAttribute("token", data.getString("token"));
+            response.sendRedirect("home");
 
-            conn.close();
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("err", "An error occurred");
