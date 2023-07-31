@@ -1,6 +1,5 @@
 package servlets;
 
-import util.DatabaseUtil;
 import classes.Author;
 import classes.User;
 import classes.Book;
@@ -24,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Servlet implementation class AdminPanelServlet
@@ -48,8 +48,14 @@ public class AdminPanelServlet extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		HttpSession session = request.getSession(false);
+		if (session != null && session.getAttribute("token") != null) {
+			response.sendRedirect("BookServlet");
+			return;
+		}
+		MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+		headers.add("Authorization", session.getAttribute("token"));
 
-		if (session != null && session.getAttribute("role") != null && session.getAttribute("role").equals("admin")) {
+		if (session != null && session.getAttribute("token") != null) {
 			String context = request.getParameter("p");
 			if (context == null) {
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
