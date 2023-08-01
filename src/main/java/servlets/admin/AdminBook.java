@@ -31,10 +31,18 @@ public class AdminBook extends HttpServlet {
 		// TODO Auto-generated method stub
 		try {
 			System.out.println(request.getContextPath());
+			String page_raw = request.getParameter("page");
+			Integer page;
+			try {
+				page = Integer.parseInt(page_raw);
+			}catch(Exception e) {
+				page = 1;
+			}
 			AdminUtil.checkAdmin(request, response);
 			AdminUtil.addContext(request);
-			AdminUtil.addBookContext(request);
-			request.getRequestDispatcher("/Admin/adminViewInventory.jsp").forward(request, response);;
+			AdminUtil.addBookContext(request,page);
+			AdminUtil.addBookCountContext(request);
+			request.getRequestDispatcher("/Admin/adminBook.jsp").forward(request, response);;
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

@@ -63,15 +63,11 @@ public class AdminUtil {
 
 	}
 	
-	public static void addBookContext(HttpServletRequest request) {
+	public static void addBookContext(HttpServletRequest request,Integer page) {
 		try {
 			BookDAO db = new BookDAO();
 			ArrayList<Book> books = new ArrayList<Book>();
-			String page_raw = request.getParameter("page");
-			Integer page;
-			try {
-				page = Integer.parseInt(page_raw);
-			}catch(Exception e) {
+			if (page == null) {
 				page = 1;
 			}
 			Integer limit = 25;
@@ -84,6 +80,17 @@ public class AdminUtil {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public static void addBookCountContext(HttpServletRequest request) {
+		try {
+			BookDAO db = new BookDAO();
+			Integer bookCount = db.getTotalBooks();
+			Integer pages = bookCount/25;
+			request.setAttribute("totalPages",pages);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void addUserContext(HttpServletRequest request) {

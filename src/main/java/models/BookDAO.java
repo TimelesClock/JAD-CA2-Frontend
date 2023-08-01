@@ -10,6 +10,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.servlet.http.Part;
+
+import com.cloudinary.Cloudinary;
+
+import cloudinary.*;
+
 public class BookDAO {
 	// public ArrayList<Book> getBooks(String search, String genreId, Integer minRating, Integer maxRating, Double minPrice, Double maxPrice, Integer limit, Integer offset) throws SQLException{
     public ArrayList<Book> getBooks(HashMap<String,Object> filter, Integer limit, Integer offset) throws SQLException{
@@ -171,7 +177,7 @@ public class BookDAO {
                 book.setDescription(rs.getString("description"));
                 book.setPublisherId(rs.getInt("publisher_id"));
                 book.setGenreId(rs.getInt("genre_id"));
-                book.setImage(rs.getString("image"));
+                book.setImage(rs.getString("image_url"));
 
                 books.add(book);
             }
@@ -183,6 +189,46 @@ public class BookDAO {
             conn.close();
         }
         return books;
+    }
+    
+    public int addBook(String title, int authorId, BigDecimal price, int quantity, String publicationDate, String ISBN, int rating, String description, int publisherId, int genreId, Part imageFile) throws SQLException {
+        Connection conn = DBConnection.getConnection();
+        int generatedBookId = -1;
+        try {
+            String sql = "INSERT INTO books (title, author_id, price, quantity, publication_date, ISBN, rating, description, publisher_id, genre_id, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, title);
+            stmt.setInt(2, authorId);
+            stmt.setBigDecimal(3, price);
+            stmt.setInt(4, quantity);
+            stmt.setString(5, publicationDate);
+            stmt.setString(6, ISBN);
+            stmt.setInt(7, rating);
+            stmt.setString(8, description);
+            stmt.setInt(9, publisherId);
+            stmt.setInt(10, genreId);
+
+            // Upload the image to Cloudinary and get the image_url using SDK in cloudinaryConnection
+            Cloudinary cloudinary = CloudinaryConnection.getCloudinary();
+            String imageUrl = CloudinaryConnection.uploadImageToCloudinary(cloudinary, imageFile);
+            stmt.setString(11, imageUrl);
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    generatedBookId = generatedKeys.getInt(1);
+                }
+            }
+
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+        return generatedBookId;
     }
 	
 }

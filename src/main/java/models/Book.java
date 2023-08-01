@@ -13,7 +13,7 @@ public class Book {
     private String description;
     private int publisherId;
     private int genreId;
-    private String image;
+    private String imageUrl;
 
     // Constructor
     public Book() {
@@ -26,8 +26,8 @@ public class Book {
     // Setters
     
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImage(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
     
     public void setBookId(int bookId) {
@@ -75,8 +75,8 @@ public class Book {
     }
 
     // Getters
-    public String getImage() {
-        return image;
+    public String getImageUrl() {
+        return imageUrl;
     }
     
     public int getBookId() {
