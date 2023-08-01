@@ -35,7 +35,7 @@ import javax.ws.rs.core.MultivaluedMap;
 /**
  * Servlet implementation class AdminPanelServlet
  */
-@WebServlet("/AdminPanelServlet")
+@WebServlet("/admin")
 public class AdminPanelServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -144,7 +144,15 @@ public class AdminPanelServlet extends HttpServlet {
 			
 			publishers = (ArrayList<Publisher>) res.readEntity(new GenericType<ArrayList<Publisher>>() {});
 			
+			List<Genre> genres = new ArrayList<>();
+			res = app.get("genre/getGenres");
 
+			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+				request.setAttribute("err", res.getStatus() + " GET request error");
+
+			}
+			
+			genres = (ArrayList<Genre>) res.readEntity(new GenericType<ArrayList<Genre>>() {});
 
 
 
@@ -161,30 +169,17 @@ public class AdminPanelServlet extends HttpServlet {
 
 	private void addBookContext(HttpServletRequest request) {
 		try {
-			ServletContext context = getServletContext();
-			Connection conn = DatabaseUtil.getConnection(context);
-			String bookQuery = "SELECT * FROM books";
-			Statement bookStmt = conn.createStatement();
-			ResultSet bookRs = bookStmt.executeQuery(bookQuery);
-			List<Book> books = new ArrayList<>();
-			while (bookRs.next()) {
-				Book book = new Book();
-				book.setBookId(bookRs.getInt("book_id"));
-				book.setTitle(bookRs.getString("title"));
-				book.setAuthorId(bookRs.getInt("author_id"));
-				book.setPrice(bookRs.getBigDecimal("price"));
-				book.setQuantity(bookRs.getInt("quantity"));
-				book.setPublicationDate(bookRs.getTimestamp("publication_date"));
-				book.setISBN(bookRs.getString("ISBN"));
-				book.setRating(bookRs.getInt("rating"));
-				book.setDescription(bookRs.getString("description"));
-				book.setPublisherId(bookRs.getInt("publisher_id"));
-				book.setGenreId(bookRs.getInt("genre_id"));
-				book.setImage(bookRs.getString("image"));
-				books.add(book);
+			AppUtil app = new AppUtil();
+
+			List<Book> books = new ArrayList<Book>();
+			Response res = app.get("books/getAllBooks");
+
+			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+				request.setAttribute("err", res.getStatus() + " GET request error");
+
 			}
-			bookRs.close();
-			bookStmt.close();
+			
+			books = (ArrayList<Book>) res.readEntity(new GenericType<ArrayList<Book>>() {});
 			request.setAttribute("books", books);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -194,23 +189,16 @@ public class AdminPanelServlet extends HttpServlet {
 
 	private void addUserContext(HttpServletRequest request) {
 		try {
-			ServletContext context = getServletContext();
-			Connection conn = DatabaseUtil.getConnection(context);
-			String userQuery = "SELECT * FROM Users WHERE role = 'customer'";
-			Statement userStmt = conn.createStatement();
-			ResultSet userRs = userStmt.executeQuery(userQuery);
+			AppUtil app = new AppUtil();
 			List<User> users = new ArrayList<>();
-			while (userRs.next()) {
-				User user = new User();
-				user.setUserId(userRs.getInt("user_id"));
-				user.setName(userRs.getString("name"));
-				user.setEmail(userRs.getString("email"));
-				user.setRole(userRs.getString("role"));
-				user.setPhone(userRs.getString("phone"));
-				users.add(user);
+			Response res = app.get("users/getUsers");
+
+			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+				request.setAttribute("err", res.getStatus() + " GET request error");
+
 			}
-			userRs.close();
-			userStmt.close();
+			
+			users = (ArrayList<User>) res.readEntity(new GenericType<ArrayList<User>>() {});
 			request.setAttribute("users", users);
 		} catch (Exception e) {
 			e.printStackTrace();

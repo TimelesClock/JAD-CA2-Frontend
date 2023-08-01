@@ -36,7 +36,7 @@
 				HttpSession loginSession = request.getSession(false);
 				if (loginSession.getAttribute("token") != null) {
 				%>
-				<form action="AdminPanelServlet" method="get" class="mx-2">
+				<form action="admin" method="get" class="mx-2">
 					<input type="hidden" name="action" value="login">
 					<button type="submit" class="btn btn-outline">Admin Panel</button>
 				</form>
