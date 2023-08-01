@@ -14,11 +14,7 @@ import java.util.HashMap;
 import util.*;
 import javax.ws.rs.core.Response;
 
-import models.Author;
-import models.Book;
-import models.Genre;
-import models.Publisher;
-import models.User;
+import models.*;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -54,157 +50,46 @@ public class AdminPanelServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		AppUtil app = new AppUtil();
-		HttpSession session = request.getSession(false);
-		if (session == null || session.getAttribute("token") == null) {
-			response.sendRedirect("home");
-			return;
-		}
-		HashMap<String, Object> headers = new HashMap<>();
-		headers.put("Authorization", session.getAttribute("token"));
+		try {
+			AdminUtil.checkAdmin(request, response);
 
-		Response res = app.get("isAdmin", headers);
-
-		if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-			request.setAttribute("err", res.getStatus() + " POST request error");
-		}
-
-		JsonObject data = JsonUtil.getData(res);
-
-		if (data == null) {
-			request.setAttribute("err", "Error in POST request");
-			request.getRequestDispatcher("login.jsp").forward(request, response);
-			return;
-		}
-
-		if (data.getString("status") == "fail") {
-			request.setAttribute("err", data.getString("message"));
-			request.getRequestDispatcher("login.jsp").forward(request, response);
-			return;
-		}
-
-		if (session != null && session.getAttribute("token") != null) {
 			String context = request.getParameter("p");
 			if (context == null) {
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			} else if (context.equals("addBook")) {
-				addContext(request, response, false);
-			} else if (context.equals("editBook")) {
-				addContext(request, response, true);
-			} else if (context.equals("deleteBook")) {
-				addBookContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-
-			} else if (context.equals("viewInventory")) {
-				addBookContext(request);
-				addContext(request,response,false);
-
-			} else if (context.equals("editInventory")) {
-				addBookContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			} else if (context.equals("viewCustomer")) {
-				addUserContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			} else if (context.equals("editCustomer")) {
-				addUserContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			} else if (context.equals("deleteCustomer")) {
-				addUserContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			} else {
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			}
+//			} else if (context.equals("addBook")) {
+//				addContext(request, response);
+//			} else if (context.equals("editBook")) {
+//				addContext(request, response);
+//			} else if (context.equals("deleteBook")) {
+//				addBookContext(request);
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//
+//			} else if (context.equals("viewInventory")) {
+//				addBookContext(request);
+//				addContext(request, response);
+//
+//			} else if (context.equals("editInventory")) {
+//				addBookContext(request);
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//			} else if (context.equals("viewCustomer")) {
+//				addUserContext(request);
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//			} else if (context.equals("editCustomer")) {
+//				addUserContext(request);
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//			} else if (context.equals("deleteCustomer")) {
+//				addUserContext(request);
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//			} else {
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//			}
 
-		} else {
-			response.sendRedirect("BookServlet");
-		}
-	}
-
-	private void addContext(HttpServletRequest request, HttpServletResponse response, Boolean edit)
-			throws ServletException, IOException {
-		try {
-			AppUtil app = new AppUtil();
-
-			List<Author> authors = new ArrayList<>();
-			Response res = app.get("author/getAuthors");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
-			}
-			
-			authors = (ArrayList<Author>) res.readEntity(new GenericType<ArrayList<Author>>() {});
-			
-			List<Publisher> publishers = new ArrayList<>();
-			res = app.get("publisher/getPublishers");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
-			}
-			
-			publishers = (ArrayList<Publisher>) res.readEntity(new GenericType<ArrayList<Publisher>>() {});
-			
-			List<Genre> genres = new ArrayList<>();
-			res = app.get("genre/getGenres");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
-			}
-			
-			genres = (ArrayList<Genre>) res.readEntity(new GenericType<ArrayList<Genre>>() {});
-
-
-
-			request.setAttribute("authors", authors);
-			request.setAttribute("publishers", publishers);
-			request.setAttribute("genres", genres);
-
-			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private void addBookContext(HttpServletRequest request) {
-		try {
-			AppUtil app = new AppUtil();
-
-			List<Book> books = new ArrayList<Book>();
-			Response res = app.get("books/getAllBooks/1");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
-			}
-			
-			books = (ArrayList<Book>) res.readEntity(new GenericType<ArrayList<Book>>() {});
-			request.setAttribute("books", books);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private void addUserContext(HttpServletRequest request) {
-		try {
-			AppUtil app = new AppUtil();
-			List<User> users = new ArrayList<>();
-			Response res = app.get("users/getUsers");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
-			}
-			
-			users = (ArrayList<User>) res.readEntity(new GenericType<ArrayList<User>>() {});
-			request.setAttribute("users", users);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse

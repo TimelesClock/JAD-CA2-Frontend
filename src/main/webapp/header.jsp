@@ -34,7 +34,7 @@
 			<div class="menu menu-horizontal px-1">
 				<%
 				HttpSession loginSession = request.getSession(false);
-				if (loginSession.getAttribute("token") != null) {
+				if (loginSession.getAttribute("userid") != null) {
 				%>
 				<form action="admin" method="get" class="mx-2">
 					<input type="hidden" name="action" value="login">
@@ -48,10 +48,10 @@
 				}
 				%>
 				<%
-				if (loginSession != null && loginSession.getAttribute("token") != null) {
+				if (loginSession != null && loginSession.getAttribute("userid") != null) {
 				%>
 				<!-- Logout button -->
-				<form action="Login" method="post" class="mx-2">
+				<form action="logout" method="post" class="mx-2">
 					<input type="hidden" name="action" value="logout">
 					<button type="submit" class="btn btn-outline btn-error">Logout</button>
 				</form>
@@ -59,7 +59,7 @@
 				} else {
 				%>
 				<!-- Login button -->
-				<form action="Login" method="get" class="mx-2">
+				<form action="login" method="get" class="mx-2">
 					<input type="hidden" name="action" value="login">
 					<button type="submit" class="btn btn-outline">Login</button>
 				</form>
