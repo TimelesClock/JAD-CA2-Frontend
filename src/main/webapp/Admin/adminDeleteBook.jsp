@@ -1,4 +1,4 @@
-<%@ page import="classes.Book"%>
+<%@ page import="models.Book"%>
 <%@ page import="java.util.*"%>
 <%
 @SuppressWarnings("unchecked")

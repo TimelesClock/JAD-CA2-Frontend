@@ -1,7 +1,6 @@
-package classes;
+package models;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 public class Cart {
 	private int cartId;

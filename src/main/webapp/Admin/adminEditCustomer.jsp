@@ -1,4 +1,4 @@
-<%@page import = "classes.User" %>
+<%@page import = "models.User" %>
 <%@page import = "java.util.*" %>
 <%
 @SuppressWarnings("unchecked")

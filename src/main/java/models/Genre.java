@@ -1,5 +1,4 @@
-package classes;
-
+package models;
 public class Genre {
     private int id;
     private String name;

@@ -1,6 +1,6 @@
-<%@ page import="classes.Author"%>
-<%@ page import="classes.Publisher"%>
-<%@ page import="classes.Genre"%>
+<%@ page import="models.Author"%>
+<%@ page import="models.Publisher"%>
+<%@ page import="models.Genre"%>
 <%@ page import="java.util.*"%>
 <%
 @SuppressWarnings("unchecked")

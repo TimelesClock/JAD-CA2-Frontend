@@ -1,4 +1,4 @@
-<%@ page import="classes.User"%>
+<%@ page import="models.User"%>
 <%@ page import="java.util.List"%>
 <body>
 	<h1 class="text-2xl font-bold mb-4 ms-5">View Customers</h1>

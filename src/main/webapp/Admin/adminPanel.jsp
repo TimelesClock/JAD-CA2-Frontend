@@ -67,11 +67,8 @@ if (success != null) {%>
 				} else if (content != null && content.equals("viewInventory")) {
 				%><%@include file="adminViewInventory.jsp"%>
 				<%
-				} else if (content != null && content.equals("editInventory")) {
-				%><%@include file="adminEditInventory.jsp"%>
-				<%
-				} else if (content != null && content.equals("viewCustomer")) {
-				%><%@include file="adminViewCustomer.jsp"%>
+				}else if (content != null && content.equals("viewCustomer")) { %><%@include
+					file="adminViewCustomer.jsp"%>
 				<%
 				} else if (content != null && content.equals("addCustomer")) {
 				%><%@include file="adminAddCustomer.jsp"%>

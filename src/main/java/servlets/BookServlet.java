@@ -29,8 +29,8 @@ import javax.ws.rs.core.Response;
 import java.io.StringReader;
 import org.jose4j.json.internal.json_simple.JSONObject;
 
-import classes.Book;
-import classes.Genre;
+import models.Book;
+import models.Genre;
 import util.AppUtil;
 
 

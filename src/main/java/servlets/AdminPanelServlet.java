@@ -1,10 +1,5 @@
 package servlets;
 
-import classes.Author;
-import classes.User;
-import classes.Book;
-import classes.Publisher;
-import classes.Genre;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
@@ -19,6 +14,11 @@ import java.util.HashMap;
 import util.*;
 import javax.ws.rs.core.Response;
 
+import models.Author;
+import models.Book;
+import models.Genre;
+import models.Publisher;
+import models.User;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -97,7 +97,8 @@ public class AdminPanelServlet extends HttpServlet {
 
 			} else if (context.equals("viewInventory")) {
 				addBookContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+				addContext(request,response,false);
+
 			} else if (context.equals("editInventory")) {
 				addBookContext(request);
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
@@ -172,7 +173,7 @@ public class AdminPanelServlet extends HttpServlet {
 			AppUtil app = new AppUtil();
 
 			List<Book> books = new ArrayList<Book>();
-			Response res = app.get("books/getAllBooks");
+			Response res = app.get("books/getAllBooks/1");
 
 			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
 				request.setAttribute("err", res.getStatus() + " GET request error");

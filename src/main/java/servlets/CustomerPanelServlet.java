@@ -7,8 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import classes.Cart;
-import classes.User;
+
 import util.AppUtil;
 
 import javax.servlet.ServletContext;
@@ -21,6 +20,9 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
 import org.jose4j.json.internal.json_simple.JSONObject;
+
+import models.Cart;
+import models.User;
 
 import javax.ws.rs.core.GenericType;
 

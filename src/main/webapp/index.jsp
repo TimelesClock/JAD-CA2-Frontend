@@ -1,6 +1,6 @@
 <%@ page import="java.util.*"%>
-<%@ page import="classes.Book"%>
-<%@ page import="classes.Genre"%>
+<%@ page import="models.Book"%>
+<%@ page import="models.Genre"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
