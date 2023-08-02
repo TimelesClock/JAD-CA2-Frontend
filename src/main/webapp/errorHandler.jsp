@@ -29,8 +29,7 @@ if (success != null) {%>
 
             toast.classList.remove("hidden");
             alert.classList.add("alert-error");
-            toast.querySelector("span").textContent = "<%=err%>
-		";
+            toast.querySelector("span").textContent = "<%=err%>";
 
 			toastTimeout = setTimeout(function() {
 				toast.classList.add("hidden");

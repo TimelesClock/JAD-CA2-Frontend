@@ -86,7 +86,7 @@ public class AdminUtil {
 		try {
 			BookDAO db = new BookDAO();
 			Integer bookCount = db.getTotalBooks();
-			Integer pages = bookCount/25;
+			Integer pages = (int) Math.ceil((double) bookCount / 25);
 			request.setAttribute("totalPages",pages);
 		}catch(Exception e) {
 			e.printStackTrace();

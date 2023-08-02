@@ -176,34 +176,12 @@ public class AdminPanelServlet extends HttpServlet {
 		}
 	}
 
-	private int insertNewAuthor(String authorName, Connection conn) {
-		int newAuthorId = -1;
-		try {
-			String query = "INSERT INTO authors (name) VALUES (?)";
-			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, authorName);
-			int rowsAffected = stmt.executeUpdate();
-
-			if (rowsAffected > 0) {
-				ResultSet rs = stmt.getGeneratedKeys();
-				if (rs.next()) {
-					newAuthorId = rs.getInt(1);
-				}
-				rs.close();
-			}
-
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return newAuthorId;
-	}
+	
 
 	private void editBook(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		int bookId = Integer.parseInt(request.getParameter("book_id"));
 		String title = request.getParameter("title");
-		int authorId = Integer.parseInt(request.getParameter("author_id"));
 		String newAuthorName = request.getParameter("new_author_name");
 		double price = Double.parseDouble(request.getParameter("price"));
 		String ISBN = request.getParameter("ISBN");
@@ -213,15 +191,12 @@ public class AdminPanelServlet extends HttpServlet {
 		String image = request.getParameter("image");
 
 		try {
-			ServletContext context = getServletContext();
-			Connection conn = DatabaseUtil.getConnection(context);
-
-			int newAuthorId = authorId;
+			int newAuthorId = Integer.parseInt(request.getParameter("author_id"));
 			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
 			int newPublisherId = Integer.parseInt(request.getParameter("publisher_id"));
 
 			// Insert new author if authorId is 0
-			if (authorId == 0) {
+			if (newAuthorId == 0) {
 				newAuthorId = insertNewAuthor(newAuthorName, conn);
 			}
 
@@ -276,51 +251,9 @@ public class AdminPanelServlet extends HttpServlet {
 		}
 	}
 
-	private int insertNewGenre(String genreName, Connection conn) {
-		int newGenreId = -1;
-		try {
-			String query = "INSERT INTO genres (name) VALUES (?)";
-			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, genreName);
-			int rowsAffected = stmt.executeUpdate();
+	
 
-			if (rowsAffected > 0) {
-				ResultSet rs = stmt.getGeneratedKeys();
-				if (rs.next()) {
-					newGenreId = rs.getInt(1);
-				}
-				rs.close();
-			}
-
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return newGenreId;
-	}
-
-	private int insertNewPublisher(String publisherName, Connection conn) {
-		int newPublisherId = -1;
-		try {
-			String query = "INSERT INTO publishers (name) VALUES (?)";
-			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, publisherName);
-			int rowsAffected = stmt.executeUpdate();
-
-			if (rowsAffected > 0) {
-				ResultSet rs = stmt.getGeneratedKeys();
-				if (rs.next()) {
-					newPublisherId = rs.getInt(1);
-				}
-				rs.close();
-			}
-
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return newPublisherId;
-	}
+	
 
 	private boolean insertBook(String title, int authorId, double price, int quantity, int publisherId, int genreId,
 			String ISBN, int rating, String description, Date publicationDate, String image, Connection conn) {
@@ -352,35 +285,7 @@ public class AdminPanelServlet extends HttpServlet {
 		return bookInserted;
 	}
 
-	private boolean updateBook(int bookId, String title, int authorId, double price, int publisherId, int genreId,
-			String ISBN, int rating, String description, Date publicationDate, String image, Connection conn) {
-		boolean bookUpdated = false;
-		try {
-			String query = "UPDATE Books SET title = ?, author_id = ?, price = ?, publisher_id = ?, genre_id = ?, ISBN = ?, rating = ?, description = ?, publication_date = ?,image = ? WHERE book_id = ?";
-			PreparedStatement stmt = conn.prepareStatement(query);
-			stmt.setString(1, title);
-			stmt.setInt(2, authorId);
-			stmt.setDouble(3, price);
-			stmt.setInt(4, publisherId);
-			stmt.setInt(5, genreId);
-			stmt.setString(6, ISBN);
-			stmt.setInt(7, rating);
-			stmt.setString(8, description);
-			stmt.setDate(9, publicationDate);
-			stmt.setString(10, image);
-			stmt.setInt(11, bookId);
-
-			int rowsAffected = stmt.executeUpdate();
-			if (rowsAffected > 0) {
-				bookUpdated = true;
-			}
-
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return bookUpdated;
-	}
+	
 
 	private void editInventory(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

@@ -12,6 +12,7 @@ List<Publisher> publishers = (List<Publisher>) request.getAttribute("publishers"
 List<Genre> genres = (List<Genre>) request.getAttribute("genres");
 %>
 <%!int currentPage;
+	String imageUrl;
 	int totalPages;%>
 <%
 try {
@@ -47,9 +48,12 @@ try {
 					New Book</button>
 				<div class="flex justify-center my-5">
 					<div class="join">
-						<a href="<%=request.getContextPath()+"/admin/book?page="+(currentPage-1)%>" class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
-						<a href="#" class="join-item btn">Page <%=currentPage%></a>
-						<a href="<%=request.getContextPath()+"/admin/book?page="+(currentPage+1)%>" class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
+						<a
+							href="<%=request.getContextPath() + "/admin/book?page=" + (currentPage - 1)%>"
+							class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
+						<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
+							href="<%=request.getContextPath() + "/admin/book?page=" + (currentPage + 1)%>"
+							class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
 					</div>
 				</div>
 				<div class="container mx-auto mt-5">
@@ -73,8 +77,13 @@ try {
 								<td class="flex items-center space-x-3">
 									<div class="avatar">
 										<div class="mask mask-squircle w-12 h-12">
-											<img src="<%=request.getContextPath() + "/image/book.jpg"%>"
-												alt="Avatar Tailwind CSS Component" />
+											<%
+											String imageUrl = book.getImageUrl();
+											if (imageUrl == null) {
+												imageUrl = request.getContextPath() + "/image/book.jpg";
+											}
+											%>
+											<img src="<%=imageUrl%>" alt="image" />
 										</div>
 									</div>
 									<div class="ms-5 font-bold"><%=book.getBookId()%></div>
@@ -103,27 +112,23 @@ try {
 				for (Book book : books) {
 				%>
 				<!-- Show Details Modal -->
-				<dialog id="showDetailsModal_<%=book.getBookId()%>" class="modal">
-				<form method="dialog" class="modal-box">
-					<h3 class="font-bold text-lg">Book Details</h3>
-					<!-- You can populate book details here -->
-					<div class="modal-action">
-						<button class="btn">Close</button>
-					</div>
-				</form>
-				</dialog>
+				<%@include file="adminShowBookModal.jspf"%>
 
 				<!-- Edit Details Modal -->
 				<%@include file="adminEditBookModal.jspf"%>
 
 				<!-- Delete Modal -->
 				<dialog id="deleteModal_<%=book.getBookId()%>" class="modal">
-				<form method="dialog" class="modal-box">
+				<form class="modal-box" method="post"
+					action="<%=request.getContextPath() + "/admin/book/delete"%>">
+					<input type="hidden" name="book_id" value="<%=book.getBookId()%>">
+					<input type="hidden" name="prev_url" value="<%=book.getImageUrl()%>">
 					<h3 class="font-bold text-lg">Delete Book</h3>
 					<p class="py-4">Are you sure you want to delete this book?</p>
 					<div class="modal-action">
-						<button class="btn">Yes</button>
-						<button class="btn">No</button>
+						<button type="submit" class="btn">Yes</button>
+						<button type="button" class="btn"
+							onclick="this.closest('dialog').close();">No</button>
 					</div>
 				</form>
 				</dialog>
@@ -132,9 +137,12 @@ try {
 				%>
 				<div class="flex justify-center my-5">
 					<div class="join">
-						<a href="<%=request.getContextPath()+"/admin/book?page="+(currentPage-1)%>" class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
-						<a href="#" class="join-item btn">Page <%=currentPage%></a>
-						<a href="<%=request.getContextPath()+"/admin/book?page="+(currentPage+1)%>" class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
+						<a
+							href="<%=request.getContextPath() + "/admin/book?page=" + (currentPage - 1)%>"
+							class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
+						<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
+							href="<%=request.getContextPath() + "/admin/book?page=" + (currentPage + 1)%>"
+							class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
 					</div>
 				</div>
 			</div>

@@ -175,10 +175,10 @@
 		<div
 			class="card lg:m-1 lg:w-72 xl:w-96 h-1/6 bg-base-100 shadow-xl m-2 mt-5 border border-base-300">
 			<%
-			if (book.getImage() != null && !book.getImage().equals("")) {
+			if (book.getImageUrl() != null && !book.getImageUrl().equals("")) {
 			%>
 			<figure class="w-full h-80">
-				<img src="data:image/jpeg;base64,<%=book.getImage()%>"
+				<img src="data:image/jpeg;base64,<%=book.getImageUrl()%>"
 					alt="Book img" class="w-full h-full">
 			</figure>
 			<%

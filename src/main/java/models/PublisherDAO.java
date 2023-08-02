@@ -26,4 +26,28 @@ public class PublisherDAO{
         }
         return publishers;
     }
+    
+    public static int addPublisher(String publisherName) {
+		int newPublisherId = -1;
+		try {
+			Connection conn = DBConnection.getConnection();
+			String query = "INSERT INTO publishers (name) VALUES (?)";
+			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, publisherName);
+			int rowsAffected = stmt.executeUpdate();
+
+			if (rowsAffected > 0) {
+				ResultSet rs = stmt.getGeneratedKeys();
+				if (rs.next()) {
+					newPublisherId = rs.getInt(1);
+				}
+				rs.close();
+			}
+
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return newPublisherId;
+	}
 }

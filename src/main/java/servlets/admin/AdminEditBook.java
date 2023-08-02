@@ -16,15 +16,15 @@ import java.sql.SQLException;
 /**
  * Servlet implementation class AdminAddBook
  */
-@WebServlet("/admin/book/add")
+@WebServlet("/admin/book/edit")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 50)
-public class AdminAddBook extends HttpServlet {
+public class AdminEditBook extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public AdminAddBook() {
+	public AdminEditBook() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -36,6 +36,7 @@ public class AdminAddBook extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		// no go away
 		response.sendRedirect(request.getContextPath() + "/admin/book");
 	}
 
@@ -55,7 +56,8 @@ public class AdminAddBook extends HttpServlet {
 			int rating = Integer.parseInt(request.getParameter("rating"));
 			String description = request.getParameter("description");
 			Part imageFile = request.getPart("image");
-
+			String prev_url = request.getParameter("prev_url");
+			int bookId = Integer.parseInt(request.getParameter("book_id"));
 			// Create a BookDAO instance and call the addBook method
 			BookDAO bookDAO = new BookDAO();
 			try {
@@ -80,14 +82,16 @@ public class AdminAddBook extends HttpServlet {
 					String newPublisherName = request.getParameter("new_publisher_name");
 					newPublisherId = PublisherDAO.addPublisher(newPublisherName);
 				}
-				int generatedBookId = bookDAO.addBook(title, newAuthorId, price, quantity, publicationDate, ISBN,
-						rating, description, newPublisherId, newGenreId, imageFile);
-				if(generatedBookId != -1) {
-					response.sendRedirect(request.getContextPath() + "/admin/book?success=Book%20Added%20Successfully!");
-				}else {
-					response.sendRedirect(request.getContextPath() + "/admin/book?err=Book%20not%20added!");
+
+				Boolean updated = bookDAO.editBook(bookId, title, newAuthorId, price, quantity, publicationDate, ISBN,
+						rating, description, newPublisherId, newGenreId, imageFile, prev_url);
+				if (updated) {
+					response.sendRedirect(
+							request.getContextPath() + "/admin/book?success=Book%20Updated%20Successfully!");
+				} else {
+					response.sendRedirect(request.getContextPath() + "/admin/book?err=Book%20Was%20Not%20Updated!");
 				}
-				
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 				// Handle database error and response to the client
