@@ -20,7 +20,7 @@ import models.*;
 /**
  * Servlet implementation class Login
  */
-@WebServlet("/Login")
+@WebServlet("/login")
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -37,7 +37,12 @@ public class Login extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		HttpSession session = request.getSession(false);
+    	if (session != null && session.getAttribute("role")!=null) {
+    		response.sendRedirect("home");
+    	} else {
+    		request.getRequestDispatcher("/login.jsp").forward(request, response);
+    	}
 	}
 
 	/**
@@ -55,10 +60,12 @@ public class Login extends HttpServlet {
         	
         	if(userid == null) {
         		request.setAttribute("err","Invalid Email or Password!");
+        		request.getRequestDispatcher("login.jsp").forward(request, response);
         	}else {
         		session.setAttribute("userid",userid);
+        		response.sendRedirect("home");
         	}
-        	request.getRequestDispatcher("login.jsp").forward(request, response);
+        	
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("err",e.getMessage());

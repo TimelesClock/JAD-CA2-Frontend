@@ -5,6 +5,7 @@ public class Book {
     private int bookId;
     private String title;
     private int authorId;
+    private String authorName;
     private BigDecimal price;
     private int quantity;
     private String publicationDate;
@@ -12,8 +13,10 @@ public class Book {
     private int rating;
     private String description;
     private int publisherId;
+    private String publisherName;
     private int genreId;
-    private String image;
+    private String genreName;
+    private String imageUrl;
 
     // Constructor
     public Book() {
@@ -26,8 +29,8 @@ public class Book {
     // Setters
     
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImage(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
     
     public void setBookId(int bookId) {
@@ -75,8 +78,8 @@ public class Book {
     }
 
     // Getters
-    public String getImage() {
-        return image;
+    public String getImageUrl() {
+        return imageUrl;
     }
     
     public int getBookId() {
@@ -119,7 +122,35 @@ public class Book {
         return publisherId;
     }
 
-    public int getGenreId() {
+    public String getAuthorName() {
+		return authorName;
+	}
+
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
+	}
+
+	public String getPublisherName() {
+		return publisherName;
+	}
+
+	public void setPublisherName(String publisherName) {
+		this.publisherName = publisherName;
+	}
+
+	public String getGenreName() {
+		return genreName;
+	}
+
+	public void setGenreName(String genreName) {
+		this.genreName = genreName;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public int getGenreId() {
         return genreId;
     }
 }

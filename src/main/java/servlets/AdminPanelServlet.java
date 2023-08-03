@@ -14,11 +14,7 @@ import java.util.HashMap;
 import util.*;
 import javax.ws.rs.core.Response;
 
-import models.Author;
-import models.Book;
-import models.Genre;
-import models.Publisher;
-import models.User;
+import models.*;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -54,157 +50,46 @@ public class AdminPanelServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		AppUtil app = new AppUtil();
-		HttpSession session = request.getSession(false);
-		if (session == null || session.getAttribute("token") == null) {
-			response.sendRedirect("home");
-			return;
-		}
-		HashMap<String, Object> headers = new HashMap<>();
-		headers.put("Authorization", session.getAttribute("token"));
+		try {
+			AdminUtil.checkAdmin(request, response);
 
-		Response res = app.get("isAdmin", headers);
-
-		if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-			request.setAttribute("err", res.getStatus() + " POST request error");
-		}
-
-		JsonObject data = JsonUtil.getData(res);
-
-		if (data == null) {
-			request.setAttribute("err", "Error in POST request");
-			request.getRequestDispatcher("login.jsp").forward(request, response);
-			return;
-		}
-
-		if (data.getString("status") == "fail") {
-			request.setAttribute("err", data.getString("message"));
-			request.getRequestDispatcher("login.jsp").forward(request, response);
-			return;
-		}
-
-		if (session != null && session.getAttribute("token") != null) {
 			String context = request.getParameter("p");
 			if (context == null) {
 				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			} else if (context.equals("addBook")) {
-				addContext(request, response, false);
-			} else if (context.equals("editBook")) {
-				addContext(request, response, true);
-			} else if (context.equals("deleteBook")) {
-				addBookContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-
-			} else if (context.equals("viewInventory")) {
-				addBookContext(request);
-				addContext(request,response,false);
-
-			} else if (context.equals("editInventory")) {
-				addBookContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			} else if (context.equals("viewCustomer")) {
-				addUserContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			} else if (context.equals("editCustomer")) {
-				addUserContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			} else if (context.equals("deleteCustomer")) {
-				addUserContext(request);
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-			} else {
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
 			}
+//			} else if (context.equals("addBook")) {
+//				addContext(request, response);
+//			} else if (context.equals("editBook")) {
+//				addContext(request, response);
+//			} else if (context.equals("deleteBook")) {
+//				addBookContext(request);
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//
+//			} else if (context.equals("viewInventory")) {
+//				addBookContext(request);
+//				addContext(request, response);
+//
+//			} else if (context.equals("editInventory")) {
+//				addBookContext(request);
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//			} else if (context.equals("viewCustomer")) {
+//				addUserContext(request);
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//			} else if (context.equals("editCustomer")) {
+//				addUserContext(request);
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//			} else if (context.equals("deleteCustomer")) {
+//				addUserContext(request);
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//			} else {
+//				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+//			}
 
-		} else {
-			response.sendRedirect("BookServlet");
-		}
-	}
-
-	private void addContext(HttpServletRequest request, HttpServletResponse response, Boolean edit)
-			throws ServletException, IOException {
-		try {
-			AppUtil app = new AppUtil();
-
-			List<Author> authors = new ArrayList<>();
-			Response res = app.get("author/getAuthors");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
-			}
-			
-			authors = (ArrayList<Author>) res.readEntity(new GenericType<ArrayList<Author>>() {});
-			
-			List<Publisher> publishers = new ArrayList<>();
-			res = app.get("publisher/getPublishers");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
-			}
-			
-			publishers = (ArrayList<Publisher>) res.readEntity(new GenericType<ArrayList<Publisher>>() {});
-			
-			List<Genre> genres = new ArrayList<>();
-			res = app.get("genre/getGenres");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
-			}
-			
-			genres = (ArrayList<Genre>) res.readEntity(new GenericType<ArrayList<Genre>>() {});
-
-
-
-			request.setAttribute("authors", authors);
-			request.setAttribute("publishers", publishers);
-			request.setAttribute("genres", genres);
-
-			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private void addBookContext(HttpServletRequest request) {
-		try {
-			AppUtil app = new AppUtil();
-
-			List<Book> books = new ArrayList<Book>();
-			Response res = app.get("books/getAllBooks/1");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
-			}
-			
-			books = (ArrayList<Book>) res.readEntity(new GenericType<ArrayList<Book>>() {});
-			request.setAttribute("books", books);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private void addUserContext(HttpServletRequest request) {
-		try {
-			AppUtil app = new AppUtil();
-			List<User> users = new ArrayList<>();
-			Response res = app.get("users/getUsers");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
-			}
-			
-			users = (ArrayList<User>) res.readEntity(new GenericType<ArrayList<User>>() {});
-			request.setAttribute("users", users);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -291,34 +176,12 @@ public class AdminPanelServlet extends HttpServlet {
 		}
 	}
 
-	private int insertNewAuthor(String authorName, Connection conn) {
-		int newAuthorId = -1;
-		try {
-			String query = "INSERT INTO authors (name) VALUES (?)";
-			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, authorName);
-			int rowsAffected = stmt.executeUpdate();
-
-			if (rowsAffected > 0) {
-				ResultSet rs = stmt.getGeneratedKeys();
-				if (rs.next()) {
-					newAuthorId = rs.getInt(1);
-				}
-				rs.close();
-			}
-
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return newAuthorId;
-	}
+	
 
 	private void editBook(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		int bookId = Integer.parseInt(request.getParameter("book_id"));
 		String title = request.getParameter("title");
-		int authorId = Integer.parseInt(request.getParameter("author_id"));
 		String newAuthorName = request.getParameter("new_author_name");
 		double price = Double.parseDouble(request.getParameter("price"));
 		String ISBN = request.getParameter("ISBN");
@@ -328,15 +191,12 @@ public class AdminPanelServlet extends HttpServlet {
 		String image = request.getParameter("image");
 
 		try {
-			ServletContext context = getServletContext();
-			Connection conn = DatabaseUtil.getConnection(context);
-
-			int newAuthorId = authorId;
+			int newAuthorId = Integer.parseInt(request.getParameter("author_id"));
 			int newGenreId = Integer.parseInt(request.getParameter("genre_id"));
 			int newPublisherId = Integer.parseInt(request.getParameter("publisher_id"));
 
 			// Insert new author if authorId is 0
-			if (authorId == 0) {
+			if (newAuthorId == 0) {
 				newAuthorId = insertNewAuthor(newAuthorName, conn);
 			}
 
@@ -391,51 +251,9 @@ public class AdminPanelServlet extends HttpServlet {
 		}
 	}
 
-	private int insertNewGenre(String genreName, Connection conn) {
-		int newGenreId = -1;
-		try {
-			String query = "INSERT INTO genres (name) VALUES (?)";
-			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, genreName);
-			int rowsAffected = stmt.executeUpdate();
+	
 
-			if (rowsAffected > 0) {
-				ResultSet rs = stmt.getGeneratedKeys();
-				if (rs.next()) {
-					newGenreId = rs.getInt(1);
-				}
-				rs.close();
-			}
-
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return newGenreId;
-	}
-
-	private int insertNewPublisher(String publisherName, Connection conn) {
-		int newPublisherId = -1;
-		try {
-			String query = "INSERT INTO publishers (name) VALUES (?)";
-			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, publisherName);
-			int rowsAffected = stmt.executeUpdate();
-
-			if (rowsAffected > 0) {
-				ResultSet rs = stmt.getGeneratedKeys();
-				if (rs.next()) {
-					newPublisherId = rs.getInt(1);
-				}
-				rs.close();
-			}
-
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return newPublisherId;
-	}
+	
 
 	private boolean insertBook(String title, int authorId, double price, int quantity, int publisherId, int genreId,
 			String ISBN, int rating, String description, Date publicationDate, String image, Connection conn) {
@@ -467,35 +285,7 @@ public class AdminPanelServlet extends HttpServlet {
 		return bookInserted;
 	}
 
-	private boolean updateBook(int bookId, String title, int authorId, double price, int publisherId, int genreId,
-			String ISBN, int rating, String description, Date publicationDate, String image, Connection conn) {
-		boolean bookUpdated = false;
-		try {
-			String query = "UPDATE Books SET title = ?, author_id = ?, price = ?, publisher_id = ?, genre_id = ?, ISBN = ?, rating = ?, description = ?, publication_date = ?,image = ? WHERE book_id = ?";
-			PreparedStatement stmt = conn.prepareStatement(query);
-			stmt.setString(1, title);
-			stmt.setInt(2, authorId);
-			stmt.setDouble(3, price);
-			stmt.setInt(4, publisherId);
-			stmt.setInt(5, genreId);
-			stmt.setString(6, ISBN);
-			stmt.setInt(7, rating);
-			stmt.setString(8, description);
-			stmt.setDate(9, publicationDate);
-			stmt.setString(10, image);
-			stmt.setInt(11, bookId);
-
-			int rowsAffected = stmt.executeUpdate();
-			if (rowsAffected > 0) {
-				bookUpdated = true;
-			}
-
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return bookUpdated;
-	}
+	
 
 	private void editInventory(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

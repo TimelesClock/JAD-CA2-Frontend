@@ -1,0 +1,64 @@
+<body>
+	<dialog id="showDetailsModal_<%=book.getBookId()%>" class="modal">
+	<form method="dialog" class="modal-box">
+		<div class="card bg-base-300">
+			<%
+			String imageUrl = book.getImageUrl();
+			if (imageUrl == null) {
+				imageUrl = request.getContextPath() + "/image/book.jpg";
+			}
+			%>
+			<figure class="w-52 h-52 self-center rounded-none">
+				<img src="<%=imageUrl%>" alt="Book img" class="w-full h-full">
+			</figure>
+
+			<div class="card-body">
+				<h2 class="card-title line-clamp-1">
+					<%=book.getTitle()%>
+				</h2>
+				<p><%=book.getDescription()%></p>
+				<p>
+					<strong>Author ID:</strong>
+					<%=book.getAuthorId()%></p>
+				<p>
+					<strong>Author Name:</strong>
+					<%=book.getAuthorName()%></p>
+				<p>
+					<strong>Price:</strong>
+					<%=book.getPrice()%></p>
+				<p>
+					<strong>Quantity:</strong>
+					<%=book.getQuantity()%></p>
+				<p>
+					<strong>Publication Date:</strong>
+					<%=book.getPublicationDate()%></p>
+				<p>
+					<strong>ISBN:</strong>
+					<%=book.getISBN()%></p>
+				<p>
+					<strong>Rating:</strong>
+					<%=book.getRating()%></p>
+				<p>
+					<strong>Publisher ID:</strong>
+					<%=book.getPublisherId()%></p>
+				<p>
+					<strong>Publisher Name:</strong>
+					<%=book.getPublisherName()%></p>
+				<p>
+					<strong>Genre ID:</strong>
+					<%=book.getGenreId()%></p>
+				<p>
+					<strong>Genre Name:</strong>
+					<%=book.getGenreName()%></p>
+
+				<div class="card-actions justify-end">
+					<div class="modal-action">
+						<button class="btn">Close</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</form>
+	</dialog>
+</body>

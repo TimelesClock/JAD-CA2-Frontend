@@ -5,6 +5,8 @@ import dbaccess.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 public class AuthorDAO {
@@ -27,4 +29,28 @@ public class AuthorDAO {
         }
         return authors;
     }
+    
+    public static int insertNewAuthor(String authorName) {
+		int newAuthorId = -1;
+		try {
+			Connection conn = DBConnection.getConnection();
+			String query = "INSERT INTO authors (name) VALUES (?)";
+			PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, authorName);
+			int rowsAffected = stmt.executeUpdate();
+
+			if (rowsAffected > 0) {
+				ResultSet rs = stmt.getGeneratedKeys();
+				if (rs.next()) {
+					newAuthorId = rs.getInt(1);
+				}
+				rs.close();
+			}
+
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return newAuthorId;
+	}
 }
