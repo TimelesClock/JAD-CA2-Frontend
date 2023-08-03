@@ -20,9 +20,6 @@ import com.cloudinary.Cloudinary;
 import cloudinary.*;
 
 public class BookDAO {
-	// public ArrayList<Book> getBooks(String search, String genreId, Integer
-	// minRating, Integer maxRating, Double minPrice, Double maxPrice, Integer
-	// limit, Integer offset) throws SQLException{
 	public ArrayList<Book> getBooks(HashMap<String, Object> filter, Integer limit, Integer offset) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		ArrayList<Book> books = new ArrayList<Book>();
