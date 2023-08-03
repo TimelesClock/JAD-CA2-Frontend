@@ -1,5 +1,5 @@
 <body>
-	<dialog id="customer_modal" class="modal">
+	<dialog id="add_customer_modal" class="modal">
 	<form method="post"
 		action="<%=request.getContextPath() + "/admin/customer/add"%>"
 		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="form"
@@ -31,10 +31,10 @@
 					required>
 			</div>
 
-			<div class="modal-action mt-5">
-				<button type="submit" class="btn btn-primary"
+			<div class="modal-action">
+				<button type="submit" class="btn btn-primary mt-5"
 					>Add</button>
-				<button type="button" class="btn"
+				<button type="button" class="btn mt-5"
 					onclick="this.closest('dialog').close();">Close</button>
 			</div>
 	</form>

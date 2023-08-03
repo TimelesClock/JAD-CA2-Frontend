@@ -37,7 +37,7 @@ try {
 			<%@include file="../adminSidePanel.jsp"%>
 			<div class="w-10/12 grid">
 				<h1 class="text-2xl font-bold mb-4 ms-5">View Customer</h1>
-				<button class="btn" onclick="customer_modal.showModal()">Add
+				<button class="btn" onclick="add_customer_modal.showModal()">Add
 					New Customer</button>
 				<div class="flex justify-center my-5">
 					<div class="join">
@@ -110,33 +110,41 @@ try {
 	</div>
 	<%@include file="../../errorHandler.jsp"%>
 	<script>
-	function handleDeleteModal(bookId){
-		const deleteBookId = document.getElementById("delete_user_id");
+	function handleDeleteModal(userId){
+		const deleteUserId = document.getElementById("delete_user_id");
 		<%for (User user : users) {%>
 		if ("<%=user.getUserId()%>" === userId.toString()) {
-			deleteuserId.value = <%=user.getUserId()%>
-			deleteModal.show();
+			deleteUserId.value = <%=user.getUserId()%>
+			delete_customer_modal.showModal()
 			return;
 		}
 <%}%>
 		
 	}
 	function handleShowModal(userId){
-
+		const showName = document.getElementById("show_name");
+		const showEmail = document.getElementById("show_email");
+		const showPhone = document.getElementById("show_phone");
 		<%for (User user : users) {%>
 			if ("<%=user.getUserId()%>" === userId.toString()) {
-				
-				showDetailsModal.showModal();
+				showName.innerHTML = "<%=user.getName()%>";
+				showEmail.innerHTML = "<%=user.getEmail()%>";
+				showPhone.innerHTML = "<%=user.getPhone()%>";
+				show_customer_modal.showModal()
 				return;
 			}
 	<%}%>
 	}
 	function handleEditModal(userId){
-
+		const editName = document.getElementById("edit_name");
+		const editEmail = document.getElementById("edit_email");
+		const editPhone = document.getElementById("edit_phone");
 		<%for (User user : users) {%>
 		if ("<%=user.getUserId()%>" === userId.toString()) {
-
-			editDetailsModal.showModal();
+			editName.value = "<%=user.getName()%>";
+			editEmail.value = "<%=user.getEmail()%>";
+			editPhone.value = "<%=user.getPhone()%>";
+			edit_customer_modal.showModal();
 			return;
 		}
 <%}%>

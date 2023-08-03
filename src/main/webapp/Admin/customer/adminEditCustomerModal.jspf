@@ -1,12 +1,42 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-</head>
 <body>
+	<dialog id="edit_customer_modal" class="modal">
+	<form method="post"
+		action="<%=request.getContextPath() + "/admin/customer/edit"%>"
+		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="form"
+		enctype="multipart/form-data">
+		<input type="hidden" name="action" value="editCustomer">
+		<div class="modal-body space-y-0 gap-4 items-start">
 
+			<div class="form-control">
+				<label class="label"> <span class="label-text">Name</span></label> <input
+					type="text" name="name" class="input input-bordered" id="edit_name" required>
+			</div>
+
+			<div class="form-control">
+				<label class="label"> <span class="label-text">Email</span></label>
+				<input
+					type="email" name="name" class="input input-bordered" id="edit_email" required>
+			</div>
+
+
+			<div class="form-control">
+				<label class="label"> <span class="label-text">Password</span></label>
+				<input type="password" name="password"
+					class="input input-bordered" autocomplete="new-password">
+			</div>
+
+			<div class="form-control">
+				<label class="label"> <span class="label-text">Phone</span></label>
+				<input type="number" name="phone" class="input input-bordered" id="edit_phone"
+					required>
+			</div>
+
+			<div class="modal-action">
+				<button type="submit" class="btn btn-primary mt-5"
+					>edit</button>
+				<button type="button" class="btn mt-5"
+					onclick="this.closest('dialog').close();">Close</button>
+			</div>
+	</form>
+	</dialog>
 </body>
-</html>

@@ -281,7 +281,7 @@ public class BookDAO {
 		Connection conn = DBConnection.getConnection();
 		Boolean updated = false;
 		try {
-			String sql = "UPDATE Books SET title = ?, author_id = ?, price = ?, publisher_id = ?, genre_id = ?, ISBN = ?, rating = ?, description = ?, publication_date = ?,quantity = ?,image_url = ? WHERE book_id = ?;";
+			String sql = "UPDATE books SET title = ?, author_id = ?, price = ?, publisher_id = ?, genre_id = ?, ISBN = ?, rating = ?, description = ?, publication_date = ?,quantity = ?,image_url = ? WHERE book_id = ?;";
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setString(1, title);
 			stmt.setInt(2, authorId);
@@ -299,7 +299,8 @@ public class BookDAO {
 			// cloudinaryConnection
 			if (imageFile != null) {
 				Cloudinary cloudinary = CloudinaryConnection.getCloudinary();
-				if (prev_url != null) {
+				System.out.println(prev_url.equals(""));
+				if (prev_url != null && !prev_url.equals("")) {
 					CloudinaryConnection.deleteFromCloudinary(cloudinary, prev_url);
 				}
 				String imageUrl = CloudinaryConnection.uploadImageToCloudinary(cloudinary, imageFile);
@@ -331,7 +332,7 @@ public class BookDAO {
 			if (prev_url != null && !prev_url.equals("")) {
 				CloudinaryConnection.deleteFromCloudinary(cloudinary, prev_url);
 			}
-			String sql = "DELETE FROM Books WHERE book_id = ?";
+			String sql = "DELETE FROM books WHERE book_id = ?";
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, bookId);
 
@@ -345,5 +346,25 @@ public class BookDAO {
 			conn.close();
 		}
 		return deleted;
+	}
+	
+	public Integer getAllTotalBooks() throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		Integer numberOfBooks = 0;
+		try {
+			String sql = "SELECT COUNT(*) AS number_of_books FROM books";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				numberOfBooks = rs.getInt("number_of_books");
+			}
+			rs.close();
+			stmt.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return numberOfBooks;
 	}
 }

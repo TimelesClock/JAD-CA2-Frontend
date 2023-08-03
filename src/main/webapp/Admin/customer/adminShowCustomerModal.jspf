@@ -1,12 +1,32 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-</head>
 <body>
+	<dialog id="show_customer_modal" class="modal">
+	<form method="dialog" class="modal-box">
+		<div class="card bg-base-300">
 
+			<div class="card-body">
+				<h2 class="card-title line-clamp-1" id="show_title">Customer</h2>
+				<p id="show_description"></p>
+				<div>
+					<strong>Name:</strong>
+					<p id="show_name"></p>
+				</div>
+				<div>
+					<strong>Email:</strong>
+					<p id="show_email"></p>
+				</div>
+				<div>
+					<strong>Phone:</strong>
+					<p id="show_phone"></p>
+				</div>
+
+				<div class="card-actions justify-end">
+					<div class="modal-action">
+						<button class="btn">Close</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</form>
+	</dialog>
 </body>
-</html>
