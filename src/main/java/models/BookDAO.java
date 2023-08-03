@@ -26,7 +26,6 @@ public class BookDAO {
 	public ArrayList<Book> getBooks(HashMap<String, Object> filter, Integer limit, Integer offset) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		ArrayList<Book> books = new ArrayList<Book>();
-		System.out.println("filter: " + filter);
 		try {
 			String sql = "SELECT * FROM books b WHERE 1=1";
 			if (filter.get("search") != null && !((String) filter.get("search")).isEmpty()) {

@@ -32,46 +32,12 @@ public class BookServlet extends HttpServlet {
         List<String> filterHeader = Arrays.asList("search", "genreId", "minRating", "maxRating", "minPrice", "maxPrice");
         List<String> filterData = new ArrayList<>();
         for (int i = 0; i < filterHeader.size(); i++) {
-        	filterData.add(request.getParameter(filterHeader.get(i)));
-        	if (i > 3 && filterData.get(i) != null) filter.put(filterHeader.get(i), Double.parseDouble(filterData.get(i)));
+        	filterData.add(request.getParameter(filterHeader.get(i)));  
+        	if (filterData.get(i) != null && filterData.get(i).isEmpty()) filter.put(filterHeader.get(i), null);
+        	else if (i > 3 && filterData.get(i) != null) filter.put(filterHeader.get(i), Double.parseDouble(filterData.get(i)));
         	else if (i > 0 && filterData.get(i) != null) filter.put(filterHeader.get(i), Integer.parseInt(filterData.get(i)));
         	else filter.put(filterHeader.get(i), filterData.get(i));
         }
-        //List<String> filterList = new ArrayList<>();
-        //filterList.add(request.getParameter("books"));
-        //filterList.add(request.getParameter("genreId"));
-        //filterList.add(request.getParameter("minRating"));
-        //filterList.add(request.getParameter("maxRating"));
-        //filterList.add(request.getParameter("minPrice"));
-        //filterList.add(request.getParameter("maxPrice"));
-        //String search = request.getParameter("books");
-        //String genreId = request.getParameter("genreId");
-        //String minRating = request.getParameter("minRating");
-        //String maxRating = request.getParameter("maxRating");
-        //String minPrice = request.getParameter("minPrice");
-        //String maxPrice = request.getParameter("maxPrice");
-        
-        //filter.put("search", search);
-        //filter.put("genreId", genreId);
-        //try {
-        //	filter.put("minRating", Integer.parseInt(minRating));
-        //	filter.put("minRating", Integer.parseInt(maxRating));
-        //} catch (NumberFormatException e) {
-        //	e.printStackTrace();
-        //    System.out.println("Filter rating error when parsing");
-        //    request.setAttribute("err", "Rating: "+e.getMessage());
-        //    return;
-        //}
-        //try {
-        //	filter.put("minRating", Double.parseDouble(minPrice));
-        //	filter.put("minRating", Double.parseDouble(maxPrice));
-        //} catch (NumberFormatException e) {
-        //	e.printStackTrace();
-        //    System.out.println("Filter price error when parsing");
-        //    request.setAttribute("err", "Price: "+e.getMessage());
-        //    return;
-        //}
-        // Get page and limit from request, or set default values
         int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
         int limit = 15;
         int offset = (page - 1) * limit;

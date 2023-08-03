@@ -23,7 +23,7 @@
 
 	<%
 	try {
-		search = request.getParameter("books");
+		search = request.getParameter("search");
 		genreId = request.getParameter("genreId");
 		minRating = request.getParameter("minRating");
 		maxRating = request.getParameter("maxRating");
@@ -68,29 +68,37 @@
 	<div class="flex flex-row">
 		<div class="flex justify-center ms-48 mt-10 w-1/2">
 
-			<form action="BookServlet" method="get" class="w-2/3">
-				<input type="text" name="books" placeholder="Search books"
+			<form action="home" method="get" class="w-2/3">
+				<!-- <input type="text" name="books" placeholder="Search books"
 					class="input input-bordered w-full max-w-xs" /> <input
-					type="submit" value="Search" class="btn btn-primary mt-2">
+					type="submit" value="Search" class="btn btn-primary mt-2"> -->
 			</form>
 		</div>
 		<div class=" w-2/3 flex h-min m-5 rounded">
-			<form id="filters" action="BookServlet" method="get" class="position-lg-fixed me-lg-5">
-				<input class="hidden" name="bookName"
-					value="<%=search != null ? search : ""%>">
+			<form id="filters" action="home" method="get" class="position-lg-fixed me-lg-5">
+				<input type="text" name="search" value="<%=search != null ? search : "" %>" placeholder="Search books"
+					class="input input-bordered w-full max-w-xs" /> <input
+					type="submit" value="Search" class="btn btn-primary mt-2">
 				<h2 class="flex flex-row p-3 text-xl font-bold" id="filter-title">Filter</h2>
 				<div class="flex flex-row">
 					<div class="flex-row me-3 ps-3 pb-3 filter-box rounded">
 						<select class="form-select rounded-xl mt-8 p-2 border"
-							aria-label="" id="genreId" name="genre">
+							aria-label="" id="genreId" name="genreId" >
 							<option class="genre-option" disabled selected>Genre</option>
 							<%
 							@SuppressWarnings("unchecked")
 							List<Genre> genres = (List<Genre>) request.getAttribute("genres");
 							if (genres != null){
 							for (Genre item : genres) {
+								String genreIdValue = String.valueOf(item.getId()); // Convert genreId to String for comparison
+				                String selectedAttribute = ""; // Initialize selected attribute as empty
+
+				                // Check if the genreId matches the current option's value
+				                if (genreId != null && genreId.equals(genreIdValue)) {
+				                    selectedAttribute = "selected"; // Set selected attribute for the matching option
+				                }
 							%>
-							<option class="genre-option" id="<%=item.getId()%>">
+							<option class="genre-option" value="<%=item.getId()%>" <%= selectedAttribute %> >
 								<%=item.getName()%>
 							</option>
 							<%
@@ -104,12 +112,12 @@
 							<div class="flex w-20 me-2">
 								<input class="form-control w-full rounded-xl p-2 border"
 									type="text" placeholder="Min" pattern="[-+]?[0-9]*[.,]?[0-9]+"
-									title="Please enter numbers." id="minRating" name="minRating" />
+									title="Please enter numbers." id="minRating" name="minRating" value="<%=minRating != null ? minRating : "" %>" />
 							</div>
 							<div class="flex w-20">
 								<input class="form-control w-full rounded-xl p-2 border"
 									type="text" placeholder="Max" pattern="[-+]?[0-9]*[.,]?[0-9]+"
-									title="Please enter numbers." id="maxRating" name="maxRating" />
+									title="Please enter numbers." id="maxRating" name="maxRating" value="<%=maxRating != null ? maxRating : "" %>" />
 							</div>
 						</div>
 					</div>
@@ -119,12 +127,12 @@
 							<div class="flex w-20 me-2">
 								<input class="form-control w-full rounded-xl p-2 border"
 									type="text" placeholder="Min" pattern="[-+]?[0-9]*[.,]?[0-9]+"
-									title="Please enter numbers." id="minPrice" name="minPrice" />
+									title="Please enter numbers." id="minPrice" name="minPrice" value="<%=minPrice != null ? minPrice : "" %>" />
 							</div>
 							<div class="flex w-20">
 								<input class="form-control w-full rounded-xl p-2 border"
 									type="text" placeholder="Max" pattern="[-+]?[0-9]*[.,]?[0-9]+"
-									title="Please enter numbers." id="maxPrice" name="maxPrice" />
+									title="Please enter numbers." id="maxPrice" name="maxPrice" value="<%=maxPrice != null ? maxPrice : "" %>" />
 							</div>
 						</div>
 					</div>
@@ -145,7 +153,7 @@
 	<div class="flex justify-center">
 		<div class="join">
 			<a
-				href="BookServlet?page=<%=currentPage - 1%><%=search != null ? ("&books=" + search) : ""%>
+				href="home?page=<%=currentPage - 1%><%=search != null ? ("&search=" + search) : ""%>
 				<%=genreId != null ? ("&genreId=" + genreId) : ""%>
 				<%=minRating != null ? ("&minRating=" + minRating) : ""%>
 				<%=maxRating != null ? ("&maxRating=" + maxRating) : ""%>
@@ -153,7 +161,7 @@
 				<%=maxPrice != null ? ("&maxPrice=" + maxPrice) : ""%>"
 				class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
 			<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
-				href="BookServlet?page=<%=currentPage + 1%><%=search != null ? ("&books=" + search) : ""%>
+				href="home?page=<%=currentPage + 1%><%=search != null ? ("&search=" + search) : ""%>
 				<%=genreId != null ? ("&genreId=" + genreId) : ""%>
 				<%=minRating != null ? ("&minRating=" + minRating) : ""%>
 				<%=maxRating != null ? ("&maxRating=" + maxRating) : ""%>
@@ -214,7 +222,7 @@
 	<div class="flex justify-center mt-10 mb-20">
 		<div class="join">
 			<a
-				href="BookServlet?page=<%=currentPage - 1%><%=search != null ? ("&books=" + search) : ""%>
+				href="home?page=<%=currentPage - 1%><%=search != null ? ("&search=" + search) : ""%>
 				<%=genreId != null ? ("&genreId=" + genreId) : ""%>
 				<%=minRating != null ? ("&minRating=" + minRating) : ""%>
 				<%=maxRating != null ? ("&maxRating=" + maxRating) : ""%>
@@ -222,7 +230,7 @@
 				<%=maxPrice != null ? ("&maxPrice=" + maxPrice) : ""%>"
 				class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
 			<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
-				href="BookServlet?page=<%=currentPage + 1%><%=search != null ? ("&books=" + search) : ""%>
+				href="home?page=<%=currentPage + 1%><%=search != null ? ("&search=" + search) : ""%>
 				<%=genreId != null ? ("&genreId=" + genreId) : ""%>
 				<%=minRating != null ? ("&minRating=" + minRating) : ""%>
 				<%=maxRating != null ? ("&maxRating=" + maxRating) : ""%>
