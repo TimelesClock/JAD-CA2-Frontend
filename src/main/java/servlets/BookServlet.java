@@ -1,37 +1,20 @@
 package servlets;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.StringReader;
-import org.jose4j.json.internal.json_simple.JSONObject;
 
 import models.Book;
+import models.BookDAO;
 import models.Genre;
-import util.AppUtil;
+import models.GenreDAO;
 
 
 @WebServlet(urlPatterns = {"/home", ""})
@@ -45,64 +28,77 @@ public class BookServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Book> books = new ArrayList<>();
         List<Genre> genres = new ArrayList<>();
-        String search = request.getParameter("books");
-        String genre = request.getParameter("genre");
-        String minRating = request.getParameter("minRating");
-        String maxRating = request.getParameter("maxRating");
-        String minPrice = request.getParameter("minPrice");
-        String maxPrice = request.getParameter("maxPrice");
+        HashMap<String,Object> filter = new HashMap<>();
+        List<String> filterHeader = Arrays.asList("search", "genreId", "minRating", "maxRating", "minPrice", "maxPrice");
+        List<String> filterData = new ArrayList<>();
+        for (int i = 0; i < filterHeader.size(); i++) {
+        	filterData.add(request.getParameter(filterHeader.get(i)));
+        	if (i > 3 && filterData.get(i) != null) filter.put(filterHeader.get(i), Double.parseDouble(filterData.get(i)));
+        	else if (i > 0 && filterData.get(i) != null) filter.put(filterHeader.get(i), Integer.parseInt(filterData.get(i)));
+        	else filter.put(filterHeader.get(i), filterData.get(i));
+        }
+        //List<String> filterList = new ArrayList<>();
+        //filterList.add(request.getParameter("books"));
+        //filterList.add(request.getParameter("genreId"));
+        //filterList.add(request.getParameter("minRating"));
+        //filterList.add(request.getParameter("maxRating"));
+        //filterList.add(request.getParameter("minPrice"));
+        //filterList.add(request.getParameter("maxPrice"));
+        //String search = request.getParameter("books");
+        //String genreId = request.getParameter("genreId");
+        //String minRating = request.getParameter("minRating");
+        //String maxRating = request.getParameter("maxRating");
+        //String minPrice = request.getParameter("minPrice");
+        //String maxPrice = request.getParameter("maxPrice");
+        
+        //filter.put("search", search);
+        //filter.put("genreId", genreId);
+        //try {
+        //	filter.put("minRating", Integer.parseInt(minRating));
+        //	filter.put("minRating", Integer.parseInt(maxRating));
+        //} catch (NumberFormatException e) {
+        //	e.printStackTrace();
+        //    System.out.println("Filter rating error when parsing");
+        //    request.setAttribute("err", "Rating: "+e.getMessage());
+        //    return;
+        //}
+        //try {
+        //	filter.put("minRating", Double.parseDouble(minPrice));
+        //	filter.put("minRating", Double.parseDouble(maxPrice));
+        //} catch (NumberFormatException e) {
+        //	e.printStackTrace();
+        //    System.out.println("Filter price error when parsing");
+        //    request.setAttribute("err", "Price: "+e.getMessage());
+        //    return;
+        //}
         // Get page and limit from request, or set default values
         int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
         int limit = 15;
         int offset = (page - 1) * limit;
-        int totalRecords;
-        AppUtil app = new AppUtil();
+        int totalRecords = 0;
+        int totalPages = 0;
         try {
-        	String url = "books/getBooks?limit="+limit+"&offset="+offset;
-        	if (search != null) {
-        		url += "&search="+search;
-        	}
-        	if (genre != null && !genre.isEmpty()) {
-                url += "&genre="+genre;
-            }
-            if (minRating != null && !minRating.isEmpty()) {
-                url += "&minRating="+minRating;
-            }
-            if (maxRating != null && !maxRating.isEmpty()) {
-                url += "&maxRating="+maxRating;
-            }
-            if (minPrice != null && !minPrice.isEmpty()) {
-                url += "&minPrice="+minPrice;
-            }
-            if (maxPrice != null && !maxPrice.isEmpty()) {
-                url += "&maxPrice="+maxPrice;
-            }
+            BookDAO db1 = new BookDAO();
+            books = db1.getBooks(filter, limit, offset);
         	
-        	Response res = app.get(url);
-        	
-        	if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-    			request.setAttribute("err", "GET Request Error");
+        	if (books == null) {
+    			request.setAttribute("err", "No books found.");
     		}
 
-    		books = (ArrayList<Book>) res.readEntity(new GenericType<ArrayList<Book>>() {});
-    		
-    		res = app.get("books/getTotalBooks");
-    		if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-    			request.setAttribute("err", "GET Request Error");
+        	totalRecords = db1.getTotalBooks();
+        	
+    		if (totalRecords == 0) {
+    			request.setAttribute("err", "Zero books found.");
     		}
-    		String result = (String) res.readEntity(String.class);
-    		JsonReader jsonReader = Json.createReader(new StringReader(result));
-    		JsonObject reply = jsonReader.readObject();
-    		totalRecords = reply.getInt("totalBooks");
+
+            totalPages = (int) Math.ceil((double) totalRecords / limit);
     		
-    		res = app.get("genre/getGenres");
-    		if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-    			request.setAttribute("err", "GET Request Error");
+    		GenreDAO db2 = new GenreDAO();
+    		genres = db2.getGenres();
+    		
+    		if (genres == null) {
+    			request.setAttribute("err", "No genres found.");
     		}
-    		genres = (ArrayList<Genre>) res.readEntity(new GenericType<ArrayList<Genre>>() {});
-			
-            int totalPages = (int) Math.ceil((double) totalRecords / limit);
-            request.setAttribute("totalPages", totalPages);
         } catch(Exception e) {
             e.printStackTrace();
             System.out.println("error");
@@ -110,6 +106,7 @@ public class BookServlet extends HttpServlet {
         }
         request.setAttribute("books", books);
         request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
         request.setAttribute("genres", genres);
         request.getRequestDispatcher("/index.jsp").forward(request, response);
     }

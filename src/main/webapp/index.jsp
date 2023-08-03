@@ -15,7 +15,7 @@
 	<%!int currentPage = 1;
 	int totalPages = 1;
 	String search;
-	String genre;
+	String genreId;
 	String minRating;
 	String maxRating;
 	String minPrice;
@@ -24,7 +24,7 @@
 	<%
 	try {
 		search = request.getParameter("books");
-		genre = request.getParameter("genre");
+		genreId = request.getParameter("genreId");
 		minRating = request.getParameter("minRating");
 		maxRating = request.getParameter("maxRating");
 		minPrice = request.getParameter("minPrice");
@@ -75,14 +75,14 @@
 			</form>
 		</div>
 		<div class=" w-2/3 flex h-min m-5 rounded">
-			<form id="filters" class="position-lg-fixed me-lg-5">
+			<form id="filters" action="BookServlet" method="get" class="position-lg-fixed me-lg-5">
 				<input class="hidden" name="bookName"
 					value="<%=search != null ? search : ""%>">
 				<h2 class="flex flex-row p-3 text-xl font-bold" id="filter-title">Filter</h2>
 				<div class="flex flex-row">
 					<div class="flex-row me-3 ps-3 pb-3 filter-box rounded">
 						<select class="form-select rounded-xl mt-8 p-2 border"
-							aria-label="" id="genre" name="genre">
+							aria-label="" id="genreId" name="genre">
 							<option class="genre-option" disabled selected>Genre</option>
 							<%
 							@SuppressWarnings("unchecked")
@@ -90,7 +90,7 @@
 							if (genres != null){
 							for (Genre item : genres) {
 							%>
-							<option class="genre-option">
+							<option class="genre-option" id="<%=item.getId()%>">
 								<%=item.getName()%>
 							</option>
 							<%
@@ -146,7 +146,7 @@
 		<div class="join">
 			<a
 				href="BookServlet?page=<%=currentPage - 1%><%=search != null ? ("&books=" + search) : ""%>
-				<%=genre != null ? ("&genre=" + genre) : ""%>
+				<%=genreId != null ? ("&genreId=" + genreId) : ""%>
 				<%=minRating != null ? ("&minRating=" + minRating) : ""%>
 				<%=maxRating != null ? ("&maxRating=" + maxRating) : ""%>
 				<%=minPrice != null ? ("&minPrice=" + minPrice) : ""%>
@@ -154,7 +154,7 @@
 				class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
 			<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
 				href="BookServlet?page=<%=currentPage + 1%><%=search != null ? ("&books=" + search) : ""%>
-				<%=genre != null ? ("&genre=" + genre) : ""%>
+				<%=genreId != null ? ("&genreId=" + genreId) : ""%>
 				<%=minRating != null ? ("&minRating=" + minRating) : ""%>
 				<%=maxRating != null ? ("&maxRating=" + maxRating) : ""%>
 				<%=minPrice != null ? ("&minPrice=" + minPrice) : ""%>
@@ -215,7 +215,7 @@
 		<div class="join">
 			<a
 				href="BookServlet?page=<%=currentPage - 1%><%=search != null ? ("&books=" + search) : ""%>
-				<%=genre != null ? ("&genre=" + genre) : ""%>
+				<%=genreId != null ? ("&genreId=" + genreId) : ""%>
 				<%=minRating != null ? ("&minRating=" + minRating) : ""%>
 				<%=maxRating != null ? ("&maxRating=" + maxRating) : ""%>
 				<%=minPrice != null ? ("&minPrice=" + minPrice) : ""%>
@@ -223,7 +223,7 @@
 				class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
 			<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
 				href="BookServlet?page=<%=currentPage + 1%><%=search != null ? ("&books=" + search) : ""%>
-				<%=genre != null ? ("&genre=" + genre) : ""%>
+				<%=genreId != null ? ("&genreId=" + genreId) : ""%>
 				<%=minRating != null ? ("&minRating=" + minRating) : ""%>
 				<%=maxRating != null ? ("&maxRating=" + maxRating) : ""%>
 				<%=minPrice != null ? ("&minPrice=" + minPrice) : ""%>
