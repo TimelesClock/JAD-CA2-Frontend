@@ -41,7 +41,7 @@ try {
 <body>
 	<div class="container-fluid mx-auto">
 		<div class="flex flex-row">
-			<%@include file="adminSidePanel.jsp"%>
+			<%@include file="/admin/adminSidePanel.jsp"%>
 			<div class="w-10/12 grid">
 				<h1 class="text-2xl font-bold mb-4 ms-5">View Inventory</h1>
 				<button class="btn" onclick="book_modal.showModal()">Add
@@ -107,27 +107,13 @@ try {
 					</table>
 				</div>
 				<%@include file="adminAddBookModal.jspf"%>
-				<!-- Edit Details Modal -->
+				
 				<%@include file="adminEditBookModal.jspf"%>
 				
 				<%@include file="adminShowBookModal.jspf"%>
 				
-				<dialog id="deleteModal" class="modal">
-				<form class="modal-box" method="post"
-					action="<%=request.getContextPath() + "/admin/book/delete"%>">
-					<input type="hidden" name="book_id" id="delete_book_id" value="">
-					<input type="hidden" name="prev_url" id = "delete_prev_url"
-						value="">
-					<h3 class="font-bold text-lg">Delete Book</h3>
-					<p class="py-4">Are you sure you want to delete this book?</p>
-					<div class="modal-action">
-						<button type="submit" class="btn">Yes</button>
-						<button type="button" class="btn"
-							onclick="this.closest('dialog').close();">No</button>
-					</div>
-				</form>
-				</dialog>
-
+				<%@include file="adminDeleteBookModal.jspf"%>
+				
 				<div class="flex justify-center my-5">
 					<div class="join">
 						<a
@@ -141,7 +127,7 @@ try {
 			</div>
 		</div>
 	</div>
-	<%@include file="../errorHandler.jsp"%>
+	<%@include file="../../errorHandler.jsp"%>
 	<script>
 	function handleDeleteModal(bookId){
 		const deleteBookId = document.getElementById("delete_book_id");

@@ -55,7 +55,7 @@ public class AdminPanelServlet extends HttpServlet {
 
 			String context = request.getParameter("p");
 			if (context == null) {
-				request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+				request.getRequestDispatcher("admin/adminPanel.jsp").forward(request, response);
 			}
 //			} else if (context.equals("addBook")) {
 //				addContext(request, response);
@@ -99,7 +99,7 @@ public class AdminPanelServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String action = request.getParameter("action");
 		if (action == null) {
-			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+			request.getRequestDispatcher("admin/adminPanel.jsp").forward(request, response);
 		} else if (action.equals("addBook")) {
 			addBook(request, response);
 		} else if (action.equals("editBook")) {
@@ -115,7 +115,7 @@ public class AdminPanelServlet extends HttpServlet {
 		} else if (action.equals("deleteCustomer")) {
 			deleteCustomer(request, response);
 		} else {
-			request.getRequestDispatcher("Admin/adminPanel.jsp").forward(request, response);
+			request.getRequestDispatcher("admin/adminPanel.jsp").forward(request, response);
 		}
 
 	}

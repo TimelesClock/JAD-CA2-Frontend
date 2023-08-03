@@ -13,13 +13,15 @@ import dbaccess.*;
 
 public class UserDAO {
 
-	public ArrayList<User> getUsers() throws SQLException {
+	public ArrayList<User> getUsers(Integer limit, Integer offset) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		ArrayList<User> users = new ArrayList<User>();
 		try {
-			String sql = "SELECT * FROM Users WHERE role = 'customer'";
-			Statement userStmt = conn.createStatement();
-			ResultSet userRs = userStmt.executeQuery(sql);
+			String sql = "SELECT * FROM users WHERE role = 'customer' LIMIT ?,?";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, offset);
+			pstmt.setInt(2, limit);
+			ResultSet userRs = pstmt.executeQuery();
 			while (userRs.next()) {
 				User user = new User();
 				user.setUserId(userRs.getInt("user_id"));
@@ -36,12 +38,32 @@ public class UserDAO {
 		}
 		return users;
 	}
+	
+	public Integer getTotalUsers() throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		Integer numberOfUsers = 0;
+		try {
+			String sql = "SELECT COUNT(*) AS number_of_users FROM users WHERE role = 'customer'";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				numberOfUsers = rs.getInt("number_of_users");
+			}
+			rs.close();
+			stmt.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return numberOfUsers;
+	}
 
 	public User getUserById(int userId) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		User user = new User();
 		try {
-			String sql = "SELECT * FROM Users WHERE user_id = ?";
+			String sql = "SELECT * FROM users WHERE user_id = ?";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
 			userStmt.setInt(1, userId);
 			ResultSet userRs = userStmt.executeQuery();
@@ -100,7 +122,7 @@ public class UserDAO {
 		Connection conn = DBConnection.getConnection();
 		String userid = null;
 		try {
-			String sql = "SELECT * FROM Users WHERE email = ? AND password = MD5(?)";
+			String sql = "SELECT * FROM users WHERE email = ? AND password = MD5(?)";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
 			userStmt.setString(1, email);
 			userStmt.setString(2, password);
@@ -143,7 +165,7 @@ public class UserDAO {
 		Connection conn = DBConnection.getConnection();
 		Integer count = 0;
 		try {
-			String sql = "SELECT COUNT(*) FROM Users WHERE email = ?";
+			String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
 			userStmt.setString(1, email);
 			ResultSet rs = userStmt.executeQuery();
@@ -162,7 +184,7 @@ public class UserDAO {
 		Connection conn = DBConnection.getConnection();
 		String role = null;
 		try {
-			String sql = "SELECT role FROM Users WHERE user_id = ?";
+			String sql = "SELECT role FROM users WHERE user_id = ?";
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, userid);
 			ResultSet rs = pstmt.executeQuery();

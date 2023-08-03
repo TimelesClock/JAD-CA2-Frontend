@@ -1,50 +1,48 @@
 <body>
-	<dialog id="editDetailsModal" class="modal">
-	<form method="post" action="<%=request.getContextPath()+"/admin/book/edit"%>"
+	<dialog id="book_modal" class="modal">
+	<form method="post" action="<%=request.getContextPath()+"/admin/book/add"%>"
 		class="modal-box w-4/5 max-w-screen-lg mx-auto"
-		enctype="multipart/form-data">
+		 id="form" enctype="multipart/form-data">
 		<input type="hidden" name="action" value="addBook">
 		<div class="modal-body space-y-0 grid grid-cols-2 gap-4 items-start">
 			<!-- Left column -->
-			<div class="space-y-4">
+			<div class="">
 				<!-- Title -->
-				<input type = "hidden" name = "book_id" id="edit_book_id" value = "">
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Title</span></label>
-					<input type="text" name="title" class="input input-bordered" id="edit_title"
-						value="" required>
+					<input type="text" name="title" class="input input-bordered"
+						required>
 				</div>
 				<!-- Description -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Description</span></label>
-					<textarea name="description" class="textarea textarea-bordered" id="edit_description"
+					<textarea name="description" class="textarea textarea-bordered"
 						required></textarea>
 				</div>
-
+				
 				<!-- Price -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Price</span></label>
-					<input type="number" step="0.01" name="price" id="edit_price"
-						class="input input-bordered" value="" required>
+					<input type="number" step="0.01" name="price"
+						class="input input-bordered" required>
 				</div>
 				<!-- Quantity -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Quantity</span></label>
-					<input type="number" name="quantity" class="input input-bordered" id="edit_quantity"
-						value="" required>
+					<input type="number" name="quantity" class="input input-bordered"
+						required>
 				</div>
 				<!-- Publication Date -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Publication
-							Date</span></label> <input type="date" name="publication_date" id="edit_date"
-						class="input input-bordered"
-						value="" required>
+							Date</span></label> <input type="date" name="publication_date"
+						class="input input-bordered" required>
 				</div>
 				<!-- ISBN -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">ISBN</span></label>
-					<input type="text" name="ISBN" class="input input-bordered" id="edit_isbn"
-						value="" required>
+					<input type="text" name="ISBN" class="input input-bordered"
+						required>
 				</div>
 			</div>
 			<!-- Right column -->
@@ -52,22 +50,21 @@
 				<!-- Rating -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Rating</span></label>
-					<input type="number" name="rating" class="input input-bordered" id="edit_rating"
-						value="" required>
+					<input type="number" name="rating" class="input input-bordered"
+						required>
 				</div>
-
+				
 				<!-- Author -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Author</span></label>
-					<select name="author_id" class="select select-bordered" id="edit_author_id"
+					<select name="author_id" class="select select-bordered"
 						onchange="handleAuthorSelection(this)" required>
 						<option value="" disabled selected>Select the author</option>
 						<option value="0">+ Add new Author</option>
 						<%
 						for (Author author : authors) {
 						%>
-						<option value="<%=author.getId()%>"
-							><%=author.getName()%></option>
+						<option value="<%=author.getId()%>"><%=author.getName()%></option>
 						<%
 						}
 						%>
@@ -81,19 +78,18 @@
 							class="input input-bordered">
 					</div>
 				</div>
-
+				
 				<!-- Publisher -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Publisher</span></label>
-					<select name="publisher_id" class="select select-bordered" id="edit_publisher_id"
+					<select name="publisher_id" class="select select-bordered"
 						onchange="handlePublisherSelection(this)" required>
 						<option value="" disabled selected>Select the publisher</option>
 						<option value="0">+ Add new Publisher</option>
 						<%
 						for (Publisher publisher : publishers) {
 						%>
-						<option value="<%=publisher.getId()%>"
-							><%=publisher.getName()%></option>
+						<option value="<%=publisher.getId()%>"><%=publisher.getName()%></option>
 						<%
 						}
 						%>
@@ -110,15 +106,14 @@
 				<!-- Genre -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Genre</span></label>
-					<select name="genre_id" class="select select-bordered" id="edit_genre_id"
+					<select name="genre_id" class="select select-bordered"
 						onchange="handleGenreSelection(this)" required>
 						<option value="" disabled selected>Select the genre</option>
 						<option value="0">+ Add new Genre</option>
 						<%
 						for (Genre genre : genres) {
 						%>
-						<option value="<%=genre.getId()%>"
-							><%=genre.getName()%></option>
+						<option value="<%=genre.getId()%>"><%=genre.getName()%></option>
 						<%
 						}
 						%>
@@ -136,22 +131,15 @@
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Image</span></label>
 					<input type="file" name="image" id="image"
-						class="file-input file-input-bordered" accept="image/*">
-					<input type="hidden" name="prev_url" id="prev_url" value = "">
-				</div>
-				<div class="form-control">
-					<label><span class="label-text">Current Image</span></label>
-					<figure class="w-32 h-32 self-center rounded-none">
-						<img src="" id="edit_image" alt="Book img" class="w-full h-full">
-					</figure>
+						class="file-input file-input-bordered" accept="image/*"> <input
+						type="hidden" name="image_base64" id="image_base64">
 				</div>
 			</div>
 		</div>
 		<div class="modal-action">
 			<button type="submit" class="btn btn-primary"
-				onclick="return validateForm();">Edit</button>
-			<button type="button" class="btn"
-				onclick="this.closest('dialog').close();">Close</button>
+				onclick="return validateForm();">Insert</button>
+			<button type = "button" class="btn" onclick="this.closest('dialog').close();">Close</button>
 		</div>
 	</form>
 	</dialog>

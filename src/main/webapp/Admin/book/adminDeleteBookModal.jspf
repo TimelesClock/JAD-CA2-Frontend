@@ -1,0 +1,17 @@
+<body>
+	<dialog id="deleteModal" class="modal">
+	<form class="modal-box" method="post"
+		action="<%=request.getContextPath() + "/admin/book/delete"%>">
+		<input type="hidden" name="book_id" id="delete_book_id" value="">
+		<input type="hidden" name="prev_url" id="delete_prev_url" value="">
+		<h3 class="font-bold text-lg">Delete Book</h3>
+		<p class="py-4">Are you sure you want to delete this book?</p>
+		<div class="modal-action">
+			<button type="submit" class="btn">Yes</button>
+			<button type="button" class="btn"
+				onclick="this.closest('dialog').close();">No</button>
+		</div>
+	</form>
+	</dialog>
+
+</body>
