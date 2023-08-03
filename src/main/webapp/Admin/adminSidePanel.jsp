@@ -10,38 +10,15 @@
 		<ul class="p-2 space-y-2 menu">
 			<li>
 				<form action="<%=request.getContextPath() + "/admin/book" %>" method="get" class="mx-2 p-0 flex">
-					<button type="submit" class="w-full h-full p-3 text-start text-xl">Books</button>
+					<button type="submit" class="w-full h-full p-3 text-start">Books</button>
 				</form>
 			</li>
 		</ul>
 		<div class="divider">Customer</div>
 		<ul class="p-2 space-y-2 menu">
 			<li>
-				<form action="admin" method="get" class="mx-2 p-0">
-					<input type="hidden" name="p" value="viewCustomer">
-					<button type="submit" class="w-full h-full p-3">View
-						Customer</button>
-				</form>
-			</li>
-			<li>
-				<form action="admin" method="get" class="mx-2 p-0">
-					<input type="hidden" name="p" value="addCustomer">
-					<button type="submit" class="w-full h-full p-3">Add
-						Customer</button>
-				</form>
-			</li>
-			<li>
-				<form action="admin" method="get" class="mx-2 p-0">
-					<input type="hidden" name="p" value="editCustomer">
-					<button type="submit" class="w-full h-full p-3">Edit
-						Customer</button>
-				</form>
-			</li>
-			<li>
-				<form action="admin" method="get" class="mx-2 p-0">
-					<input type="hidden" name="p" value="deleteCustomer">
-					<button type="submit" class="w-full h-full p-3">Delete
-						Customer</button>
+				<form action="<%=request.getContextPath() + "/admin/customer" %>" method="get" class="mx-2 p-0 flex">
+					<button type="submit" class="w-full h-full p-3 text-start">Customer</button>
 				</form>
 			</li>
 		</ul>
