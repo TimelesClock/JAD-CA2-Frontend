@@ -12,14 +12,14 @@ import util.AdminUtil;
 /**
  * Servlet implementation class AdminBook
  */
-@WebServlet("/admin/book")
-public class AdminBook extends HttpServlet {
+@WebServlet("/admin/customer")
+public class AdminCustomer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AdminBook() {
+    public AdminCustomer() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -39,10 +39,9 @@ public class AdminBook extends HttpServlet {
 				page = 1;
 			}
 			AdminUtil.checkAdmin(request, response);
-			AdminUtil.addContext(request);
-			AdminUtil.addBookContext(request,page);
-			AdminUtil.addBookCountContext(request);
-			request.getRequestDispatcher("/admin/book/adminBook.jsp").forward(request, response);;
+			AdminUtil.addUserContext(request,page);
+			AdminUtil.addUserCountContext(request);
+			request.getRequestDispatcher("/admin/customer/adminCustomer.jsp").forward(request, response);;
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

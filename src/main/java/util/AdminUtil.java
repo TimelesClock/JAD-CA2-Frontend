@@ -33,7 +33,8 @@ public class AdminUtil {
 
 		UserDAO db = new UserDAO();
 		String userid = (String) session.getAttribute("userid");
-		if (!db.getRole(userid).equals("admin")) {
+		String role = db.getRole(userid);
+		if (role == null || !role.equals("admin")) {
 			response.sendRedirect(request.getContextPath()+"/home");
 			return;
 		}
@@ -93,21 +94,31 @@ public class AdminUtil {
 		}
 	}
 
-	public static void addUserContext(HttpServletRequest request) {
+	public static void addUserContext(HttpServletRequest request,Integer page) {
 		try {
-			AppUtil app = new AppUtil();
-			List<User> users = new ArrayList<>();
-			Response res = app.get("users/getUsers");
-
-			if (res.getStatus() != Response.Status.OK.getStatusCode()) {
-				request.setAttribute("err", res.getStatus() + " GET request error");
-
+			UserDAO db = new UserDAO();
+			ArrayList<User> users = new ArrayList<User>();
+			if (page == null) {
+				page = 1;
 			}
-
-			users = (ArrayList<User>) res.readEntity(new GenericType<ArrayList<User>>() {
-			});
+			Integer limit = 25;
+			Integer offset = (page-1) * limit;
+			
+			users = db.getUsers(limit,offset);
+			
 			request.setAttribute("users", users);
 		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void addUserCountContext(HttpServletRequest request) {
+		try {
+			UserDAO db = new UserDAO();
+			Integer userCount = db.getTotalUsers();
+			Integer pages = (int) Math.ceil((double) userCount / 25);
+			request.setAttribute("totalPages",pages);
+		}catch(Exception e) {
 			e.printStackTrace();
 		}
 	}

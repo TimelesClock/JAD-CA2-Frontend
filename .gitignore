@@ -2,3 +2,5 @@
 /build
 .classpath
 .project
+/src/main/java/dbaccess/DBConnection.properties
+/src/main/java/cloudinary/Cloudinary.properties

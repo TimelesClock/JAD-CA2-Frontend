@@ -7,19 +7,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import util.AdminUtil;
-
 /**
- * Servlet implementation class AdminBook
+ * Servlet implementation class AdminAddCustomer
  */
-@WebServlet("/admin/book")
-public class AdminBook extends HttpServlet {
+@WebServlet("/admin/customer/add")
+public class AdminAddCustomer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AdminBook() {
+    public AdminAddCustomer() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -29,23 +27,7 @@ public class AdminBook extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		try {
-			System.out.println(request.getContextPath());
-			String page_raw = request.getParameter("page");
-			Integer page;
-			try {
-				page = Integer.parseInt(page_raw);
-			}catch(Exception e) {
-				page = 1;
-			}
-			AdminUtil.checkAdmin(request, response);
-			AdminUtil.addContext(request);
-			AdminUtil.addBookContext(request,page);
-			AdminUtil.addBookCountContext(request);
-			request.getRequestDispatcher("/admin/book/adminBook.jsp").forward(request, response);;
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**

@@ -1,0 +1,42 @@
+<body>
+	<dialog id="customer_modal" class="modal">
+	<form method="post"
+		action="<%=request.getContextPath() + "/admin/customer/add"%>"
+		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="form"
+		enctype="multipart/form-data">
+		<input type="hidden" name="action" value="addCustomer">
+		<div class="modal-body space-y-0 gap-4 items-start">
+
+			<div class="form-control">
+				<label class="label"> <span class="label-text">Name</span></label> <input
+					type="text" name="name" class="input input-bordered" required>
+			</div>
+
+			<div class="form-control">
+				<label class="label"> <span class="label-text">Email</span></label>
+				<input
+					type="email" name="name" class="input input-bordered" required>
+			</div>
+
+
+			<div class="form-control">
+				<label class="label"> <span class="label-text">Password</span></label>
+				<input type="password" name="password"
+					class="input input-bordered" required>
+			</div>
+
+			<div class="form-control">
+				<label class="label"> <span class="label-text">Phone</span></label>
+				<input type="number" name="phone" class="input input-bordered"
+					required>
+			</div>
+
+			<div class="modal-action mt-5">
+				<button type="submit" class="btn btn-primary"
+					>Add</button>
+				<button type="button" class="btn"
+					onclick="this.closest('dialog').close();">Close</button>
+			</div>
+	</form>
+	</dialog>
+</body>
