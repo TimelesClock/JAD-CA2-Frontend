@@ -25,7 +25,7 @@ public class BookDAO {
 		ArrayList<Book> books = new ArrayList<Book>();
 		try {
 			String sql = "SELECT * FROM books b WHERE 1=1";
-			if (filter.get("search") != null && !((String) filter.get("search")).isEmpty()) {
+			if (filter.get("search") != null) {
 				sql += " AND b.title LIKE ?";
 			}
 			if (filter.get("genreId") != null) {
@@ -84,12 +84,10 @@ public class BookDAO {
 				book.setDescription(rs.getString("description"));
 				book.setPublisherId(rs.getInt("publisher_id"));
 				book.setGenreId(rs.getInt("genre_id"));
-				book.setImage(rs.getString("image"));
+				book.setImage(rs.getString("image_url"));
 
 				books.add(book);
 			}
-			rs.close();
-			pst.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -134,24 +132,65 @@ public class BookDAO {
 		return book;
 	}
 
-	public Integer getTotalBooks() throws SQLException {
+	public Integer getTotalBooks(HashMap<String, Object> filter) throws SQLException {
 		Connection conn = DBConnection.getConnection();
-		Integer numberOfBooks = 0;
+		Integer totalBooks = 0;
 		try {
-			String sql = "SELECT COUNT(*) AS number_of_books FROM books";
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
-			if (rs.next()) {
-				numberOfBooks = rs.getInt("number_of_books");
+			String sql = "SELECT COUNT(*) AS total_books FROM books b WHERE 1=1";
+			if (filter.get("search") != null) {
+				sql += " AND b.title LIKE ?";
 			}
-			rs.close();
-			stmt.close();
+			if (filter.get("genreId") != null) {
+				sql += " AND b.genre_id = ?";
+			}
+			if (filter.get("minRating") != null) {
+				sql += " AND b.rating >= ?";
+			}
+			if (filter.get("maxRating") != null) {
+				sql += " AND b.rating <= ?";
+			}
+			if (filter.get("minPrice") != null) {
+				sql += " AND b.price >= ?";
+			}
+			if (filter.get("maxPrice") != null) {
+				sql += " AND b.price <= ?";
+			}
+			sql += ";";
+
+			PreparedStatement pst = conn.prepareStatement(sql);
+
+			// Set parameters based on the condition
+			int parameterIndex = 1;
+			if (filter.get("search") != null) {
+				pst.setString(parameterIndex++, "%" + filter.get("search") + "%");
+			}
+			if (filter.get("genreId") != null) {
+				pst.setInt(parameterIndex++, (Integer) filter.get("genreId"));
+			}
+			if (filter.get("minRating") != null) {
+				pst.setInt(parameterIndex++, (Integer) filter.get("minRating"));
+			}
+			if (filter.get("maxRating") != null) {
+				pst.setInt(parameterIndex++, (Integer) filter.get("maxRating"));
+			}
+			if (filter.get("minPrice") != null) {
+				pst.setBigDecimal(parameterIndex++, new BigDecimal((Double) filter.get("minPrice")));
+			}
+			if (filter.get("maxPrice") != null) {
+				pst.setBigDecimal(parameterIndex++, new BigDecimal((Double) filter.get("maxPrice")));
+			}
+			
+			ResultSet rs = pst.executeQuery();
+			
+			if (rs.next()) {
+				totalBooks = rs.getInt("total_books");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			conn.close();
 		}
-		return numberOfBooks;
+		return totalBooks;
 	}
 
 	public ArrayList<Book> getAllBooks(Integer limit, Integer offset) throws SQLException {

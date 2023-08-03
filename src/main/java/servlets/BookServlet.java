@@ -51,7 +51,7 @@ public class BookServlet extends HttpServlet {
     			request.setAttribute("err", "No books found.");
     		}
 
-        	totalRecords = db1.getTotalBooks();
+        	totalRecords = db1.getTotalBooks(filter);
         	
     		if (totalRecords == 0) {
     			request.setAttribute("err", "Zero books found.");
