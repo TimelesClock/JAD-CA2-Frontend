@@ -9,8 +9,8 @@
 		<div class="divider">Books</div>
 		<ul class="p-2 space-y-2 menu">
 			<li>
-				<form action="<%=request.getContextPath() + "/admin/book" %>" method="get" class="mx-2 p-0">
-					<button type="submit" class="w-full h-full p-3">Books</button>
+				<form action="<%=request.getContextPath() + "/admin/book" %>" method="get" class="mx-2 p-0 flex">
+					<button type="submit" class="w-full h-full p-3 text-start text-xl">Books</button>
 				</form>
 			</li>
 		</ul>

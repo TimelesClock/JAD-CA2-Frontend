@@ -76,7 +76,7 @@ public class CloudinaryConnection {
 		if (lastSlashIndex >= 0 && lastDotIndex >= 0 && lastSlashIndex < lastDotIndex) {
             id = url.substring(lastSlashIndex + 1, lastDotIndex);
         }
-		
+
 		cloudinary.uploader().destroy(id,
 				  ObjectUtils.asMap("resource_type","image"));
 	}

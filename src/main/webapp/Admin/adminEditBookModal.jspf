@@ -1,5 +1,5 @@
 <body>
-	<dialog id="editDetailsModal_<%=book.getBookId()%>" class="modal">
+	<dialog id="editDetailsModal" class="modal">
 	<form method="post" action="<%=request.getContextPath()+"/admin/book/edit"%>"
 		class="modal-box w-4/5 max-w-screen-lg mx-auto"
 		enctype="multipart/form-data">
@@ -8,43 +8,43 @@
 			<!-- Left column -->
 			<div class="space-y-4">
 				<!-- Title -->
-				<input type = "hidden" name = "book_id" value = "<%=book.getBookId() %>">
+				<input type = "hidden" name = "book_id" id="edit_book_id" value = "">
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Title</span></label>
-					<input type="text" name="title" class="input input-bordered"
-						value="<%=book.getTitle()%>" required>
+					<input type="text" name="title" class="input input-bordered" id="edit_title"
+						value="" required>
 				</div>
 				<!-- Description -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Description</span></label>
-					<textarea name="description" class="textarea textarea-bordered"
-						required><%=book.getDescription()%></textarea>
+					<textarea name="description" class="textarea textarea-bordered" id="edit_description"
+						required></textarea>
 				</div>
 
 				<!-- Price -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Price</span></label>
-					<input type="number" step="0.01" name="price"
-						class="input input-bordered" value="<%=book.getPrice()%>" required>
+					<input type="number" step="0.01" name="price" id="edit_price"
+						class="input input-bordered" value="" required>
 				</div>
 				<!-- Quantity -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Quantity</span></label>
-					<input type="number" name="quantity" class="input input-bordered"
-						value="<%=book.getQuantity()%>" required>
+					<input type="number" name="quantity" class="input input-bordered" id="edit_quantity"
+						value="" required>
 				</div>
 				<!-- Publication Date -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Publication
-							Date</span></label> <input type="date" name="publication_date"
+							Date</span></label> <input type="date" name="publication_date" id="edit_date"
 						class="input input-bordered"
-						value="<%=book.getPublicationDate()%>" required>
+						value="" required>
 				</div>
 				<!-- ISBN -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">ISBN</span></label>
-					<input type="text" name="ISBN" class="input input-bordered"
-						value="<%=book.getISBN()%>" required>
+					<input type="text" name="ISBN" class="input input-bordered" id="edit_isbn"
+						value="" required>
 				</div>
 			</div>
 			<!-- Right column -->
@@ -52,14 +52,14 @@
 				<!-- Rating -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Rating</span></label>
-					<input type="number" name="rating" class="input input-bordered"
-						value="<%=book.getRating()%>" required>
+					<input type="number" name="rating" class="input input-bordered" id="edit_rating"
+						value="" required>
 				</div>
 
 				<!-- Author -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Author</span></label>
-					<select name="author_id" class="select select-bordered"
+					<select name="author_id" class="select select-bordered" id="edit_author_id"
 						onchange="handleAuthorSelection(this)" required>
 						<option value="" disabled selected>Select the author</option>
 						<option value="0">+ Add new Author</option>
@@ -67,7 +67,7 @@
 						for (Author author : authors) {
 						%>
 						<option value="<%=author.getId()%>"
-							<%=(author.getId() == book.getAuthorId()) ? "selected" : ""%>><%=author.getName()%></option>
+							><%=author.getName()%></option>
 						<%
 						}
 						%>
@@ -85,7 +85,7 @@
 				<!-- Publisher -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Publisher</span></label>
-					<select name="publisher_id" class="select select-bordered"
+					<select name="publisher_id" class="select select-bordered" id="edit_publisher_id"
 						onchange="handlePublisherSelection(this)" required>
 						<option value="" disabled selected>Select the publisher</option>
 						<option value="0">+ Add new Publisher</option>
@@ -93,7 +93,7 @@
 						for (Publisher publisher : publishers) {
 						%>
 						<option value="<%=publisher.getId()%>"
-							<%=(publisher.getId() == book.getPublisherId()) ? "selected" : ""%>><%=publisher.getName()%></option>
+							><%=publisher.getName()%></option>
 						<%
 						}
 						%>
@@ -110,7 +110,7 @@
 				<!-- Genre -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Genre</span></label>
-					<select name="genre_id" class="select select-bordered"
+					<select name="genre_id" class="select select-bordered" id="edit_genre_id"
 						onchange="handleGenreSelection(this)" required>
 						<option value="" disabled selected>Select the genre</option>
 						<option value="0">+ Add new Genre</option>
@@ -118,7 +118,7 @@
 						for (Genre genre : genres) {
 						%>
 						<option value="<%=genre.getId()%>"
-							<%=(genre.getId() == book.getGenreId()) ? "selected" : ""%>><%=genre.getName()%></option>
+							><%=genre.getName()%></option>
 						<%
 						}
 						%>
@@ -137,18 +137,12 @@
 					<label class="label"> <span class="label-text">Image</span></label>
 					<input type="file" name="image" id="image"
 						class="file-input file-input-bordered" accept="image/*">
-					<input type="hidden" name="prev_url" id="prev_url" value = "<%=imageUrl%>">
+					<input type="hidden" name="prev_url" id="prev_url" value = "">
 				</div>
 				<div class="form-control">
 					<label><span class="label-text">Current Image</span></label>
-					<%
-					imageUrl = book.getImageUrl();
-					if (imageUrl == null) {
-						imageUrl = request.getContextPath() + "/image/book.jpg";
-					}
-					%>
 					<figure class="w-32 h-32 self-center rounded-none">
-						<img src="<%=imageUrl%>" alt="Book img" class="w-full h-full">
+						<img src="" id="edit_image" alt="Book img" class="w-full h-full">
 					</figure>
 				</div>
 			</div>

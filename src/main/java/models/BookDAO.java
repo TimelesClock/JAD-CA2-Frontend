@@ -293,7 +293,7 @@ public class BookDAO {
 		Connection conn = DBConnection.getConnection();
 		try {
 			Cloudinary cloudinary = CloudinaryConnection.getCloudinary();
-			if (prev_url != null) {
+			if (prev_url != null && !prev_url.equals("")) {
 				CloudinaryConnection.deleteFromCloudinary(cloudinary, prev_url);
 			}
 			String sql = "DELETE FROM Books WHERE book_id = ?";

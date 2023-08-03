@@ -93,11 +93,11 @@ try {
 								<td class="text-center"><%=book.getQuantity()%></td>
 								<td class="text-center">
 									<button class="btn"
-										onclick="showDetailsModal_<%=book.getBookId()%>.showModal()">Show</button>
+										onclick="handleShowModal(<%=book.getBookId()%>)">Show</button>
 									<button class="btn"
-										onclick="editDetailsModal_<%=book.getBookId()%>.showModal()">Edit</button>
+										onclick="handleEditModal(<%=book.getBookId()%>)">Edit</button>
 									<button class="btn"
-										onclick="deleteModal_<%=book.getBookId()%>.showModal()">Delete</button>
+										onclick="handleDeleteModal(<%=book.getBookId()%>)">Delete</button>
 								</td>
 							</tr>
 							<%
@@ -107,22 +107,17 @@ try {
 					</table>
 				</div>
 				<%@include file="adminAddBookModal.jspf"%>
-
-				<%
-				for (Book book : books) {
-				%>
-				<!-- Show Details Modal -->
-				<%@include file="adminShowBookModal.jspf"%>
-
 				<!-- Edit Details Modal -->
 				<%@include file="adminEditBookModal.jspf"%>
-
-				<!-- Delete Modal -->
-				<dialog id="deleteModal_<%=book.getBookId()%>" class="modal">
+				
+				<%@include file="adminShowBookModal.jspf"%>
+				
+				<dialog id="deleteModal" class="modal">
 				<form class="modal-box" method="post"
 					action="<%=request.getContextPath() + "/admin/book/delete"%>">
-					<input type="hidden" name="book_id" value="<%=book.getBookId()%>">
-					<input type="hidden" name="prev_url" value="<%=book.getImageUrl()%>">
+					<input type="hidden" name="book_id" id="delete_book_id" value="">
+					<input type="hidden" name="prev_url" id = "delete_prev_url"
+						value="">
 					<h3 class="font-bold text-lg">Delete Book</h3>
 					<p class="py-4">Are you sure you want to delete this book?</p>
 					<div class="modal-action">
@@ -132,9 +127,7 @@ try {
 					</div>
 				</form>
 				</dialog>
-				<%
-				}
-				%>
+
 				<div class="flex justify-center my-5">
 					<div class="join">
 						<a
@@ -150,6 +143,91 @@ try {
 	</div>
 	<%@include file="../errorHandler.jsp"%>
 	<script>
+	function handleDeleteModal(bookId){
+		const deleteBookId = document.getElementById("delete_book_id");
+		const deletePrevUrl = document.getElementById("delete_prev_url");
+		<%for (Book book : books) {%>
+		if ("<%=book.getBookId()%>" === bookId.toString()) {
+			deleteBookId.value = <%=book.getBookId()%>
+			deletePrevUrl.value = '<%=(book.getImageUrl() != null) ? book.getImageUrl() : ""%>';
+			deleteModal.show();
+			return;
+		}
+<%}%>
+		
+	}
+	function handleShowModal(bookId){
+		const showTitle = document.getElementById('show_title');
+		const showDescription = document.getElementById('show_description');
+		const showAuthorId = document.getElementById('show_author_id');
+		const showAuthorName = document.getElementById('show_author_name');
+		const showPrice = document.getElementById('show_price');
+		const showQuantity = document.getElementById('show_quantity');
+		const showPublicationDate = document.getElementById('show_date');
+		const showISBN = document.getElementById('show_isbn');
+		const showRating = document.getElementById('show_rating');
+		const showPublisherId = document.getElementById('show_publisher_id');
+		const showPublisherName = document.getElementById('show_publisher_name');
+		const showGenreId = document.getElementById('show_genre_id');
+		const showGenreName = document.getElementById('show_genre_name');
+		const showImage = document.getElementById("show_image");
+		<%for (Book book : books) {%>
+			if ("<%=book.getBookId()%>" === bookId.toString()) {
+				showTitle.innerText = "<%=book.getTitle()%>";
+				showDescription.innerText = "<%=book.getDescription()%>";
+				showAuthorId.innerText = "<%=book.getAuthorId()%>";
+				showAuthorName.innerText = "<%=book.getAuthorName()%>";
+				showPrice.innerText = "<%=book.getPrice()%>";
+				showQuantity.innerText = "<%=book.getQuantity()%>";
+				showPublicationDate.innerText = "<%=book.getPublicationDate()%>";
+				showISBN.innerText = "<%=book.getISBN()%>";
+				showRating.innerText = "<%=book.getRating()%>";
+				showPublisherId.innerText = "<%=book.getPublisherId()%>";
+				showPublisherName.innerText = "<%=book.getPublisherName()%>";
+				showGenreId.innerText = "<%=book.getGenreId()%>";
+				showGenreName.innerText = "<%=book.getGenreName()%>";
+				showImage.src = '<%=(book.getImageUrl() != null) ? book.getImageUrl() : (request.getContextPath() + "/image/book.jpg")%>';
+				showDetailsModal.showModal();
+				return;
+			}
+	<%}%>
+	}
+	function handleEditModal(bookId){
+		const editTitleInput = document.getElementById('edit_title');
+		const editDescriptionTextarea = document.getElementById('edit_description');
+		const editPriceInput = document.getElementById('edit_price');
+		const editQuantityInput = document.getElementById('edit_quantity');
+		const editPublicationDateInput = document.getElementById('edit_date');
+		const editISBNInput = document.getElementById('edit_isbn');
+		const editRatingInput = document.getElementById('edit_rating');
+		const editAuthorIdSelect = document.getElementById('edit_author_id');
+		const editPublisherIdSelect = document.getElementById('edit_publisher_id');
+		const editGenreIdSelect = document.getElementById('edit_genre_id');
+		const editPrevUrl = document.getElementById('prev_url');
+		const editImage = document.getElementById('edit_image');
+		const editBookId = document.getElementById("edit_book_id");
+
+		<%for (Book book : books) {%>
+		if ("<%=book.getBookId()%>" === bookId.toString()) {
+			editBookId.value = "<%=book.getBookId()%>";
+			editQuantityInput.value = "<%=book.getQuantity()%>";
+			editTitleInput.value = "<%=book.getTitle()%>";
+			editAuthorIdSelect.value = "<%=book.getAuthorId()%>";
+			editPriceInput.value = "<%=book.getPrice()%>";
+			editPublicationDateInput.valueAsDate = new Date("<%=book.getPublicationDate()%>");
+			editISBNInput.value = "<%=book.getISBN()%>";
+			editRatingInput.value = "<%=book.getRating()%>";
+			editDescriptionTextarea.value = "<%=book.getDescription()%>";
+			editPublisherIdSelect.value = "<%=book.getPublisherId()%>";
+			editGenreIdSelect.value = "<%=book.getGenreId()%>";
+			editPrevUrl.value = '<%=(book.getImageUrl() != null) ? book.getImageUrl() : ""%>';
+			editImage.src = '<%=(book.getImageUrl() != null) ? book.getImageUrl() : (request.getContextPath() + "/image/book.jpg")%>';
+			editDetailsModal.showModal();
+			return;
+		}
+<%}%>
+	}
+	
 	function handleAuthorSelection(selectElement) {
 		var newAuthorForm = document.getElementById("newAuthorForm");
 		if (selectElement.value === "0") {
