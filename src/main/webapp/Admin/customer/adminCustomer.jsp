@@ -139,11 +139,13 @@ try {
 		const editName = document.getElementById("edit_name");
 		const editEmail = document.getElementById("edit_email");
 		const editPhone = document.getElementById("edit_phone");
+		const editUserId = document.getElementById("edit_user_id")
 		<%for (User user : users) {%>
 		if ("<%=user.getUserId()%>" === userId.toString()) {
 			editName.value = "<%=user.getName()%>";
 			editEmail.value = "<%=user.getEmail()%>";
 			editPhone.value = "<%=user.getPhone()%>";
+			editUserId.value = "<%=user.getUserId()%>";
 			edit_customer_modal.showModal();
 			return;
 		}

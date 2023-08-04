@@ -2,11 +2,10 @@
 	<dialog id="edit_customer_modal" class="modal">
 	<form method="post"
 		action="<%=request.getContextPath() + "/admin/customer/edit"%>"
-		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="form"
-		enctype="multipart/form-data">
+		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="form">
 		<input type="hidden" name="action" value="editCustomer">
 		<div class="modal-body space-y-0 gap-4 items-start">
-
+			<input type="hidden" name="user_id" id="edit_user_id">
 			<div class="form-control">
 				<label class="label"> <span class="label-text">Name</span></label> <input
 					type="text" name="name" class="input input-bordered" id="edit_name" required>
@@ -15,7 +14,7 @@
 			<div class="form-control">
 				<label class="label"> <span class="label-text">Email</span></label>
 				<input
-					type="email" name="name" class="input input-bordered" id="edit_email" required>
+					type="email" name="email" class="input input-bordered" id="edit_email" required>
 			</div>
 
 

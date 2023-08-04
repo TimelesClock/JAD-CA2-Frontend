@@ -12,14 +12,14 @@ import models.UserDAO;
 /**
  * Servlet implementation class AdminAddCustomer
  */
-@WebServlet("/admin/customer/add")
-public class AdminAddCustomer extends HttpServlet {
+@WebServlet("/admin/customer/edit")
+public class AdminEditCustomer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AdminAddCustomer() {
+    public AdminEditCustomer() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -41,21 +41,19 @@ public class AdminAddCustomer extends HttpServlet {
 			String email = request.getParameter("email");
 			String password = request.getParameter("password");
 			String phone = request.getParameter("phone");
-			
+			Integer userId = Integer.parseInt(request.getParameter("user_id"));
 			try {
 				UserDAO db = new UserDAO();
-				Integer count = db.userCountByEmail(email);
-				if (count != 0) {
-					response.sendRedirect(request.getContextPath() + "/admin/customer?err=Email%20Already%20Exists");
-					return;
-				}
 				
-				String userid = db.register(name,email,password,phone);
-				if (userid == null) {
-					response.sendRedirect(request.getContextPath() + "/admin/customer?err=Customer%20Was%20Not%20Added");
+				Integer rowsAffected = db.editUserById(userId,name,email,phone);
+				if (password != null) {
+					db.changeUserPasswordById(userId,password);
+				}
+				if (rowsAffected == 0) {
+					response.sendRedirect(request.getContextPath() + "/admin/customer?err=Customer%20Details%20Was%20Not%20Edited");
 					return;
 				}else {
-					response.sendRedirect(request.getContextPath() + "/admin/customer?success=Customer%20Was%20Successfully%20Added");
+					response.sendRedirect(request.getContextPath() + "/admin/customer?success=Customer%20Details%20Was%20Successfully%20Edited");
 					return;
 				}
 			} catch (Exception e) {

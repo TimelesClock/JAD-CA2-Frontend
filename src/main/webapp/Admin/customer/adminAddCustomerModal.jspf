@@ -2,8 +2,8 @@
 	<dialog id="add_customer_modal" class="modal">
 	<form method="post"
 		action="<%=request.getContextPath() + "/admin/customer/add"%>"
-		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="form"
-		enctype="multipart/form-data">
+		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="add_form"
+		>
 		<input type="hidden" name="action" value="addCustomer">
 		<div class="modal-body space-y-0 gap-4 items-start">
 
@@ -15,7 +15,7 @@
 			<div class="form-control">
 				<label class="label"> <span class="label-text">Email</span></label>
 				<input
-					type="email" name="name" class="input input-bordered" required>
+					type="email" name="email" class="input input-bordered" required>
 			</div>
 
 

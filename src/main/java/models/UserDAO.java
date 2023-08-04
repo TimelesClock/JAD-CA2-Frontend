@@ -82,15 +82,15 @@ public class UserDAO {
 		return user;
 	}
 
-	public Integer editUserById(int userId, HashMap<String, String> userInfo) throws SQLException {
+	public Integer editUserById(int userId, String name, String email, String phone) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		int rowsAffected = 0;
 		try {
 			String sql = "UPDATE users SET name = ?, email = ?, phone = ? WHERE user_id = ?;";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
-			userStmt.setString(1, userInfo.get("name"));
-			userStmt.setString(2, userInfo.get("email"));
-			userStmt.setString(3, userInfo.get("phone"));
+			userStmt.setString(1, name);
+			userStmt.setString(2, email);
+			userStmt.setString(3, phone);
 			userStmt.setInt(4, userId);
 			rowsAffected = userStmt.executeUpdate();
 		} catch (Exception e) {
@@ -101,13 +101,13 @@ public class UserDAO {
 		return rowsAffected;
 	}
 
-	public Integer changeUserPasswordById(int userId, HashMap<String, String> userInfo) throws SQLException {
+	public Integer changeUserPasswordById(int userId, String password) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		int rowsAffected = 0;
 		try {
 			String sql = "UPDATE users SET password = MD5(?) WHERE user_id = ?;";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
-			userStmt.setString(1, userInfo.get("password"));
+			userStmt.setString(1, password);
 			userStmt.setInt(2, userId);
 			rowsAffected = userStmt.executeUpdate();
 		} catch (Exception e) {
@@ -198,4 +198,26 @@ public class UserDAO {
 		}
 		return role;
 	}
+	
+	public boolean deleteUser(String userid) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		boolean isDeleted = false;
+		try {
+			String sql = "DELETE FROM users WHERE user_id = ?";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+			int rowsAffected = pstmt.executeUpdate();
+			if (rowsAffected > 0) {
+				isDeleted = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return isDeleted;
+	}
+
+	
+
 }
