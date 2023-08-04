@@ -24,28 +24,32 @@ import models.User;
 import models.UserDAO;
 
 public class AdminUtil {
-	public static void checkAdmin(HttpServletRequest request,HttpServletResponse response) throws IOException,ServletException,SQLException {
-		HttpSession session = request.getSession(false);
-		if (session == null || session.getAttribute("userid") == null) {
-			response.sendRedirect(request.getContextPath()+"/home");
-			return;
-		}
+	public static Boolean checkAdmin(HttpServletRequest request) {
+		try {
+			HttpSession session = request.getSession(false);
+			if (session == null || session.getAttribute("userid") == null) {
+				return false;
+			}
 
-		UserDAO db = new UserDAO();
-		String userid = (String) session.getAttribute("userid");
-		String role = db.getRole(userid);
-		if (role == null || !role.equals("admin")) {
-			response.sendRedirect(request.getContextPath()+"/home");
-			return;
+			UserDAO db = new UserDAO();
+			String userid = (String) session.getAttribute("userid");
+			String role = db.getRole(userid);
+			if (role == null || !role.equals("admin")) {
+				return false;
+			} else {
+				return true;
+			}
+		} catch (Exception e) {
+			return false;
 		}
 	}
-	
-	public static void addContext(HttpServletRequest request)throws ServletException, IOException {
+
+	public static void addContext(HttpServletRequest request) throws ServletException, IOException {
 		try {
 			List<Author> authors = new ArrayList<>();
 			AuthorDAO au = new AuthorDAO();
 			authors = au.getAuthors();
-			
+
 			List<Publisher> publishers = new ArrayList<>();
 			PublisherDAO pu = new PublisherDAO();
 			publishers = pu.getPublishers();
@@ -63,8 +67,8 @@ public class AdminUtil {
 		}
 
 	}
-	
-	public static void addBookContext(HttpServletRequest request,Integer page) {
+
+	public static void addBookContext(HttpServletRequest request, Integer page) {
 		try {
 			BookDAO db = new BookDAO();
 			ArrayList<Book> books = new ArrayList<Book>();
@@ -72,29 +76,29 @@ public class AdminUtil {
 				page = 1;
 			}
 			Integer limit = 25;
-			Integer offset = (page-1) * limit;
-			
-			books = db.getAllBooks(limit,offset);
-			
+			Integer offset = (page - 1) * limit;
+
+			books = db.getAllBooks(limit, offset);
+
 			request.setAttribute("books", books);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
-	
+
 	public static void addBookCountContext(HttpServletRequest request) {
 		try {
 			BookDAO db = new BookDAO();
 			Integer bookCount = db.getAllTotalBooks();
 			Integer pages = (int) Math.ceil((double) bookCount / 25);
-			request.setAttribute("totalPages",pages);
-		}catch(Exception e) {
+			request.setAttribute("totalPages", pages);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void addUserContext(HttpServletRequest request,Integer page) {
+	public static void addUserContext(HttpServletRequest request, Integer page) {
 		try {
 			UserDAO db = new UserDAO();
 			ArrayList<User> users = new ArrayList<User>();
@@ -102,23 +106,23 @@ public class AdminUtil {
 				page = 1;
 			}
 			Integer limit = 25;
-			Integer offset = (page-1) * limit;
-			
-			users = db.getUsers(limit,offset);
-			
+			Integer offset = (page - 1) * limit;
+
+			users = db.getUsers(limit, offset);
+
 			request.setAttribute("users", users);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void addUserCountContext(HttpServletRequest request) {
 		try {
 			UserDAO db = new UserDAO();
 			Integer userCount = db.getTotalUsers();
 			Integer pages = (int) Math.ceil((double) userCount / 25);
-			request.setAttribute("totalPages",pages);
-		}catch(Exception e) {
+			request.setAttribute("totalPages", pages);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
