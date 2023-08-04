@@ -1,22 +1,15 @@
 package servlets;
 import java.io.IOException;
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import util.DatabaseUtil;
+import models.Book;
+import models.BookDAO;
 
-@WebServlet("/BookDetailsServlet")
+@WebServlet("/BookDetails")
 public class BookDetailsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -25,45 +18,34 @@ public class BookDetailsServlet extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Book book = new Book();
 		try {
-			int bookId = (int) Integer.parseInt(request.getParameter("bookId"));
-			ServletContext context = getServletContext();
-	    	Connection conn = DatabaseUtil.getConnection(context);
-            String query = "SELECT b.image, b.title, a.name AS author, b.price, b.quantity, p.name AS publisher, b.publication_date, b.ISBN, g.name AS genre, b.rating, b.description \r\n"
-            		+ "FROM books b\r\n"
-            		+ "LEFT JOIN authors a ON a.author_id = b.author_id\r\n"
-            		+ "LEFT JOIN publishers p ON p.publisher_id = b.publisher_id\r\n"
-            		+ "LEFT JOIN genres g ON g.genre_id = b.genre_id\r\n"
-            		+ "WHERE book_id = ?;";
-            PreparedStatement pst = conn.prepareStatement(query);
-            pst.setInt(1, bookId);
-            ResultSet rs = pst.executeQuery();
+			int bookId = 0;
+			try {
+				bookId = (int) Integer.parseInt(request.getParameter("bookId"));
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+	            System.out.println("error");
+	            request.setAttribute("err", e.getMessage());
+	            response.sendRedirect(request.getContextPath() + "/home");
+	            return;
+			}
+			BookDAO db = new BookDAO();
+            book = db.getBook(bookId);
             
-            if (rs.next()) {
-	            request.setAttribute("bookId", bookId);
-	            request.setAttribute("image", rs.getString("image"));
-	            request.setAttribute("title", rs.getString("title"));
-	            request.setAttribute("author", rs.getString("author"));
-	            request.setAttribute("price", rs.getDouble("price"));
-	            request.setAttribute("quantity", rs.getInt("quantity"));
-	            request.setAttribute("publisher", rs.getString("publisher"));
-	            request.setAttribute("publicationDate", new Date(rs.getTimestamp("publication_date").getTime()));
-	            request.setAttribute("ISBN", rs.getString("ISBN"));
-	            request.setAttribute("genre", rs.getString("genre"));
-	            request.setAttribute("rating", rs.getInt("rating"));
-	            request.setAttribute("description", rs.getString("description"));
-            } else {
-            	response.sendRedirect("BookServlet");
+            if (book.getISBN() == null) {
+            	response.sendRedirect(request.getContextPath() + "/home");
+            	return;
             }
             
-            conn.close();
-        } catch (Exception e) {
+		} catch(Exception e) {
             e.printStackTrace();
+            System.out.println("error");
             request.setAttribute("err", e.getMessage());
-            response.sendRedirect("BookServlet");
+            response.sendRedirect(request.getContextPath() + "/home");
             return;
         }
-
+		request.setAttribute("book", book);
         request.getRequestDispatcher("bookDetails.jsp").forward(request, response);
 	}
 }

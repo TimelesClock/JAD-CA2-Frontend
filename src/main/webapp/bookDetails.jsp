@@ -12,41 +12,28 @@
 	rel="stylesheet">
 </head>
 <body>
-Sanity Check
 	<%@page import="java.sql.Date"%>
 
 	<%@include file="header.jsp"%>
 	<%
 	try {
-		String image = (String) request.getAttribute("image");
-		String title = (String) request.getAttribute("title");
-		String author = (String) request.getAttribute("author");
-		Double price = (Double) request.getAttribute("price");
-		Integer quantity = (Integer) request.getAttribute("quantity");
-		String publisher = (String) request.getAttribute("publisher");
-		Date publicationDate = (Date) request.getAttribute("publicationDate");
-		String ISBN = (String) request.getAttribute("ISBN");
-		String genre = (String) request.getAttribute("genre");
-		Integer rating = (Integer) request.getAttribute("rating");
-		String description = (String) request.getAttribute("description");
-		Integer bookId = (Integer) request.getAttribute("bookId");
-		Integer userId = (Integer) session.getAttribute("userId");
+		Book book = (Book) request.getAttribute("book");
 	%>
 	<div class="max-w-7xl mx-auto px-4">
 		<div class=" flex flex-col w-full lg:flex-row">
 			<div class="grid flex-shrink-0 place-items-center my-20 lg:pr-6">
 				<%
-				if (image != null && !image.equals("")) {
+				if (book.getImageUrl() != null && !book.getImageUrl().equals("")) {
 				%>
 				<figure class="w-full h-80">
-					<img src="data:image/jpeg;base64,<%=image%>" alt="Book img"
+					<img src="<%=book.getImageUrl()%>" alt="Book img"
 						class="w-full h-full">
 				</figure>
 				<%
 				} else {
 				%>
 				<figure class="w-full h-80">
-					<span class=""><%=title%></span>
+					<span class=""><%=book.getTitle()%></span>
 				</figure>
 				<%
 				}
@@ -56,21 +43,21 @@ Sanity Check
 			<div class="grid flex-shrink my-20">
 				<div class="flex flex-col lg:pl-4">
 					<h2 class="text-2xl font-bold">
-						<%=title%>
+						<%=book.getTitle()%>
 					</h2>
 					<div class="badge badge-accent mt-2 text-s p-2">
-						<%=genre%>
+						<%=book.getGenreName()%>
 					</div>
 					<p class="mt-5 text-lg">
 						<span class="">By</span>
-						<%=author%>
+						<%=book.getAuthorName()%>
 					</p>
 					<h3 class="my-5 text-xl font-semibold">
-						$<%=price%>
+						$<%=book.getPrice()%>
 					</h3>
 					<form action="CustomerPanelServlet" method="post">
 						<input type="hidden" name="function" value="addToCart"> <input
-							type="hidden" name="bookId" value="<%=bookId%>">
+							type="hidden" name="bookId" value="<%=book.getBookId()%>">
 						<div class="flex flex-row items-center mb-5">
 							<span class="me-2">Quantity </span>
 							<div class="form-control mt-1 flex flex-row max-w-min rounded-xl">
@@ -84,7 +71,7 @@ Sanity Check
 									id="increase"> + </span>
 							</div>
 							<p class="ms-4">
-								<%=quantity%>
+								<%=book.getQuantity()%>
 								available
 							</p>
 						</div>
@@ -104,22 +91,22 @@ Sanity Check
 					</div>
 
 					<div class="tab-content" id="descriptionContent">
-						<p class=""><%=description%></p>
+						<p class=""><%=book.getDescription()%></p>
 					</div>
 					<div class="tab-content hidden" id="productContent">
 						<table class="table">
 							<tbody>
 								<tr>
 									<th>ISBN</th>
-									<td><%=ISBN%></td>
+									<td><%=book.getISBN()%></td>
 								</tr>
 								<tr>
 									<th>Publisher</th>
-									<td><%=publisher%></td>
+									<td><%=book.getPublisherName()%></td>
 								</tr>
 								<tr>
 									<th>Publication Date</th>
-									<td><%=publicationDate%></td>
+									<td><%=book.getPublicationDate()%></td>
 								</tr>
 							</tbody>
 						</table>
@@ -129,7 +116,7 @@ Sanity Check
 						<div class="rating flex flex-row">
 							<%
 							for (int i = 1; i <= 5; i++) {
-								if (i <= rating) {
+								if (i <= book.getRating()) {
 							%>
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
 								stroke-width="0" class="w-8 h-8 fill-amber-400">
@@ -188,7 +175,7 @@ Sanity Check
 												quantityValue = 1;
 
 											if (quantityValue <
-					<%=quantity%>
+					<%=book.getQuantity()%>
 						) {
 												quantityValue++;
 												quantityInput.value = quantityValue;

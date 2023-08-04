@@ -10,34 +10,28 @@
 	rel="stylesheet">
 </head>
 <body>
-	<%@include file="header.jsp"%>
+	<%@include file="../header.jsp"%>
 
 	<%
 	try {
 		String username = (String) session.getAttribute("username");
 		String email = (String) request.getAttribute("email");
 		String phone = (String) request.getAttribute("phone");
-		
 	%>
 	<div class="flex flex-col items-center w-full p-5 rounded-xl space-y-6">
 		<form action="CustomerPanelServlet" method="post" class="card w-full"
-			id="profileForm">
-			<h1 class="text-2xl font-bold">My Profile</h1>
-			<input type="hidden" name="p" value="editProfile">
+			id="changePasswordForm">
+			<h1 class="text-2xl font-bold">Change Password</h1>
+			<input type="hidden" name="p" value="changePassword">
 			<div class="form-control">
-				<label class="label"> <span class="label-text">Username</span>
-				</label> <input type="text" name="username" class="input input-bordered"
-					value=<%=username%> required>
+				<label class="label"> <span class="label-text">New Password</span>
+				</label> <input type="text" name="password" class="input input-bordered"
+					required>
 			</div>
 			<div class="form-control">
-				<label class="label"> <span class="label-text">Email</span>
-				</label> <input type="text" name="email" class="input input-bordered"
-					value=<%=email%> required>
-			</div>
-			<div class="form-control">
-				<label class="label"> <span class="label-text">Phone</span>
-				</label> <input type="number" name="phone" class="input input-bordered"
-					value=<%=Integer.parseInt(phone)%> required>
+				<label class="label"> <span class="label-text">Please key in your new password again</span>
+				</label> <input type="text" name="passwordCheck" class="input input-bordered"
+					required>
 			</div>
 			<button type="submit" class="btn btn-primary mt-5">Save
 				Changes</button>
@@ -45,11 +39,16 @@
 		<%
 		try {
 			String success = (String) request.getParameter("success");
+			String err = (String) request.getParameter("err");
 			if (success != null) {
 				
 		%>
 		<p class=""><%=success%></p>
 		<%
+			} else if (err != null) {
+		%>
+		<p class=""><%=err%></p>	
+		<%	
 			}
 		} catch (Exception e) {
 			String err = (String) request.getParameter("err");
@@ -77,5 +76,7 @@
 	<%
 	}
 	%>
+	
+	<%@include file="../footer.html"%>
 </body>
 </html>

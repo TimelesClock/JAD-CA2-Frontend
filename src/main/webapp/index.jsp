@@ -186,7 +186,7 @@
 			if (book.getImageUrl() != null && !book.getImageUrl().equals("")) {
 			%>
 			<figure class="w-full h-80">
-				<img src="data:image/jpeg;base64,<%=book.getImageUrl()%>"
+				<img src="<%=book.getImageUrl()%>"
 					alt="Book img" class="w-full h-full">
 			</figure>
 			<%
@@ -205,10 +205,10 @@
 				</h2>
 				<p class="line-clamp-2"><%=book.getDescription().length() > 100 ? book.getDescription().substring(0, 100) + "..." : book.getDescription()%></p>
 				<div class="card-actions justify-end">
-					<form class="btn btn-primary" action="BookDetailsServlet"
+					<form class="btn btn-primary" action="BookDetails"
 						method="get">
 						<input type="hidden" name="bookId" value='<%=book.getBookId()%>'>
-						<input type="submit" value="SHOW DETAILS" />
+						<input class="w-full h-full" type="submit" value="SHOW DETAILS" />
 					</form>
 				</div>
 			</div>

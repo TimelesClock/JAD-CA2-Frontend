@@ -95,34 +95,35 @@ public class BookDAO {
 		}
 		return books;
 	}
-
-	public HashMap<String, Object> getBook(Integer bookId) throws SQLException {
+ 
+	public Book getBook(Integer bookId) throws SQLException {
 		Connection conn = DBConnection.getConnection();
-		HashMap<String, Object> book = new HashMap<String, Object>();
+		Book book = new Book();
 		try {
-			String sql = "SELECT b.image, b.title, a.name AS author, b.price, b.quantity, p.name AS publisher, b.publication_date, b.ISBN, g.name AS genre, b.rating, b.description \r\n"
+			String sql = "SELECT b.image_url, b.title, a.author_id, a.name AS author, b.price, b.quantity, p.name AS publisher, b.publication_date, b.ISBN, g.genre_id, g.name AS genre, b.rating, b.description \r\n"
 					+ "FROM books b\r\n" + "LEFT JOIN authors a ON a.author_id = b.author_id\r\n"
 					+ "LEFT JOIN publishers p ON p.publisher_id = b.publisher_id\r\n"
-					+ "LEFT JOIN genres g ON g.genre_id = b.genre_id\r\n" + "WHERE book_id = ?;";
+					+ "LEFT JOIN genres g ON g.genre_id = b.genre_id\r\n" 
+					+ "WHERE book_id = ?;";
 			PreparedStatement pst = conn.prepareStatement(sql);
 			pst.setInt(1, bookId);
 			ResultSet rs = pst.executeQuery();
 
 			if (rs.next()) {
-				book.put("image", rs.getString("image"));
-				book.put("title", rs.getString("title"));
-				book.put("author", rs.getString("author"));
-				book.put("price", rs.getDouble("price"));
-				book.put("quantity", rs.getInt("quantity"));
-				book.put("publisher", rs.getString("publisher"));
-				book.put("publication_date", rs.getDate("publication_date"));
-				book.put("ISBN", rs.getString("ISBN"));
-				book.put("genre", rs.getString("genre"));
-				book.put("rating", rs.getDouble("rating"));
-				book.put("description", rs.getString("description"));
+				book.setImage(rs.getString("image_url"));
+				book.setTitle(rs.getString("title"));
+				book.setAuthorId(rs.getInt("author_id"));
+				book.setAuthorName(rs.getString("author"));
+				book.setPrice(rs.getBigDecimal("price"));
+				book.setQuantity(rs.getInt("quantity"));
+				book.setPublisherName(rs.getString("publisher"));
+				book.setPublicationDate(rs.getString("publication_date"));
+				book.setISBN(rs.getString("ISBN"));
+				book.setGenreId(rs.getInt("genre_id"));
+				book.setGenreName(rs.getString("genre"));
+				book.setRating(rs.getInt("rating"));
+				book.setDescription(rs.getString("description"));
 			}
-			rs.close();
-			pst.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();

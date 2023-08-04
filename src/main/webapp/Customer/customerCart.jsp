@@ -14,7 +14,7 @@
 <body>
 	<%@page import="java.sql.Date"%>
 
-	<%@include file="header.jsp"%>
+	<%@include file="../header.jsp"%>
 	<%!int currentPage = 1;
 	int totalPages = 1;
 	String search;%>
@@ -194,7 +194,8 @@
 	<%
 	}
 	%>
-	<%@include file="footer.html"%>
+	
+	<%@include file="../footer.html"%>
 
 </body>
 </html>
