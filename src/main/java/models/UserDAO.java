@@ -29,6 +29,7 @@ public class UserDAO {
 				user.setEmail(userRs.getString("email"));
 				user.setRole(userRs.getString("role"));
 				user.setPhone(userRs.getString("phone"));
+				user.setAddressId(Integer.toString(userRs.getInt("address_id")));
 				users.add(user);
 			}
 		} catch (Exception e) {
@@ -82,16 +83,17 @@ public class UserDAO {
 		return user;
 	}
 
-	public Integer editUserById(int userId, String name, String email, String phone) throws SQLException {
+	public Integer editUserById(int userId, String name, String email, String phone,String addressId) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		int rowsAffected = 0;
 		try {
-			String sql = "UPDATE users SET name = ?, email = ?, phone = ? WHERE user_id = ?;";
+			String sql = "UPDATE users SET name = ?, email = ?, phone = ?,address_id = ? WHERE user_id = ?;";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
 			userStmt.setString(1, name);
 			userStmt.setString(2, email);
 			userStmt.setString(3, phone);
-			userStmt.setInt(4, userId);
+			userStmt.setString(4,addressId);
+			userStmt.setInt(5, userId);
 			rowsAffected = userStmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -217,7 +219,29 @@ public class UserDAO {
 		}
 		return isDeleted;
 	}
-
+	public String addUser(String name, String email, String password, String phone,String addressId) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		String userid = null;
+		try {
+			String sql = "INSERT INTO users (name, email, password, phone, role,address_id) VALUES (?, ?, MD5(?), ?, 'customer',?)";
+			PreparedStatement userStmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			userStmt.setString(1, name);
+			userStmt.setString(2, email);
+			userStmt.setString(3, password);
+			userStmt.setString(4, phone);
+			userStmt.setString(5,addressId);
+			userStmt.executeUpdate();
+			ResultSet rs = userStmt.getGeneratedKeys();
+			if (rs.next()) {
+				userid = String.valueOf(rs.getInt(1));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return userid;
+	}
 	
 
 }

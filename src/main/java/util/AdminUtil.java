@@ -22,6 +22,10 @@ import models.Publisher;
 import models.PublisherDAO;
 import models.User;
 import models.UserDAO;
+import models.AddressDAO;
+import models.Address;
+import models.Order;
+import models.OrderDAO;
 
 public class AdminUtil {
 	public static Boolean checkAdmin(HttpServletRequest request) {
@@ -121,6 +125,46 @@ public class AdminUtil {
 			UserDAO db = new UserDAO();
 			Integer userCount = db.getTotalUsers();
 			Integer pages = (int) Math.ceil((double) userCount / 25);
+			request.setAttribute("totalPages", pages);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void addAddressContext(HttpServletRequest request) {
+		try {
+			AddressDAO db = new AddressDAO();
+			ArrayList<Address> addresses = new ArrayList<Address>();
+			addresses = db.getAddresses();
+			request.setAttribute("addresses",addresses);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void addOrderContext(HttpServletRequest request, Integer page) {
+		try {
+			OrderDAO db = new OrderDAO();
+			List<Order> orders = new ArrayList<Order>();
+			if (page == null) {
+				page = 1;
+			}
+			Integer limit = 25;
+			Integer offset = (page - 1) * limit;
+
+			orders = db.getOrders(limit, offset);
+
+			request.setAttribute("orders", orders);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void addOrderCountContext(HttpServletRequest request) {
+		try {
+			OrderDAO db = new OrderDAO();
+			Integer bookCount = db.getTotalOrders();
+			Integer pages = (int) Math.ceil((double) bookCount / 25);
 			request.setAttribute("totalPages", pages);
 		} catch (Exception e) {
 			e.printStackTrace();

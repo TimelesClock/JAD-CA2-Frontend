@@ -5,6 +5,14 @@ public class OrderItem {
 	private int bookId;
 	private int quantity;
 	private String bookName;
+	private Double price;
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
 
 	public String getBookName() {
 		return bookName;

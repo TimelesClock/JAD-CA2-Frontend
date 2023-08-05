@@ -103,6 +103,64 @@ public class OrderDAO {
         return orders;
     }
 
+    public List<Order> getOrders(Integer limit, Integer offset) throws SQLException {
+        List<Order> orders = new ArrayList<>();
 
+        Connection conn = DBConnection.getConnection();
+        String sql = "SELECT * FROM orders ORDER BY order_date DESC LIMIT ?,? ";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, offset);
+		pstmt.setInt(2, limit);
+        ResultSet rs = pstmt.executeQuery();
+        while (rs.next()) {
+            Order order = new Order();
+            order.setOrderId(rs.getInt("order_id"));
+            order.setOrderDate(rs.getDate("order_date"));
+            order.setSubtotal(rs.getFloat("subtotal"));
+            order.setStatus(rs.getString("status"));
+
+            int orderId = order.getOrderId();
+            sql = "SELECT * FROM order_items oi INNER JOIN books b ON oi.book_id = b.book_id WHERE order_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, orderId);
+
+            ResultSet rsItems = pstmt.executeQuery();
+            while (rsItems.next()) {
+                OrderItem item = new OrderItem();
+                item.setOrderId(rsItems.getInt("order_id"));
+                item.setBookId(rsItems.getInt("book_id"));
+                item.setQuantity(rsItems.getInt("quantity"));
+                item.setBookName(rsItems.getString("title"));
+                item.setPrice(rsItems.getDouble("price"));
+                order.addOrderItem(item);
+            }
+
+            orders.add(order);
+        }
+
+        conn.close();
+        return orders;
+    }
+    
+    public Integer getTotalOrders() throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		Integer number_of_orders = 0;
+		try {
+			String sql = "SELECT COUNT(*) AS number_of_orders FROM orders";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				number_of_orders = rs.getInt("number_of_orders");
+			}
+			rs.close();
+			stmt.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return number_of_orders;
+	}
+    
 }
 

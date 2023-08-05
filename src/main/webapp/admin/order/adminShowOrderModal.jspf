@@ -1,0 +1,49 @@
+<body>
+	<dialog id="show_order_modal" class="modal">
+	<form method="dialog" class="modal-box">
+		<div class="card bg-base-300">
+
+			<div class="card-body">
+				<h2 class="card-title line-clamp-1" id="show_title">Order</h2>
+				<div>
+					<strong>Order Id:</strong>
+					<p id="show_order_id"></p>
+				</div>
+				<div>
+					<strong>Order Date:</strong>
+					<p id="show_order_date"></p>
+				</div>
+				<div>
+					<strong>Status:</strong>
+					<p id="show_status"></p>
+				</div>
+
+				<div>
+					<strong>Subtotal:</strong>
+					<p id="show_subtotal"></p>
+				</div>
+				<strong>Order Items</strong>
+				<table class="table table-zebra">
+					<thead>
+						<tr>
+							<th class="text-center">Book title</th>
+							<th class="text-center">Price</th>
+							<th class="text-center">Quantity</th>
+						</tr>
+					</thead>
+					<tbody id = "book_table">
+					
+					</tbody>
+				</table>
+
+				<div class="card-actions justify-end">
+					<div class="modal-action">
+						<button class="btn">Close</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</form>
+	</dialog>
+</body>

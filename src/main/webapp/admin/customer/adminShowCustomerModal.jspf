@@ -18,7 +18,37 @@
 					<strong>Phone:</strong>
 					<p id="show_phone"></p>
 				</div>
+				<div id="show_address_div">
+					<div>
+						<strong>Address:</strong>
+						<p id="show_address"></p>
+					</div>
+					<div>
+						<strong>Address 2:</strong>
+						<p id="show_address2"></p>
+					</div>
+					<div>
+						<strong>District:</strong>
+						<p id="show_district"></p>
+					</div>
+					<div>
+						<strong>Country:</strong>
+						<p id="show_country"></p>
+					</div>
+					<div>
+						<strong>City:</strong>
+						<p id="show_city"></p>
+					</div>
+					<div>
+						<strong>Postal Code:</strong>
+						<p id="show_postal_code"></p>
+					</div>
+					<div>
+						<strong>Phone (Address):</strong>
+						<p id="show_phone_address"></p>
+					</div>
 
+				</div>
 				<div class="card-actions justify-end">
 					<div class="modal-action">
 						<button class="btn">Close</button>

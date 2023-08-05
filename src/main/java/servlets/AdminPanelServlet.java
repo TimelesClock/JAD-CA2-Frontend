@@ -51,8 +51,6 @@ public class AdminPanelServlet extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		try {
-			AdminUtil.checkAdmin(request, response);
-
 			String context = request.getParameter("p");
 			if (context == null) {
 				request.getRequestDispatcher("admin/adminPanel.jsp").forward(request, response);
