@@ -1,0 +1,25 @@
+<body>
+	<dialog id="editOrderModal" class="modal">
+	<form method="post" action="<%=request.getContextPath()+"/admin/order/edit"%>"
+		class="modal-box w-4/5 max-w-screen-lg mx-auto">
+		<input type="hidden" id="edit_order_id" name = "edit_order_id">
+		<div class="modal-body space-y-0 gap-4 items-start">
+			<div class = "form-control">
+				<h2>Edit Order Status</h2>
+				<select name="status" class="select select-bordered" id="edit_status" required>
+						<option value="" disabled >Select the status</option>
+						<option value="Pending"  >Pending</option>
+						<option value="Shipped"  >Shipped</option>
+						<option value="Completed"  >Completed</option>
+						<option value="Cancelled"  >Cancelled</option>
+				</select>
+			</div>
+		</div>
+		<div class="modal-action">
+			<button type="submit" class="btn btn-primary">Edit</button>
+			<button type="button" class="btn"
+				onclick="this.closest('dialog').close();">Close</button>
+		</div>
+	</form>
+	</dialog>
+</body>

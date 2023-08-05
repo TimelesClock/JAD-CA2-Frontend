@@ -10,9 +10,11 @@
 ArrayList<Order> orders = (ArrayList<Order>) request.getAttribute("orders");
 %>
 <%!int currentPage;
-	int totalPages;%>
+	int totalPages;
+	String status;%>
 <%
 try {
+	status = request.getParameter("status");
 	String pageNum = request.getParameter("page");
 	String totalPageRaw = request.getAttribute("totalPages") != null
 	? request.getAttribute("totalPages").toString()
@@ -41,13 +43,27 @@ try {
 			<%@include file="/admin/adminSidePanel.jsp"%>
 			<div class="w-10/12 grid">
 				<h1 class="text-2xl font-bold mb-4 ms-5">View Orders</h1>
+				<div class="justify-center my-5">
+					<label class="label"> <span class="label-text">Sort
+							by status</span>
+					</label> <select name="status" class="select select-bordered"
+						onChange="handleSort(this)" id="edit_status" required>
+						<option value = "All" selected disabled>Select an option </option>
+						<option value="All">All</option>
+						<option value="Pending">Pending</option>
+						<option value="Shipped">Shipped</option>
+						<option value="Completed">Completed</option>
+						<option value="Cancelled">Cancelled</option>
+					</select>
+				</div>
 				<div class="flex justify-center my-5">
+
 					<div class="join">
 						<a
-							href="<%=request.getContextPath() + "/admin/order?page=" + (currentPage - 1)%>"
+							href="<%=request.getContextPath() + "/admin/order?page=" + (currentPage - 1)%><%=status != null ? ("&status=" + status) : ""%>"
 							class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
 						<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
-							href="<%=request.getContextPath() + "/admin/order?page=" + (currentPage + 1)%>"
+							href="<%=request.getContextPath() + "/admin/order?page=" + (currentPage + 1)%><%=status != null ? ("&status=" + status) : ""%>"
 							class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
 					</div>
 				</div>
@@ -88,13 +104,14 @@ try {
 					</table>
 				</div>
 				<%@include file="adminShowOrderModal.jspf"%>
+				<%@include file="adminEditOrderModal.jspf"%>
 				<div class="flex justify-center my-5">
 					<div class="join">
 						<a
-							href="<%=request.getContextPath() + "/admin/order?page=" + (currentPage - 1)%>"
+							href="<%=request.getContextPath() + "/admin/order?page=" + (currentPage - 1)%><%=status != null ? ("&status=" + status) : ""%>"
 							class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
 						<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
-							href="<%=request.getContextPath() + "/admin/order?page=" + (currentPage + 1)%>"
+							href="<%=request.getContextPath() + "/admin/order?page=" + (currentPage + 1)%><%=status != null ? ("&status=" + status) : ""%>"
 							class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
 					</div>
 				</div>
@@ -103,6 +120,26 @@ try {
 	</div>
 	<%@include file="../../errorHandler.jsp"%>
 	<script>
+	
+	function handleSort(selectElement) {
+		  const selectedValue = selectElement.value;
+		  const currentUrl = window.location.href;
+		  const url = new URL(currentUrl);
+		  url.searchParams.set('status', selectedValue);
+		  window.location.href = url.toString();
+		}
+	function handleEditModal(orderId){
+		var edit_status = document.getElementById('edit_status');
+		var edit_order_id = document.getElementById('edit_order_id')
+		<%for (Order order : orders) {%>
+			if ("<%=order.getOrderId()%>" === orderId.toString()){
+				edit_status.value = "<%=order.getStatus()%>";
+				edit_order_id.value11 = "<%=order.getOrderId()%>";
+				editOrderModal.showModal()
+			}
+		<%}%>
+	}
+	
 	function handleShowModal(orderId) {
 		var show_order_id = document.getElementById('show_order_id');
 		var show_order_date = document.getElementById('show_order_date');
@@ -117,19 +154,17 @@ try {
 				show_subtotal.innerHTML = "<%=order.getSubtotal()%>";
 				
 				var orderItems = [
-	                <% 
-	                ArrayList<OrderItem> items = order.getOrderItems();
-	                for (int i = 0; i < items.size(); i++) {
-	                    OrderItem item = items.get(i);
-	                %>
+	                <%ArrayList<OrderItem> items = order.getOrderItems();
+for (int i = 0; i < items.size(); i++) {
+	OrderItem item = items.get(i);%>
 	                {
 	                    orderId: "<%=item.getOrderId()%>",
 	                    bookId: "<%=item.getBookId()%>",
 	                    quantity: "<%=item.getQuantity()%>",
 	                    bookName: "<%=item.getBookName()%>",
 	                    price:"<%=item.getPrice()%>"
-	                }<%= i < items.size() - 1 ? "," : "" %>
-	                <% } %>
+	                }<%=i < items.size() - 1 ? "," : ""%>
+	                <%}%>
 	            ];
 				var tableRows = "";
 				for(var i = 0; i < orderItems.length; i++){

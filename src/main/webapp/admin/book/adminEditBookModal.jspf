@@ -5,58 +5,57 @@
 		enctype="multipart/form-data">
 		<input type="hidden" name="action" value="addBook">
 		<div class="modal-body space-y-0 grid grid-cols-2 gap-4 items-start">
-			<!-- Left column -->
+
 			<div class="">
-				<!-- Title -->
+
 				<input type = "hidden" name = "book_id" id="edit_book_id" value = "">
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Title</span></label>
 					<input type="text" name="title" class="input input-bordered" id="edit_title"
 						value="" required>
 				</div>
-				<!-- Description -->
+
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Description</span></label>
 					<textarea name="description" class="textarea textarea-bordered" id="edit_description"
 						required></textarea>
 				</div>
 
-				<!-- Price -->
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Price</span></label>
 					<input type="number" step="0.01" name="price" id="edit_price"
 						class="input input-bordered" value="" required>
 				</div>
-				<!-- Quantity -->
+
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Quantity</span></label>
 					<input type="number" name="quantity" class="input input-bordered" id="edit_quantity"
 						value="" required>
 				</div>
-				<!-- Publication Date -->
+
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Publication
 							Date</span></label> <input type="date" name="publication_date" id="edit_date"
 						class="input input-bordered"
 						value="" required>
 				</div>
-				<!-- ISBN -->
+
 				<div class="form-control">
 					<label class="label"> <span class="label-text">ISBN</span></label>
 					<input type="text" name="ISBN" class="input input-bordered" id="edit_isbn"
 						value="" required>
 				</div>
 			</div>
-			<!-- Right column -->
+
 			<div class="space-y-4">
-				<!-- Rating -->
+
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Rating</span></label>
 					<input type="number" name="rating" class="input input-bordered" id="edit_rating"
 						value="" required>
 				</div>
 
-				<!-- Author -->
+
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Author</span></label>
 					<select name="author_id" class="select select-bordered" id="edit_author_id"
@@ -73,7 +72,7 @@
 						%>
 					</select>
 				</div>
-				<!-- New Author Form -->
+
 				<div id="newAuthorForm" style="display: none;">
 					<div class="form-control">
 						<label class="label"> <span class="label-text">New
@@ -82,7 +81,7 @@
 					</div>
 				</div>
 
-				<!-- Publisher -->
+
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Publisher</span></label>
 					<select name="publisher_id" class="select select-bordered" id="edit_publisher_id"
@@ -99,7 +98,7 @@
 						%>
 					</select>
 				</div>
-				<!-- New Publisher Form -->
+
 				<div id="newPublisherForm" style="display: none;">
 					<div class="form-control">
 						<label class="label"> <span class="label-text">New
@@ -107,7 +106,7 @@
 							class="input input-bordered">
 					</div>
 				</div>
-				<!-- Genre -->
+
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Genre</span></label>
 					<select name="genre_id" class="select select-bordered" id="edit_genre_id"
@@ -124,7 +123,7 @@
 						%>
 					</select>
 				</div>
-				<!-- New Genre Form -->
+
 				<div id="newGenreForm" style="display: none;">
 					<div class="form-control">
 						<label class="label"> <span class="label-text">New
@@ -132,7 +131,7 @@
 							class="input input-bordered">
 					</div>
 				</div>
-				<!-- Image -->
+
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Image</span></label>
 					<input type="file" name="image" id="image"
