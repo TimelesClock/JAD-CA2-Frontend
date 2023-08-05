@@ -1,4 +1,5 @@
 package servlets;
+
 import java.io.IOException;
 
 import javax.ws.rs.core.Response;
@@ -15,26 +16,28 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import util.*;
 
-
-
 @WebServlet("/logout")
 public class Logout extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    
-    public Logout() {
-    	super();
-    }
-    
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-    	doPost(request,response);
-    }
+	private static final long serialVersionUID = 1L;
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+	public Logout() {
+		super();
+	}
 
-        HttpSession session = request.getSession(false);
-        session.invalidate();
-        request.getRequestDispatcher("home").forward(request,response);
-    }
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			HttpSession session = request.getSession(false);
+			session.invalidate();
+			response.sendRedirect(request.getContextPath() + "/home");
+		}catch(Exception e) {
+			response.sendRedirect(request.getContextPath() + "/home");
+		}
+		
+	}
 }
