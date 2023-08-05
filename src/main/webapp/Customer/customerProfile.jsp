@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%@ page import="models.User"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,9 +15,7 @@
 
 	<%
 	try {
-		String username = (String) session.getAttribute("username");
-		String email = (String) request.getAttribute("email");
-		String phone = (String) request.getAttribute("phone");
+		User user = (User) request.getAttribute("user");
 		
 	%>
 	<div class="flex flex-col items-center w-full p-5 rounded-xl space-y-6">
@@ -27,17 +26,17 @@
 			<div class="form-control">
 				<label class="label"> <span class="label-text">Username</span>
 				</label> <input type="text" name="username" class="input input-bordered"
-					value=<%=username%> required>
+					value=<%=user.getName()%> required>
 			</div>
 			<div class="form-control">
 				<label class="label"> <span class="label-text">Email</span>
 				</label> <input type="text" name="email" class="input input-bordered"
-					value=<%=email%> required>
+					value=<%=user.getEmail()%> required>
 			</div>
 			<div class="form-control">
 				<label class="label"> <span class="label-text">Phone</span>
 				</label> <input type="number" name="phone" class="input input-bordered"
-					value=<%=Integer.parseInt(phone)%> required>
+					value=<%=user.getPhone()%> required>
 			</div>
 			<button type="submit" class="btn btn-primary mt-5">Save
 				Changes</button>

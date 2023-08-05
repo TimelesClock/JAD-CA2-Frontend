@@ -41,7 +41,7 @@
 					<div class="divider m-0 px-0"></div>
 				</li>
 				<li>
-					<form action="CustomerPanelServlet" method="get">
+					<form action="<%=request.getContextPath()+"/customer/profile"%>" method="get">
 						<input type="hidden" name="p" value="myProfile">
 						<button type="submit">My Profile</button>
 					</form>

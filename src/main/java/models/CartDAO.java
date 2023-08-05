@@ -10,7 +10,7 @@ import java.util.HashMap;
 import dbaccess.*;
 
 public class CartDAO {
-    public ArrayList<Cart> getCart(int userId, Integer limit, Integer offset) throws SQLException {
+    public ArrayList<Cart> getCart(int userid, Integer limit, Integer offset) throws SQLException {
 		Connection conn = DBConnection.getConnection();
         ArrayList<Cart> cartItems = new ArrayList<Cart>();
         try {
@@ -21,7 +21,7 @@ public class CartDAO {
             + "WHERE user_id = ?\r\n"
             + "LIMIT ?, ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, userId);
+            pst.setInt(1, userid);
             pst.setInt(2, offset);
             pst.setInt(3, limit);
             ResultSet rs = pst.executeQuery();
@@ -48,7 +48,7 @@ public class CartDAO {
         return cartItems;
     }
 
-    public Integer getTotalCartItems(int userId) throws SQLException {
+    public Integer getTotalCartItems(int userid) throws SQLException {
         Connection conn = DBConnection.getConnection();
         Integer totalRecords = 0;
         try{
@@ -58,7 +58,7 @@ public class CartDAO {
             + "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
             + "WHERE user_id = ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, userId);
+            pst.setInt(1, userid);
             ResultSet rs = pst.executeQuery();
             if(rs.next()){
                 totalRecords = rs.getInt(1);
@@ -73,7 +73,7 @@ public class CartDAO {
         return totalRecords;
     }
 
-    public Double getSubtotal(int userId) throws SQLException {
+    public Double getSubtotal(int userid) throws SQLException {
         Connection conn = DBConnection.getConnection();
         Double subtotal = 0.00;
         try{
@@ -83,7 +83,7 @@ public class CartDAO {
             + "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
             + "WHERE user_id = ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, userId);
+            pst.setInt(1, userid);
             ResultSet rs = pst.executeQuery();
             if(rs.next()){
                 subtotal = rs.getDouble(1);
@@ -98,7 +98,7 @@ public class CartDAO {
         return subtotal;
     }
 
-    public Integer addToCart(int userId, HashMap<String,Integer> cartItem) throws SQLException {
+    public Integer addToCart(int userid, int bookId, int quantity) throws SQLException {
 		Connection conn = DBConnection.getConnection();
         int rowsAffected = 0;
         try {
@@ -107,10 +107,10 @@ public class CartDAO {
             + "ON DUPLICATE KEY UPDATE\r\n" 
             + "quantity = quantity + ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, userId);
-            pst.setInt(2, cartItem.get("bookId"));
-            pst.setInt(3, cartItem.get("quantity"));
-            pst.setInt(4, cartItem.get("quantity"));
+            pst.setInt(1, userid);
+            pst.setInt(2, bookId);
+            pst.setInt(3, quantity);
+            pst.setInt(4, quantity);
             rowsAffected = pst.executeUpdate();
             pst.close();
         } catch (Exception e) {

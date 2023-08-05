@@ -59,13 +59,13 @@ public class UserDAO {
 		return numberOfUsers;
 	}
 
-	public User getUserById(int userId) throws SQLException {
+	public User getUserById(int userid) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		User user = new User();
 		try {
 			String sql = "SELECT * FROM users WHERE user_id = ?";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
-			userStmt.setInt(1, userId);
+			userStmt.setInt(1, userid);
 			ResultSet userRs = userStmt.executeQuery();
 			while (userRs.next()) {
 				user.setUserId(userRs.getInt("user_id"));
@@ -82,7 +82,7 @@ public class UserDAO {
 		return user;
 	}
 
-	public Integer editUserById(int userId, String name, String email, String phone) throws SQLException {
+	public Integer editUserById(int userid, String name, String email, String phone) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		int rowsAffected = 0;
 		try {
@@ -91,7 +91,7 @@ public class UserDAO {
 			userStmt.setString(1, name);
 			userStmt.setString(2, email);
 			userStmt.setString(3, phone);
-			userStmt.setInt(4, userId);
+			userStmt.setInt(4, userid);
 			rowsAffected = userStmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,14 +101,14 @@ public class UserDAO {
 		return rowsAffected;
 	}
 
-	public Integer changeUserPasswordById(int userId, String password) throws SQLException {
+	public Integer changeUserPasswordById(int userid, String password) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		int rowsAffected = 0;
 		try {
 			String sql = "UPDATE users SET password = MD5(?) WHERE user_id = ?;";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
 			userStmt.setString(1, password);
-			userStmt.setInt(2, userId);
+			userStmt.setInt(2, userid);
 			rowsAffected = userStmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
