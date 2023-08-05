@@ -37,9 +37,13 @@ public class AdminOrder extends HttpServlet {
 			}catch(Exception e) {
 				page = 1;
 			}
+			String status = request.getParameter("status");
+			if(status == null || status.equals("all")) {
+				status = "all";
+			}
 
-			AdminUtil.addOrderContext(request,page);
-			AdminUtil.addOrderCountContext(request);
+			AdminUtil.addOrderContext(request,page,status);
+			AdminUtil.addOrderCountContext(request,status);
 			request.getRequestDispatcher("/admin/order/adminOrder.jsp").forward(request, response);;
 		}catch(Exception e) {
 			e.printStackTrace();

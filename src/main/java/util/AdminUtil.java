@@ -142,7 +142,7 @@ public class AdminUtil {
 		}
 	}
 	
-	public static void addOrderContext(HttpServletRequest request, Integer page) {
+	public static void addOrderContext(HttpServletRequest request, Integer page,String status) {
 		try {
 			OrderDAO db = new OrderDAO();
 			List<Order> orders = new ArrayList<Order>();
@@ -152,7 +152,7 @@ public class AdminUtil {
 			Integer limit = 25;
 			Integer offset = (page - 1) * limit;
 
-			orders = db.getOrders(limit, offset);
+			orders = db.getOrders(limit, offset,status);
 
 			request.setAttribute("orders", orders);
 		} catch (Exception e) {
@@ -160,10 +160,10 @@ public class AdminUtil {
 		}
 	}
 	
-	public static void addOrderCountContext(HttpServletRequest request) {
+	public static void addOrderCountContext(HttpServletRequest request,String status) {
 		try {
 			OrderDAO db = new OrderDAO();
-			Integer bookCount = db.getTotalOrders();
+			Integer bookCount = db.getTotalOrders(status);
 			Integer pages = (int) Math.ceil((double) bookCount / 25);
 			request.setAttribute("totalPages", pages);
 		} catch (Exception e) {
