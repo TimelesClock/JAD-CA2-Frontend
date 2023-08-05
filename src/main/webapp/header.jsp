@@ -34,7 +34,7 @@
 			<div class="menu menu-horizontal px-1">
 				<%
 				HttpSession loginSession = request.getSession(false);
-				if (loginSession.getAttribute("userid") != null) {
+				if (loginSession.getAttribute("userid") != null &&request.getAttribute("role")!= null&& request.getAttribute("role").equals("admin")) {
 				%>
 				<form action="admin" method="get" class="mx-2">
 					<input type="hidden" name="action" value="login">

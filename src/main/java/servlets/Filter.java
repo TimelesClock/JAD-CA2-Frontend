@@ -11,6 +11,8 @@ import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import util.AdminUtil;
+
 /**
  * Servlet Filter implementation class Filter
  */
@@ -48,6 +50,14 @@ public class Filter extends HttpFilter implements javax.servlet.Filter {
                 return;
             }
         }
+        
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+	    
+	    Boolean isAdmin = AdminUtil.checkAdmin(httpRequest);
+	    if (isAdmin) {
+	    	httpRequest.setAttribute("role","admin");
+	    }
+	    
 
         // If it's not a JSP file, continue the filter chain
         chain.doFilter(request, response);
