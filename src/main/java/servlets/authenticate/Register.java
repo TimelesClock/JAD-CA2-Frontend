@@ -49,6 +49,12 @@ public class Register extends HttpServlet {
 			String phone = request.getParameter("phone");
 			String name = request.getParameter("name");
         	UserDAO db = new UserDAO();
+        	Integer count = db.userCountByEmail(email);
+			if (count != 0) {
+				request.setAttribute("err","Email Already Exists!");
+        		request.getRequestDispatcher("login.jsp").forward(request, response);
+				return;
+			}
         	String userid = db.register(name, email, password, phone);
         	
         	if (userid == null) {

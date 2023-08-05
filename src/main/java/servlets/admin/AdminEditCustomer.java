@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import models.AddressDAO;
 import models.UserDAO;
 
 /**
@@ -42,10 +43,25 @@ public class AdminEditCustomer extends HttpServlet {
 			String password = request.getParameter("password");
 			String phone = request.getParameter("phone");
 			Integer userId = Integer.parseInt(request.getParameter("user_id"));
+			String addressId = request.getParameter("edit_address_id");
 			try {
 				UserDAO db = new UserDAO();
 				
-				Integer rowsAffected = db.editUserById(userId,name,email,phone);
+				if (addressId.equals("-1")) {
+					addressId = null;
+				}else if (addressId.equals("0")) {
+					String address = request.getParameter("edit_address");
+					String address2 = request.getParameter("edit_address2");
+					String district = request.getParameter("edit_district");
+					String country = request.getParameter("edit_country");
+					String city = request.getParameter("edit_city");
+					String postal_code = request.getParameter("edit_postal_code");
+					String adr_phone = request.getParameter("edit_phone_address");
+					AddressDAO adr = new AddressDAO();
+					addressId = adr.addAddress(address,address2,district,country,city,postal_code,adr_phone);
+				}
+				
+				Integer rowsAffected = db.editUserById(userId,name,email,phone,addressId);
 				if (password != null) {
 					db.changeUserPasswordById(userId,password);
 				}

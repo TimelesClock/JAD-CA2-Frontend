@@ -10,16 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 import util.AdminUtil;
 
 /**
- * Servlet implementation class AdminBook
+ * Servlet implementation class AdminOrder
  */
-@WebServlet("/admin/book")
-public class AdminBook extends HttpServlet {
+@WebServlet("/admin/order")
+public class AdminOrder extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AdminBook() {
+    public AdminOrder() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -27,7 +27,7 @@ public class AdminBook extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		try {
 			String page_raw = request.getParameter("page");
@@ -37,10 +37,10 @@ public class AdminBook extends HttpServlet {
 			}catch(Exception e) {
 				page = 1;
 			}
-			AdminUtil.addContext(request);
-			AdminUtil.addBookContext(request,page);
-			AdminUtil.addBookCountContext(request);
-			request.getRequestDispatcher("/admin/book/adminBook.jsp").forward(request, response);;
+
+			AdminUtil.addOrderContext(request,page);
+			AdminUtil.addOrderCountContext(request);
+			request.getRequestDispatcher("/admin/order/adminOrder.jsp").forward(request, response);;
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

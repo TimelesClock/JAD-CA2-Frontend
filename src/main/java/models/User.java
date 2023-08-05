@@ -7,14 +7,24 @@ public class User {
     private String password;
     private String role;
     private String phone;
-
+    private String addressId;
     public User() {
     }
 
-
+    
     // Getters and Setters
 
-    public int getUserId() {
+    public String getAddressId() {
+		return addressId;
+	}
+
+
+	public void setAddressId(String addressId) {
+		this.addressId = addressId;
+	}
+
+
+	public int getUserId() {
         return userId;
     }
 

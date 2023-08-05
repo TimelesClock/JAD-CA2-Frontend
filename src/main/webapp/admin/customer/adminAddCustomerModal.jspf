@@ -2,38 +2,106 @@
 	<dialog id="add_customer_modal" class="modal">
 	<form method="post"
 		action="<%=request.getContextPath() + "/admin/customer/add"%>"
-		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="add_form"
-		>
+		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="add_form">
 		<input type="hidden" name="action" value="addCustomer">
-		<div class="modal-body space-y-0 gap-4 items-start">
+		<div class="modal-body space-y-0 grid grid-cols-2 gap-4 items-start">
+			<div>
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Name</span></label>
+					<input type="text" name="name" class="input input-bordered"
+						required>
+				</div>
 
-			<div class="form-control">
-				<label class="label"> <span class="label-text">Name</span></label> <input
-					type="text" name="name" class="input input-bordered" required>
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Email</span></label>
+					<input type="email" name="email" class="input input-bordered"
+						required>
+				</div>
+
+
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Password</span></label>
+					<input type="password" name="password" class="input input-bordered"
+						required>
+				</div>
+
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Phone</span></label>
+					<input type="number" name="phone" class="input input-bordered"
+						required>
+				</div>
 			</div>
-
-			<div class="form-control">
-				<label class="label"> <span class="label-text">Email</span></label>
-				<input
-					type="email" name="email" class="input input-bordered" required>
+			<div>
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Address</span></label>
+					<select name="add_address_id" class="select select-bordered"
+						onchange="handleAddressSelection(this)" required>
+						<option value="" disabled selected>Select the address</option>
+						<option value="-1">No Address</option>
+						<option value="0">+ Add new address</option>
+						<%
+						for (Address address : addresses) {
+						%>
+						<option value="<%=address.getAddressId()%>"><%=address.getAddress()%></option>
+						<%
+						}
+						%>
+					</select>
+				</div>
+				<div class="form-control" id="new_address_form">
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">
+									Address</span></label> <input type="text" name="add_address" id="add_address"
+								class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">
+									Address 2</span></label> <input type="text" name="add_address2"
+								id="add_address2" class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">
+									District</span></label> <input type="text" name="add_district"
+								id="add_district" class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">
+									Country</span></label> <input type="text" name="add_country" id="add_country"
+								class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">City</span></label>
+							<input type="text" name="add_city" id="add_city"
+								class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">Postal
+									Code</span></label> <input type="text" name="add_postal_code"
+								id="add_postal_code" class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">Phone
+									(Address)</span></label> <input type="text" name="add_phone" id="add_phone"
+								class="input input-bordered" disabled>
+						</div>
+					</div>
+				</div>
 			</div>
-
-
-			<div class="form-control">
-				<label class="label"> <span class="label-text">Password</span></label>
-				<input type="password" name="password"
-					class="input input-bordered" required>
-			</div>
-
-			<div class="form-control">
-				<label class="label"> <span class="label-text">Phone</span></label>
-				<input type="number" name="phone" class="input input-bordered"
-					required>
-			</div>
-
 			<div class="modal-action">
-				<button type="submit" class="btn btn-primary mt-5"
-					>Add</button>
+				<button type="submit" class="btn btn-primary mt-5">Add</button>
 				<button type="button" class="btn mt-5"
 					onclick="this.closest('dialog').close();">Close</button>
 			</div>

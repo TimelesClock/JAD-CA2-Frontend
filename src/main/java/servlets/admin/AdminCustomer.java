@@ -40,9 +40,10 @@ public class AdminCustomer extends HttpServlet {
 			} catch (Exception e) {
 				page = 1;
 			}
-			AdminUtil.checkAdmin(request, response);
+
 			AdminUtil.addUserContext(request, page);
 			AdminUtil.addUserCountContext(request);
+			AdminUtil.addAddressContext(request);
 			request.getRequestDispatcher("/admin/customer/adminCustomer.jsp").forward(request, response);
 
 		} catch (Exception e) {

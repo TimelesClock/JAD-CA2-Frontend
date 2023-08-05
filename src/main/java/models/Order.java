@@ -6,8 +6,17 @@ import java.util.ArrayList;
 public class Order {
 	private int orderId;
 	private Date orderDate;
+	private String status;
 	private float subtotal;
 	private ArrayList<OrderItem> orderItems;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	public Order() {
 		orderItems = new ArrayList<>();
