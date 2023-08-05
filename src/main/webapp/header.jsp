@@ -43,7 +43,7 @@
 				<%
 				} else {
 				%>
-				<%@include file="customer/customerHeader.jsp"%>
+				<%@include file="Customer/customerHeader.jsp"%>
 				<%
 				}
 				%>
