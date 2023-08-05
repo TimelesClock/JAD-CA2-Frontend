@@ -61,7 +61,7 @@ public class CustomerProfile extends HttpServlet {
 		int rowsAffected = 0;
 		try {
 			UserDAO db = new UserDAO();
-			rowsAffected = db.editUserById(userid, username, email, phone);
+			// rowsAffected = db.editUserById(userid, username, email, phone);
 			
 			if (rowsAffected > 0) {
 				response.sendRedirect(request.getContextPath()+"/customer/profile&success=Password%20Changed%20Successfully");

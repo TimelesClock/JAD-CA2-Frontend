@@ -83,11 +83,11 @@ public class UserDAO {
 		return user;
 	}
 
-	public Integer editUserById(int userid, String name, String email, String phone,String addressId) throws SQLException {
+	public Integer editUserById(int userid, String name, String email, String phone, String addressId) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		int rowsAffected = 0;
 		try {
-			String sql = "UPDATE users SET name = ?, email = ?, phone = ?,address_id = ? WHERE user_id = ?;";
+			String sql = "UPDATE users SET name = ?, email = ?, phone = ?, address_id = ? WHERE user_id = ?;";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
 			userStmt.setString(1, name);
 			userStmt.setString(2, email);
