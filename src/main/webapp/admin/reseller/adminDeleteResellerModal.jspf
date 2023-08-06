@@ -1,0 +1,16 @@
+<body>
+	<dialog id="delete_reseller_modal" class="modal">
+	<form class="modal-box" method="post"
+		action="<%=request.getContextPath() + "/admin/reseller/delete"%>">
+		<input type="hidden" name="user_id" id="delete_user_id" value="">
+		<h3 class="font-bold text-lg">Delete reseller</h3>
+		<p class="py-4">Are you sure you want to delete this reseller?</p>
+		<div class="modal-action">
+			<button type="submit" class="btn">Yes</button>
+			<button type="button" class="btn"
+				onclick="this.closest('dialog').close();">No</button>
+		</div>
+	</form>
+	</dialog>
+
+</body>
