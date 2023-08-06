@@ -47,6 +47,83 @@ public class OrderDAO {
 		return order;
 	}
 
+	public HashMap<String,Object> getOrderHistory(int userid, int limit, int offset) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		HashMap<String,Object> hashmap = new HashMap<>();
+		ArrayList<Order> orders = new ArrayList<>();
+		ArrayList<Cart> cartItems = new ArrayList<>();
+		try {
+			String sql = "SELECT o.order_id, o.order_date, o.status, o.subtotal, oi.quantity, oi.book_id, b.image_url, b.title, a.name AS author, b.price FROM orders o\r\n"
+					+ "INNER JOIN order_items oi\r\n"
+					+ "ON o.order_id = oi.order_id\r\n"
+					+ "INNER JOIN books b\r\n"
+					+ "ON oi.book_id = b.book_id\r\n"
+					+ "INNER JOIN authors a \r\n"
+					+ "ON b.author_id = a.author_id\r\n"
+					+ "WHERE o.customer_id = ?\r\n"
+					+ "LIMIT ?, ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, userid);
+			pstmt.setInt(2, offset);
+			pstmt.setInt(3, limit);
+	
+			ResultSet rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				Order order = new Order();
+				order.setOrderId(rs.getInt("order_id"));
+				order.setOrderDate(rs.getDate("order_date"));
+				order.setStatus(rs.getString("status"));
+				order.setSubtotal(rs.getDouble("subtotal"));
+				orders.add(order);
+				
+				Cart item = new Cart();
+				item.setBookId(rs.getInt("book_id"));
+				item.setTitle(rs.getString("title"));
+				item.setAuthor(rs.getString("author"));
+				item.setPrice(rs.getBigDecimal("price"));
+				item.setQuantity(rs.getInt("quantity"));
+				item.setImage(rs.getString("image_url"));
+				cartItems.add(item);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		hashmap.put("orders", orders);
+		hashmap.put("cartItems", cartItems);
+		return hashmap;
+	}
+	
+	public Integer getTotalOrderHistory(int userid) throws SQLException {
+        Connection conn = DBConnection.getConnection();
+        Integer totalRecords = 0;
+        try{
+            String sql = "SELECT COUNT(*) AS total_records FROM orders o\r\n"
+            		+ "INNER JOIN order_items oi\r\n"
+            		+ "ON o.order_id = oi.order_id\r\n"
+            		+ "INNER JOIN books b\r\n"
+            		+ "ON oi.book_id = b.book_id\r\n"
+            		+ "INNER JOIN authors a \r\n"
+            		+ "ON b.author_id = a.author_id\r\n"
+            		+ "WHERE o.customer_id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, userid);
+            ResultSet rs = pst.executeQuery();
+            if(rs.next()){
+                totalRecords = rs.getInt(1);
+            }
+            rs.close();
+            pst.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+        return totalRecords;
+    }
+	
 	public Integer insertOrder(Order order) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		int orderId = -1;

@@ -159,6 +159,23 @@ public class UserDAO {
 		}
 		return rowsAffected;
 	}
+	
+	public Integer changeUserStripeCustomerIdById(int userid, String stripeCustomerId) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		int rowsAffected = 0;
+		try {
+			String sql = "UPDATE users SET stripe_customer_id = ? WHERE user_id = ?;";
+			PreparedStatement userStmt = conn.prepareStatement(sql);
+			userStmt.setString(1, stripeCustomerId);
+			userStmt.setInt(2, userid);
+			rowsAffected = userStmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return rowsAffected;
+	}
 
 	public String login(String email, String password) throws SQLException {
 		Connection conn = DBConnection.getConnection();

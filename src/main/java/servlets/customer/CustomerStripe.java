@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.stripe.Stripe;
+import com.stripe.exception.CardException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Card;
 import com.stripe.model.Charge;
@@ -62,18 +64,14 @@ public class CustomerStripe extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		System.out.println("You've reached Stripe!");
-//		String cardNumber = (String) request.getAttribute("cardNumber");
-//		String expMonth = (String) request.getAttribute("expMonth");
-//		String expYear = (String) request.getAttribute("expYear");
-//		String cvv = (String) request.getAttribute("cvv");
 		String cardNumber = request.getParameter("cardNumber");
 		String expMonth = request.getParameter("expMonth");
 		String expYear = request.getParameter("expYear");
-		String cvv = request.getParameter("cvv");
+		String cvc = request.getParameter("cvc");
 		System.out.println(cardNumber);
 		System.out.println(expMonth);
 		System.out.println(expYear);
-		System.out.println(cvv);
+		System.out.println(cvc);
 		HttpSession session = request.getSession(false);
 		int userid = -1;
 		try {
@@ -138,13 +136,13 @@ public class CustomerStripe extends HttpServlet {
 			
 			if (user.getStripeCustomerId() == null) {
 				HashMap<String, Object> customerParam = new HashMap<String, Object>();
-				customerParam.put("userid", user.getUserId());
 				customerParam.put("email", user.getEmail());
 				
 				Customer newCustomer = Customer.create(customerParam);
 				customerId = newCustomer.getId();
 				
 				customer = Customer.retrieve(customerId);
+				userDb.changeUserStripeCustomerIdById(userid, customerId);
 			} else {
 				customer = Customer.retrieve(user.getStripeCustomerId());
 			}
@@ -154,24 +152,39 @@ public class CustomerStripe extends HttpServlet {
 			
 			PaymentSourceCollection allCardDetails = customer.getSources();
 			
-			HashMap<String, Object> cardParam = new HashMap<String, Object>();
-			cardParam.put("cardNumber", cardNumber);
-			cardParam.put("expMonth", expMonth);
-			cardParam.put("expYear", expYear);
-			cardParam.put("cvv", cvv);
+			Token token = null;
+			try {
+				HashMap<String, Object> cardParam = new HashMap<String, Object>();
+				cardParam.put("number", cardNumber);
+				cardParam.put("exp_month", expMonth);
+				cardParam.put("exp_year", expYear);
+				cardParam.put("cvc", cvc);
+				
+				HashMap<String, Object> tokenParam = new HashMap<String, Object>();
+				tokenParam.put("card", cardParam);
+	
+				token = Token.create(tokenParam);
 			
-			HashMap<String, Object> tokenParam = new HashMap<String, Object>();
-			tokenParam.put("card", cardParam);
+//			PaymentMethod paymentMethod = PaymentMethod.create(Map.of(
+//                    "type", "card",
+//                    "card[number]", cardNumber,
+//                    "card[exp_month]", expMonth,
+//                    "card[exp_year]", expYear,
+//                    "card[cvc]", cvc
+//            ));
 			
-			Token token = Token.create(cardParam);
+//			String paymentMethodId = paymentMethod.getId();
+
 			String cardId = "";
 			Boolean cardNotExist = true;
-			for (int i = 0; i < allCardDetails.getData().size(); i++) {
-				String cardDetails = ((StripeObject) allCardDetails.getData().get(i)).toJson();
-				Card card = gson.fromJson(cardDetails, Card.class);
-				if (card.getFingerprint().equals(token.getCard().getFingerprint())) {
-					cardNotExist = false;
-					cardId = allCardDetails.getData().get(i).getId();
+			if (allCardDetails != null) {
+				for (int i = 0; i < allCardDetails.getData().size(); i++) {
+					String cardDetails = ((StripeObject) allCardDetails.getData().get(i)).toJson();
+					Card card = gson.fromJson(cardDetails, Card.class);
+					if (card.getFingerprint().equals(token.getCard().getFingerprint())) {
+						cardNotExist = false;
+						cardId = allCardDetails.getData().get(i).getId();
+					}
 				}
 			}
 			if (cardNotExist) {
@@ -192,6 +205,12 @@ public class CustomerStripe extends HttpServlet {
 			
 			Charge charge = Charge.create(chargeParam);
 			System.out.println(gson.toJson(charge));
+			
+			} catch (CardException e) {
+	            System.out.println("CardException: " + e.getMessage());
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
 			
 			for (Cart item : cartItems) {
 				OrderItem orderItem = new OrderItem();

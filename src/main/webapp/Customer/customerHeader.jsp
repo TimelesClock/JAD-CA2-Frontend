@@ -62,6 +62,12 @@
 						<button type="submit">My Address</button>
 					</form>
 				</li>
+				<li>
+					<form action="<%=request.getContextPath() + "/customer/order"%>" method="get">
+						<input type="hidden" name="p" value="myOrder">
+						<button type="submit">My Order(s)</button>
+					</form>
+				</li>
 			</ul>
 		</div>
 	</div>
