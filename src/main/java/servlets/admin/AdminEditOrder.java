@@ -36,7 +36,6 @@ public class AdminEditOrder extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String status = request.getParameter("status");
 		String orderId = request.getParameter("edit_order_id");
-		
 		try {
 			OrderDAO db = new OrderDAO();
 			Integer rowsAffected = db.updateStatus(status,orderId);

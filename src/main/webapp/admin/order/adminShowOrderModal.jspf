@@ -6,8 +6,8 @@
 			<div class="card-body">
 				<h2 class="card-title line-clamp-1" id="show_title">Order</h2>
 				<div>
-					<strong>Order Id:</strong>
-					<p id="show_order_id"></p>
+					<strong>Customer Id:</strong>
+					<p id="show_customer_id"></p>
 				</div>
 				<div>
 					<strong>Order Date:</strong>
@@ -19,7 +19,7 @@
 				</div>
 
 				<div>
-					<strong>Subtotal:</strong>
+					<strong>Total:</strong>
 					<p id="show_subtotal"></p>
 				</div>
 				<strong>Order Items</strong>
@@ -29,6 +29,7 @@
 							<th class="text-center">Book title</th>
 							<th class="text-center">Price</th>
 							<th class="text-center">Quantity</th>
+							<th class="text-center">Subtotal</th>
 						</tr>
 					</thead>
 					<tbody id = "book_table">

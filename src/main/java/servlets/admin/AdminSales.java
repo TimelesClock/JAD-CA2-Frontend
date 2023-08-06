@@ -3,6 +3,8 @@ package servlets.admin;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,6 +35,8 @@ public class AdminSales extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         try {
             List<Order> orders = orderDAO.getAllOrders();
+            List<Map<String, Object>> customerData = orderDAO.getTopCustomers();
+            request.setAttribute("customerData",customerData);
             request.setAttribute("orders", orders);
             request.getRequestDispatcher("/admin/adminSales.jsp").forward(request, response);
         } catch (SQLException e) {

@@ -134,21 +134,21 @@ try {
 		<%for (Order order : orders) {%>
 			if ("<%=order.getOrderId()%>" === orderId.toString()){
 				edit_status.value = "<%=order.getStatus()%>";
-				edit_order_id.value11 = "<%=order.getOrderId()%>";
+				edit_order_id.value = "<%=order.getOrderId()%>";
 				editOrderModal.showModal()
 			}
 		<%}%>
 	}
 	
 	function handleShowModal(orderId) {
-		var show_order_id = document.getElementById('show_order_id');
+		var show_customer_id = document.getElementById('show_customer_id');
 		var show_order_date = document.getElementById('show_order_date');
 		var show_status = document.getElementById('show_status');
 		var show_subtotal = document.getElementById('show_subtotal');
 		var book_table = document.getElementById('book_table');
 		<%for (Order order : orders) {%>
 			if ("<%=order.getOrderId()%>" === orderId.toString()) {
-				show_order_id.innerHTML = "<%=order.getOrderId()%>";
+				show_customer_id.innerHTML = "<%=order.getCustomerId()%>";
 				show_order_date.innerHTML = "<%=order.getOrderDate()%>";
 				show_status.innerHTML = "<%=order.getStatus()%>";
 				show_subtotal.innerHTML = "<%=order.getSubtotal()%>";
@@ -172,6 +172,7 @@ for (int i = 0; i < items.size(); i++) {
 					tableRows += '<td class="text-center">' + orderItems[i].bookName + '</td>';
 					tableRows += '<td class="text-center">' + orderItems[i].price + '</td>';
 					tableRows += '<td class="text-center">' + orderItems[i].quantity + '</td>';
+					tableRows += '<td class="text-center">' + (orderItems[i].quantity*orderItems[i].price) + '</td>';
 					tableRows += '</tr>';
 				}
 				book_table.innerHTML = tableRows;
