@@ -93,6 +93,7 @@ public class CustomerStripe extends HttpServlet {
 		int total = -1;
 		ArrayList<OrderItem> orderItems = new ArrayList<>();
 		int rowsAffected = -1;
+		int orderId = -1;
 		try {			
 			CartDAO cartDb = new CartDAO();
         	cartItems = cartDb.getCartItems(userid);
@@ -208,7 +209,7 @@ public class CustomerStripe extends HttpServlet {
 			order.setSubtotal(subtotal);
 			
 			OrderDAO orderDb = new OrderDAO();
-			rowsAffected = orderDb.insertOrder(order);
+			orderId = orderDb.insertOrder(order);
 			
 			rowsAffected = cartDb.deleteAllFromCart(userid);
 			if (rowsAffected != cartItems.size()) {
