@@ -312,7 +312,14 @@ public class UserDAO {
 		Connection conn = DBConnection.getConnection();
 		String userid = null;
 		try {
-			String sql = "INSERT INTO users (name, email, password, phone, role,address_id) VALUES (?, ?, MD5(?), ?, ?,?)";
+			String sql;
+			System.out.println(role+" What Hoiw wtf");
+			if (role.equals("reseller")) {
+				sql = "INSERT INTO users (name, email, password, phone, role,address_id,token) VALUES (?, ?, MD5(?), ?, ?,?,MD5(?))";
+			}else {
+				sql = "INSERT INTO users (name, email, password, phone, role,address_id) VALUES (?, ?, MD5(?), ?, ?,?)";
+			}
+			
 			PreparedStatement userStmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			userStmt.setString(1, name);
 			userStmt.setString(2, email);
@@ -320,6 +327,9 @@ public class UserDAO {
 			userStmt.setString(4, phone);
 			userStmt.setString(5,role);
 			userStmt.setString(6,addressId);
+			if (role.equals("reseller")) {
+				userStmt.setString(7,email+password);
+			}
 			userStmt.executeUpdate();
 			ResultSet rs = userStmt.getGeneratedKeys();
 			if (rs.next()) {

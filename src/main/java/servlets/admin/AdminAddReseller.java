@@ -43,7 +43,6 @@ public class AdminAddReseller extends HttpServlet {
 			String password = request.getParameter("password");
 			String phone = request.getParameter("phone");
 			String addressId = request.getParameter("add_address_id");
-			System.out.print("address"+addressId);
 			try {
 				UserDAO db = new UserDAO();
 				Integer count = db.userCountByEmail(email);
