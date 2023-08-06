@@ -120,6 +120,35 @@ public class AdminUtil {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void addResellerContext(HttpServletRequest request, Integer page,String search) {
+		try {
+			UserDAO db = new UserDAO();
+			ArrayList<User> users = new ArrayList<User>();
+			if (page == null) {
+				page = 1;
+			}
+			Integer limit = 25;
+			Integer offset = (page - 1) * limit;
+
+			users = db.getResellers(limit, offset,search);
+
+			request.setAttribute("users", users);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void addResellerCountContext(HttpServletRequest request,String search) {
+		try {
+			UserDAO db = new UserDAO();
+			Integer userCount = db.getTotalResellers(search);
+			Integer pages = (int) Math.ceil((double) userCount / 25);
+			request.setAttribute("totalPages", pages);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static void addUserCountContext(HttpServletRequest request,String search) {
 		try {

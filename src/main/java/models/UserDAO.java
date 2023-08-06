@@ -41,11 +41,60 @@ public class UserDAO {
 		return users;
 	}
 	
+	public ArrayList<User> getResellers(Integer limit, Integer offset,String search) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		ArrayList<User> users = new ArrayList<User>();
+		try {
+			String sql = "SELECT * FROM users WHERE role = 'reseller' AND name LIKE ? LIMIT ?,?";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1,"%"+search+"%");
+			pstmt.setInt(2, offset);
+			pstmt.setInt(3, limit);
+			ResultSet userRs = pstmt.executeQuery();
+			while (userRs.next()) {
+				User user = new User();
+				user.setUserId(userRs.getInt("user_id"));
+				user.setName(userRs.getString("name"));
+				user.setEmail(userRs.getString("email"));
+				user.setRole(userRs.getString("role"));
+				user.setPhone(userRs.getString("phone"));
+				user.setAddressId(Integer.toString(userRs.getInt("address_id")));
+				users.add(user);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return users;
+	}
+	
 	public Integer getTotalUsers(String search) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		Integer numberOfUsers = 0;
 		try {
 			String sql = "SELECT COUNT(*) AS number_of_users FROM users WHERE role = 'customer' AND name LIKE ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1,"%"+search+"%");
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				numberOfUsers = rs.getInt("number_of_users");
+			}
+			rs.close();
+			stmt.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return numberOfUsers;
+	}
+	
+	public Integer getTotalResellers(String search) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		Integer numberOfUsers = 0;
+		try {
+			String sql = "SELECT COUNT(*) AS number_of_users FROM users WHERE role = 'reseller' AND name LIKE ?";
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setString(1,"%"+search+"%");
 			ResultSet rs = stmt.executeQuery();
@@ -221,17 +270,18 @@ public class UserDAO {
 		}
 		return isDeleted;
 	}
-	public String addUser(String name, String email, String password, String phone,String addressId) throws SQLException {
+	public String addUser(String name, String email, String password, String phone,String addressId,String role) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		String userid = null;
 		try {
-			String sql = "INSERT INTO users (name, email, password, phone, role,address_id) VALUES (?, ?, MD5(?), ?, 'customer',?)";
+			String sql = "INSERT INTO users (name, email, password, phone, role,address_id) VALUES (?, ?, MD5(?), ?, ?,?)";
 			PreparedStatement userStmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			userStmt.setString(1, name);
 			userStmt.setString(2, email);
 			userStmt.setString(3, password);
 			userStmt.setString(4, phone);
-			userStmt.setString(5,addressId);
+			userStmt.setString(5,role);
+			userStmt.setString(6,addressId);
 			userStmt.executeUpdate();
 			ResultSet rs = userStmt.getGeneratedKeys();
 			if (rs.next()) {

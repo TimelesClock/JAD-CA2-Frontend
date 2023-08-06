@@ -37,5 +37,13 @@
 				</form>
 			</li>
 		</ul>
+		<div class="divider">Reseller</div>
+		<ul class="p-2 space-y-2 menu">
+			<li>
+				<form action="<%=request.getContextPath() + "/admin/reseller" %>" method="get" class="mx-2 p-0 flex">
+					<button type="submit" class="w-full h-full p-3 text-start">Reseller</button>
+				</form>
+			</li>
+		</ul>
 	</div>
 </body>

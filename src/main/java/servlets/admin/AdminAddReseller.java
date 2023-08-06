@@ -11,16 +11,16 @@ import models.UserDAO;
 import models.AddressDAO;
 
 /**
- * Servlet implementation class AdminAddCustomer
+ * Servlet implementation class AdminAddreseller
  */
-@WebServlet("/admin/customer/add")
-public class AdminAddCustomer extends HttpServlet {
+@WebServlet("/admin/reseller/add")
+public class AdminAddReseller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AdminAddCustomer() {
+    public AdminAddReseller() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -29,7 +29,7 @@ public class AdminAddCustomer extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendRedirect(request.getContextPath() + "/admin/customer");
+		response.sendRedirect(request.getContextPath() + "/admin/reseller");
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class AdminAddCustomer extends HttpServlet {
 				UserDAO db = new UserDAO();
 				Integer count = db.userCountByEmail(email);
 				if (count != 0) {
-					response.sendRedirect(request.getContextPath() + "/admin/customer?err=Email%20Already%20Exists");
+					response.sendRedirect(request.getContextPath() + "/admin/reseller?err=Email%20Already%20Exists");
 					return;
 				}
 				
@@ -66,22 +66,22 @@ public class AdminAddCustomer extends HttpServlet {
 					addressId = adr.addAddress(address,address2,district,country,city,postal_code,adr_phone);
 				}
 				
-				String userid = db.addUser(name,email,password,phone,addressId,"customer");
+				String userid = db.addUser(name,email,password,phone,addressId,"reseller");
 				if (userid == null) {
-					response.sendRedirect(request.getContextPath() + "/admin/customer?err=Customer%20Was%20Not%20Added");
+					response.sendRedirect(request.getContextPath() + "/admin/reseller?err=reseller%20Was%20Not%20Added");
 					return;
 				}else {
-					response.sendRedirect(request.getContextPath() + "/admin/customer?success=Customer%20Was%20Successfully%20Added");
+					response.sendRedirect(request.getContextPath() + "/admin/reseller?success=reseller%20Was%20Successfully%20Added");
 					return;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				response.sendRedirect(request.getContextPath() + "/admin/customer?err=Database%20Error");
+				response.sendRedirect(request.getContextPath() + "/admin/reseller?err=Database%20Error");
 				return;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendRedirect(request.getContextPath() + "/admin/customer?err=Something%20Went%20Wrong");
+			response.sendRedirect(request.getContextPath() + "/admin/reseller?err=Something%20Went%20Wrong");
 			return;
 		}
 	}

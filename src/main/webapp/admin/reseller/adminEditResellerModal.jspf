@@ -1,0 +1,112 @@
+<body>
+	<dialog id="edit_reseller_modal" class="modal">
+	<form method="post"
+		action="<%=request.getContextPath() + "/admin/reseller/edit"%>"
+		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="form">
+		<input type="hidden" name="action" value="editreseller">
+		<div class="modal-body space-y-0 grid grid-cols-2 gap-4 items-start">
+			<div>
+				<input type="hidden" name="user_id" id="edit_user_id">
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Name</span></label>
+					<input type="text" name="name" class="input input-bordered"
+						id="edit_name" required>
+				</div>
+
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Email</span></label>
+					<input type="email" name="email" class="input input-bordered"
+						id="edit_email" required>
+				</div>
+
+
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Password</span></label>
+					<input type="password" name="password" class="input input-bordered"
+						autocomplete="new-password">
+				</div>
+
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Phone</span></label>
+					<input type="number" name="phone" class="input input-bordered"
+						id="edit_phone" required>
+				</div>
+			</div>
+			<div>
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Address</span></label>
+					<select name="edit_address_id" class="select select-bordered"
+						id="edit_address_id" onchange="handleEditAddressSelection(this)"
+						required>
+						<option value="" disabled selected>Select the address</option>
+						<option value="-1">No Address</option>
+						<option value="0">+ Add new address</option>
+						<%
+						for (Address address : addresses) {
+						%>
+						<option value="<%=address.getAddressId()%>"><%=address.getAddress()%></option>
+						<%
+						}
+						%>
+					</select>
+				</div>
+				<div class="form-control" id="edit_address_form">
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">
+									Address</span></label> <input type="text" name="edit_address"
+								id="edit_address" class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">
+									Address 2</span></label> <input type="text" name="edit_address2"
+								id="edit_address2" class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">
+									District</span></label> <input type="text" name="edit_district"
+								id="edit_district" class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">
+									Country</span></label> <input type="text" name="edit_country"
+								id="edit_country" class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">City</span></label>
+							<input type="text" name="edit_city" id="edit_city"
+								class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">Postal
+									Code</span></label> <input type="text" name="edit_postal_code"
+								id="edit_postal_code" class="input input-bordered" disabled>
+						</div>
+					</div>
+					<div>
+						<div class="form-control">
+							<label class="label"> <span class="label-text">Phone
+									(Address)</span></label> <input type="text" name="edit_phone_address"
+								id="edit_phone_address" class="input input-bordered" disabled>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-action">
+				<button type="submit" class="btn btn-primary mt-5">edit</button>
+				<button type="button" class="btn mt-5"
+					onclick="this.closest('dialog').close();">Close</button>
+			</div>
+	</form>
+	</dialog>
+</body>
