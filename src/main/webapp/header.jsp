@@ -50,7 +50,7 @@
 				<%
 				}else{
 				%>
-				<%@include file="Customer/customerHeader.jsp"%>
+				<%@include file="customer/customerHeader.jsp"%>
 				<%
 				}
 				%>
