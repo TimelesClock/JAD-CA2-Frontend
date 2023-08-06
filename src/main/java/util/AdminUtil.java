@@ -47,6 +47,26 @@ public class AdminUtil {
 			return false;
 		}
 	}
+	
+	public static Boolean checkReseller(HttpServletRequest request) {
+		try {
+			HttpSession session = request.getSession(false);
+			if (session == null || session.getAttribute("userid") == null) {
+				return false;
+			}
+
+			UserDAO db = new UserDAO();
+			String userid = (String) session.getAttribute("userid");
+			String role = db.getRole(userid);
+			if (role == null || !role.equals("reseller")) {
+				return false;
+			} else {
+				return true;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
 	public static void addContext(HttpServletRequest request) throws ServletException, IOException {
 		try {

@@ -41,9 +41,16 @@
 					<button type="submit" class="btn btn-outline">Admin Panel</button>
 				</form>
 				<%
-				} else {
+				} else if (loginSession.getAttribute("userid") != null &&request.getAttribute("role")!= null&& request.getAttribute("role").equals("reseller")) {
+					%>
+					<form action="reseller" method="get" class="mx-2">
+					<input type="hidden" name="action" value="login">
+					<button type="submit" class="btn btn-outline">Reseller Panel</button>
+				</form>
+				<%
+				}else{
 				%>
-				<%@include file="customer/customerHeader.jsp"%>
+				<%@include file="Customer/customerHeader.jsp"%>
 				<%
 				}
 				%>

@@ -56,6 +56,8 @@ public class Filter extends HttpFilter implements javax.servlet.Filter {
 	    Boolean isAdmin = AdminUtil.checkAdmin(httpRequest);
 	    if (isAdmin) {
 	    	httpRequest.setAttribute("role","admin");
+	    }else if (AdminUtil.checkReseller(httpRequest)) {
+	    	httpRequest.setAttribute("role","reseller");
 	    }
 	    
 

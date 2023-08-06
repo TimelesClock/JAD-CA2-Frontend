@@ -290,6 +290,25 @@ public class UserDAO {
 		return role;
 	}
 	
+	public String getToken(String userid) throws SQLException{
+		Connection conn = DBConnection.getConnection();
+		String token = null;
+		try {
+			String sql = "SELECT token FROM users WHERE user_id = ?";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+			ResultSet rs = pstmt.executeQuery();
+			if(rs.next()) {
+				token = rs.getString("token");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return token;
+	}
+	
 	public boolean deleteUser(String userid) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		boolean isDeleted = false;
@@ -313,7 +332,6 @@ public class UserDAO {
 		String userid = null;
 		try {
 			String sql;
-			System.out.println(role+" What Hoiw wtf");
 			if (role.equals("reseller")) {
 				sql = "INSERT INTO users (name, email, password, phone, role,address_id,token) VALUES (?, ?, MD5(?), ?, ?,?,MD5(?))";
 			}else {
