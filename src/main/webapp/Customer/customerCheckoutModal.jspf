@@ -1,0 +1,47 @@
+<%@ page import="java.time.Year" %>
+<body>
+	<!-- Open the modal using ID.showModal() method -->
+	<button class="btn" onclick="customerCardModal.showModal()"
+		class="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
+		Check Out
+	</button>
+	<dialog id="customerCardModal" class="modal">
+	<form method="post"
+		action="<%=request.getContextPath() + "/customer/cart/stripe"%>"
+		class="modal-box w-2/5 max-w-screen-lg mx-auto" id="customerCardForm">
+		<input type="hidden" name="action" value="addCard">
+		<div class="modal-body space-y-0 grid grid-cols-2 gap-4 items-start">
+			<div>
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Card Number</span></label>
+					<input type="number" name="cardNumber" class="input input-bordered"
+						required>
+				</div>
+				
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Expiry Year</span></label>
+					<input type="number" name="expYear" class="input input-bordered" min="<%= java.time.Year.now().getValue() %>"
+						required>
+				</div>
+
+				<div class="form-control">
+					<label class="label"> <span class="label-text">Expiry Month</span></label>
+					<input type="number" name="expMonth" class="input input-bordered"
+						required>
+				</div>
+
+				<div class="form-control">
+					<label class="label"> <span class="label-text">CVV</span></label>
+					<input type="number" name="cvv" class="input input-bordered"
+						required>
+				</div>
+			</div>
+			
+			<div class="modal-action">
+				<button type="submit" class="btn btn-primary mt-5">Submit</button>
+				<button type="button" class="btn mt-5"
+					onclick="this.closest('dialog').close();">Close</button>
+			</div>
+	</form>
+	</dialog>
+</body>

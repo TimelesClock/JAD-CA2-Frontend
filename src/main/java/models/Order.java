@@ -7,7 +7,7 @@ public class Order {
 	private int orderId;
 	private Date orderDate;
 	private String status;
-	private float subtotal;
+	private double subtotal;
 	private ArrayList<OrderItem> orderItems;
 
 	public String getStatus() {
@@ -39,11 +39,11 @@ public class Order {
 		this.orderDate = orderDate;
 	}
 
-	public float getSubtotal() {
+	public double getSubtotal() {
 		return subtotal;
 	}
 
-	public void setSubtotal(float subtotal) {
+	public void setSubtotal(double subtotal) {
 		this.subtotal = subtotal;
 	}
 

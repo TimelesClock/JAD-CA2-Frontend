@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="models.User"%>
+<%@ page import="models.Address"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,15 +15,17 @@
 	<%@include file="../header.jsp"%>
 
 	<%
+	// customer profile
 	try {
 		User user = (User) request.getAttribute("user");
-		
+		Address address = (Address) request.getAttribute("address");
 	%>
 	<div class="flex flex-col items-center w-full p-5 rounded-xl space-y-6">
-		<form action="CustomerPanelServlet" method="post" class="card w-full"
-			id="profileForm">
+		<form action="<%=request.getContextPath() + "/customer/profile"%>"
+			method="post" class="card w-full" id="profileForm">
 			<h1 class="text-2xl font-bold">My Profile</h1>
-			<input type="hidden" name="p" value="editProfile">
+			<input type="hidden" name="addressId"
+				value="<%=user.getAddressId()%>">
 			<div class="form-control">
 				<label class="label"> <span class="label-text">Username</span>
 				</label> <input type="text" name="username" class="input input-bordered"
@@ -45,14 +48,13 @@
 		try {
 			String success = (String) request.getParameter("success");
 			if (success != null) {
-				
 		%>
 		<p class=""><%=success%></p>
 		<%
-			}
+		}
 		} catch (Exception e) {
-			String err = (String) request.getParameter("err");
-			%>
+		String err = (String) request.getParameter("err");
+		%>
 		<!-- Error Message -->
 		<div class="toast toast-top toast-center justify-center">
 			<div class="alert alert-error">
@@ -63,9 +65,10 @@
 		}
 		%>
 	</div>
+
 	<%
 	} catch (Exception e) {
-		String err = e.getMessage();
+	String err = e.getMessage();
 	%>
 	<!-- Error Message -->
 	<div class="toast toast-top toast-center justify-center">
@@ -76,5 +79,7 @@
 	<%
 	}
 	%>
+
+	<%@include file="../footer.html"%>
 </body>
 </html>

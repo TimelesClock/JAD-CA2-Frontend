@@ -5,7 +5,7 @@
 	%>
 	<div class="flex flex-row items-center">
 
-		<form action="CustomerPanelServlet" method="get">
+		<form action="<%=request.getContextPath() + "/customer/cart"%>" method="get">
 			<input type="hidden" name="p" value="myCart">
 			<button type="submit">
 				<svg xmlns="http://www.w3.org/2000/svg"
@@ -51,9 +51,15 @@
 					</form>
 				</li>
 				<li>
-					<form action="CustomerPanelServlet" method="get">
+					<form action="<%=request.getContextPath() + "/customer/changePassword"%>" method="get">
 						<input type="hidden" name="p" value="changePasswordForm">
 						<button type="submit">Change Password</button>
+					</form>
+				</li>
+				<li>
+					<form action="<%=request.getContextPath() + "/customer/address"%>" method="get">
+						<input type="hidden" name="p" value="myAddress">
+						<button type="submit">My Address</button>
 					</form>
 				</li>
 			</ul>

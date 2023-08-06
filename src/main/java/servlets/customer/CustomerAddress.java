@@ -8,20 +8,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import models.Address;
+import models.AddressDAO;
 import models.User;
 import models.UserDAO;
 
 /**
- * Servlet implementation class CustomerProfile
+ * Servlet implementation class CustomerAddress
  */
-@WebServlet("/customer/profile")
-public class CustomerProfile extends HttpServlet {
+@WebServlet("/customer/address")
+public class CustomerAddress extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public CustomerProfile() {
+    public CustomerAddress() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -43,10 +45,10 @@ public class CustomerProfile extends HttpServlet {
             return;
         }
 		
-		User user = new User();
+		Address address = new Address();
         try {
-            UserDAO db = new UserDAO();
-            user = db.getUserById(userid);
+            AddressDAO db = new AddressDAO();
+            address = db.getAddress(userid);
         } catch (Exception e) {
         	e.printStackTrace();
             System.out.println("error");
@@ -54,8 +56,8 @@ public class CustomerProfile extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/home");
             return;
         }
-        request.setAttribute("user", user);
-        request.getRequestDispatcher("/customer/customerProfile.jsp").forward(request, response);
+        request.setAttribute("address", address);
+        request.getRequestDispatcher("/customer/customerAddress.jsp").forward(request, response);
 	}
 
 	/**
@@ -75,30 +77,47 @@ public class CustomerProfile extends HttpServlet {
             return;
         }
 		
-		String username = request.getParameter("username");
-		String email = request.getParameter("email");
-		String phone = request.getParameter("phone");
-		String addressId = request.getParameter("addressId");
-		if (addressId.equals("0")) {
-			addressId = null;
-		}
+		String address = request.getParameter("add_address");
+		String address2 = request.getParameter("add_address2");
+		String district = request.getParameter("add_district");
+		String country = request.getParameter("add_country");
+		String city = request.getParameter("add_city");
+		String postal_code = request.getParameter("add_postal_code");
+		String adr_phone = request.getParameter("add_phone");
+		String addressId = null;
 		int rowsAffected = 0;
 		try {
-			UserDAO db = new UserDAO();
-			rowsAffected = db.editUserById(userid, username, email, phone, addressId);
+			AddressDAO db1 = new AddressDAO();
+			try {
+				addressId = db1.addAddress(address,address2,district,country,city,postal_code,adr_phone);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				response.sendRedirect(request.getContextPath()+"/customer/address?err=Something%20Went%20Wrong");
+				return;
+			}
 			
-			if (rowsAffected > 0) {
-				response.sendRedirect(request.getContextPath()+"/customer/profile?success=Profile%20Changed%20Successfully");
+			if (addressId == null) {
+				response.sendRedirect(request.getContextPath()+"/customer/address?err=Something%20Went%20Wrong");
 				return;
 			} else {
-				response.sendRedirect(request.getContextPath()+"/customer/profile?err=Something%20Went%20Wrong");
-				return;
+				UserDAO db2 = new UserDAO();
+				rowsAffected = db2.changeUserAddressById(userid, addressId);
+				
+				if (rowsAffected > 0) {
+					response.sendRedirect(request.getContextPath()+"/customer/address?success=Address%20Changed%20Successfully");
+					return;
+				} else {
+					response.sendRedirect(request.getContextPath()+"/customer/address?err=Something%20Went%20Wrong");
+					return;
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendRedirect(request.getContextPath()+"/customer/profile?err=Something%20Went%20Wrong");
+			response.sendRedirect(request.getContextPath()+"/customer/address?err=Something%20Went%20Wrong");
 			return;
 		}
+	
 		// doGet(request, response);
 	}
 

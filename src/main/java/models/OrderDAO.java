@@ -45,7 +45,7 @@ public class OrderDAO {
 		String sql = "INSERT INTO orders(order_date, subtotal) VALUES(?, ?)";
 		PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		pstmt.setDate(1, new java.sql.Date(order.getOrderDate().getTime()));
-		pstmt.setFloat(2, order.getSubtotal());
+		pstmt.setDouble(2, order.getSubtotal());
 
 		pstmt.executeUpdate();
 		ResultSet rs = pstmt.getGeneratedKeys();

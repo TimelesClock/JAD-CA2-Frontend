@@ -35,6 +35,57 @@ public class AddressDAO {
         return addresses;
     }
 	
+	public Address getAddress(int userid) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		Address address = new Address();
+		try {
+            String sql = "SELECT a.address_id, a.address, a.address2, a.district, a.country, a.city, a.postal_code, a.phone FROM address a\r\n"
+            		+ "INNER JOIN users u\r\n"
+            		+ "ON u.address_id = a.address_id\r\n"
+            		+ "WHERE u.user_id = ?;";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userid);
+            ResultSet addressRs = pstmt.executeQuery();
+            if (addressRs.next()) {
+                address.setAddressId(addressRs.getInt("address_id"));
+                address.setAddress(addressRs.getString("address"));
+                address.setAddress2(addressRs.getString("address2"));
+                address.setDistrict(addressRs.getString("district"));
+                address.setCountry(addressRs.getString("country"));
+                address.setCity(addressRs.getString("city"));
+                address.setPostalCode(addressRs.getString("postal_code"));
+                address.setPhone(addressRs.getString("phone"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+        return address;
+	}
+	
+	public Integer getAddressId (int userid) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		int addressId = -1;
+		try {
+            String sql = "SELECT a.address_id FROM address a\r\n"
+            		+ "INNER JOIN users u\r\n"
+            		+ "ON u.address_id = a.address_id\r\n"
+            		+ "WHERE u.user_id = ?;";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userid);
+            ResultSet addressRs = pstmt.executeQuery();
+            if (addressRs.next()) {
+            	addressId = addressRs.getInt("address_id");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+        return addressId;
+	}
+	
 	public String addAddress(String address, String address2, String district, String country, String city, String postal_code, String phone) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		String addressID = null;

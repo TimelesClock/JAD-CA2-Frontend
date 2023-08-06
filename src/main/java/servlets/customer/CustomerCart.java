@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import models.Cart;
 import models.CartDAO;
+import util.CustomerUtil;
 
 /**
  * Servlet implementation class CustomerCart
@@ -35,7 +36,21 @@ public class CustomerCart extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		HttpSession session = request.getSession(false);
-		int userid = (int) session.getAttribute("userid");
+		int userid = -1;
+		try {
+			userid = Integer.parseInt((String) session.getAttribute("userid"));
+		} catch (NumberFormatException e) {
+        	e.printStackTrace();
+            System.out.println("error");
+            request.setAttribute("err", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/home");
+            return;
+        }
+//		int totalQuantity = (int) request.getAttribute("totalQuantity");
+//		double subtotal = (double) request.getAttribute("subtotal");
+//		double gst = (double) request.getAttribute("gst");
+//		double total = (double) request.getAttribute("total");
+		
 		List<Cart> cartItems = new ArrayList<>();
 		// Get page and limit from request, or set default values
         int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
@@ -43,7 +58,7 @@ public class CustomerCart extends HttpServlet {
         int offset = (page - 1) * limit;
         int totalRecords = -1;
         int totalPages = 0;
-        double subtotal = -1;
+//        double subtotal = -1;
         try {
         	CartDAO db = new CartDAO();
         	cartItems = db.getCart(userid, limit, offset);
@@ -60,21 +75,27 @@ public class CustomerCart extends HttpServlet {
 
             totalPages = (int) Math.ceil((double) totalRecords / limit);
     		
-            subtotal = db.getSubtotal(userid);
-            
-            if (subtotal == -1) {
-    			request.setAttribute("err", "Subtotal failed to be retrieved.");
-    		}
+//            subtotal = db.getSubtotal(userid);
+//            
+//            if (subtotal == -1) {
+//    			request.setAttribute("err", "Subtotal failed to be retrieved.");
+//    		}
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 		}
 		request.setAttribute("cart", cartItems);
 		request.setAttribute("totalRecords", totalRecords);
-		request.setAttribute("subtotal", subtotal);
+//		request.setAttribute("subtotal", subtotal);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
-        request.getRequestDispatcher("/customerCart.jsp").forward(request, response);
+        CustomerUtil.addCartSummaryContext(request, response);
+//        request.setAttribute("totalQuantity", totalQuantity);
+//        request.setAttribute("subtotal", subtotal);
+//        request.setAttribute("gst", gst);
+//        request.setAttribute("total", total);
+//        response.sendRedirect(request.getContextPath() + "/customer/cart?p=myCart&page=" + page + "&success=Quantity%20Plus%20One");
+        request.getRequestDispatcher("/customer/customerCart.jsp").forward(request, response);
 	}
 
 	/**

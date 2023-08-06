@@ -74,6 +74,8 @@ public class UserDAO {
 				user.setEmail(userRs.getString("email"));
 				user.setRole(userRs.getString("role"));
 				user.setPhone(userRs.getString("phone"));
+				user.setAddressId(Integer.toString(userRs.getInt("address_id")));
+				user.setStripeCustomerId(userRs.getString("stripe_customer_id"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -92,8 +94,27 @@ public class UserDAO {
 			userStmt.setString(1, name);
 			userStmt.setString(2, email);
 			userStmt.setString(3, phone);
-			userStmt.setString(4,addressId);
+			userStmt.setString(4, addressId);
 			userStmt.setInt(5, userid);
+			rowsAffected = userStmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return rowsAffected;
+	}
+	
+	public Integer editUserProfileById(int userid, String name, String email, String phone) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		int rowsAffected = 0;
+		try {
+			String sql = "UPDATE users SET name = ?, email = ?, phone = ? WHERE user_id = ?;";
+			PreparedStatement userStmt = conn.prepareStatement(sql);
+			userStmt.setString(1, name);
+			userStmt.setString(2, email);
+			userStmt.setString(3, phone);
+			userStmt.setInt(4, userid);
 			rowsAffected = userStmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -110,6 +131,23 @@ public class UserDAO {
 			String sql = "UPDATE users SET password = MD5(?) WHERE user_id = ?;";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
 			userStmt.setString(1, password);
+			userStmt.setInt(2, userid);
+			rowsAffected = userStmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return rowsAffected;
+	}
+	
+	public Integer changeUserAddressById(int userid, String addressId) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		int rowsAffected = 0;
+		try {
+			String sql = "UPDATE users SET address_id = ? WHERE user_id = ?;";
+			PreparedStatement userStmt = conn.prepareStatement(sql);
+			userStmt.setString(1, addressId);
 			userStmt.setInt(2, userid);
 			rowsAffected = userStmt.executeUpdate();
 		} catch (Exception e) {

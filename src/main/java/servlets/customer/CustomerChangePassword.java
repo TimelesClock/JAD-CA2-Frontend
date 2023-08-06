@@ -35,7 +35,7 @@ public class CustomerChangePassword extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		request.getRequestDispatcher("/customer/customerChangePassword.jsp").forward(request, response);
 	}
 
 	/**
@@ -44,28 +44,43 @@ public class CustomerChangePassword extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		HttpSession session = request.getSession(false);
-		int userid = (int) session.getAttribute("userid");
+		int userid = -1;
+		try {
+			userid = Integer.parseInt((String) session.getAttribute("userid"));
+		} catch (NumberFormatException e) {
+        	e.printStackTrace();
+            System.out.println("error");
+            request.setAttribute("err", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/home");
+            return;
+        }
+		
 		String password = request.getParameter("password");
 		String passwordCheck = request.getParameter("passwordCheck");
 		int rowsAffected = 0;
 		try {
 			if (password.length() < 8) {
-				response.sendRedirect(request.getContextPath()+"/customer/changePassword&err=Minimum%20Length%20Of%208%20Characters");
+				response.sendRedirect(request.getContextPath()+"/customer/changePassword?err=Minimum%20Length%20Of%208%20Characters");
+				return;
 			} else if (!password.equals(passwordCheck)) {
-				response.sendRedirect(request.getContextPath()+"/customer/changePassword&err=Passwords%20Entered%20Do%20Not%20Match");
+				response.sendRedirect(request.getContextPath()+"/customer/changePassword?err=Passwords%20Entered%20Do%20Not%20Match");
+				return;
 			} else {
 				UserDAO db = new UserDAO();
 	            rowsAffected = db.changeUserPasswordById(userid, password);
 	            
 				if (rowsAffected > 0) {
-					response.sendRedirect(request.getContextPath()+"/customer/changePassword&success=Password%20Changed%20Successfully");
+					response.sendRedirect(request.getContextPath()+"/customer/changePassword?success=Password%20Changed%20Successfully");
+					return;
 				} else {
-					response.sendRedirect(request.getContextPath()+"/customer/changePassword&err=Something%20Went%20Wrong");
+					response.sendRedirect(request.getContextPath()+"/customer/changePassword?err=Something%20Went%20Wrong");
+					return;
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendRedirect(request.getContextPath()+"/customer/changePassword&err=Something%20Went%20Wrong");
+			response.sendRedirect(request.getContextPath()+"/customer/changePassword?err=Something%20Went%20Wrong");
+			return;
 		}
 	}
 

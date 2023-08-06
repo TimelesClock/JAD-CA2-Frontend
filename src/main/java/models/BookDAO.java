@@ -110,6 +110,7 @@ public class BookDAO {
 			ResultSet rs = pst.executeQuery();
 
 			if (rs.next()) {
+				book.setBookId(bookId);
 				book.setImage(rs.getString("image_url"));
 				book.setTitle(rs.getString("title"));
 				book.setAuthorId(rs.getInt("author_id"));

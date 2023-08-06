@@ -46,13 +46,13 @@ public class CustomerDeleteCart extends HttpServlet {
 			
 			if (rowsAffected > 0) {
 				// request.setAttribute("success", "Added To Cart");
-				response.sendRedirect(request.getContextPath() + "/customer/cart/&page=" + page + "&success=Deleted%20From%20Cart");
+				response.sendRedirect(request.getContextPath() + "/customer/cart?p=myCart&page=" + page + "&success=Deleted%20From%20Cart");
 			} else {
-				response.sendRedirect(request.getContextPath() + "/customer/cart/&page=" + page + "&err=Something%20Went%20Wrong");
+				response.sendRedirect(request.getContextPath() + "/customer/cart?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendRedirect(request.getContextPath() + "/customer/cart/&page=" + page + "&err=Something%20Went%20Wrong");
+			response.sendRedirect(request.getContextPath() + "/customer/cart?p=myCart&page=" + page + "&err=Something%20Went%20Wrong");
 		}
 	}
 

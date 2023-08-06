@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import models.Book;
 import models.BookDAO;
 
-@WebServlet("/BookDetails")
+@WebServlet("/bookDetails")
 public class BookDetailsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
