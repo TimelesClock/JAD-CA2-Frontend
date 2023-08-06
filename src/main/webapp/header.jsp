@@ -58,7 +58,7 @@
 				if (loginSession != null && loginSession.getAttribute("userid") != null) {
 				%>
 				<!-- Logout button -->
-				<form action="logout" method="post" class="mx-2">
+				<form action="<%=request.getContextPath() + "/logout"%>" method="post" class="mx-2">
 					<input type="hidden" name="action" value="logout">
 					<button type="submit" class="btn btn-outline btn-error">Logout</button>
 				</form>

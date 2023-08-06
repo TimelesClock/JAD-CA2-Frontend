@@ -128,10 +128,11 @@ public class OrderDAO {
 		Connection conn = DBConnection.getConnection();
 		int orderId = -1;
 		try {
-			String sql = "INSERT INTO orders(order_date, subtotal) VALUES(?, ?)";
+			String sql = "INSERT INTO orders(order_date, status, subtotal, customer_id) VALUES(?, 'Pending', ?, ?)";
 			PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			pstmt.setDate(1, new java.sql.Date(order.getOrderDate().getTime()));
 			pstmt.setDouble(2, order.getSubtotal());
+			pstmt.setInt(3, order.getCustomerId());
 	
 			pstmt.executeUpdate();
 			ResultSet rs = pstmt.getGeneratedKeys();

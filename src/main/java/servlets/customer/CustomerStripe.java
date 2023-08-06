@@ -129,90 +129,7 @@ public class CustomerStripe extends HttpServlet {
 			
             String formattedTotal = Integer.toString(total);
             System.out.println("formattedTotal: " + formattedTotal);
-			Stripe.apiKey = StripeConnection.getStripeApiKey();
-			
-			Customer customer = new Customer();
-			String customerId = user.getStripeCustomerId();
-			
-			if (user.getStripeCustomerId() == null) {
-				HashMap<String, Object> customerParam = new HashMap<String, Object>();
-				customerParam.put("email", user.getEmail());
-				
-				Customer newCustomer = Customer.create(customerParam);
-				customerId = newCustomer.getId();
-				
-				customer = Customer.retrieve(customerId);
-				userDb.changeUserStripeCustomerIdById(userid, customerId);
-			} else {
-				customer = Customer.retrieve(user.getStripeCustomerId());
-			}
-			
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			System.out.println(gson.toJson(customer));
-			
-			PaymentSourceCollection allCardDetails = customer.getSources();
-			
-			Token token = null;
-			try {
-				HashMap<String, Object> cardParam = new HashMap<String, Object>();
-				cardParam.put("number", cardNumber);
-				cardParam.put("exp_month", expMonth);
-				cardParam.put("exp_year", expYear);
-				cardParam.put("cvc", cvc);
-				
-				HashMap<String, Object> tokenParam = new HashMap<String, Object>();
-				tokenParam.put("card", cardParam);
-	
-				token = Token.create(tokenParam);
-			
-//			PaymentMethod paymentMethod = PaymentMethod.create(Map.of(
-//                    "type", "card",
-//                    "card[number]", cardNumber,
-//                    "card[exp_month]", expMonth,
-//                    "card[exp_year]", expYear,
-//                    "card[cvc]", cvc
-//            ));
-			
-//			String paymentMethodId = paymentMethod.getId();
-
-			String cardId = "";
-			Boolean cardNotExist = true;
-			if (allCardDetails != null) {
-				for (int i = 0; i < allCardDetails.getData().size(); i++) {
-					String cardDetails = ((StripeObject) allCardDetails.getData().get(i)).toJson();
-					Card card = gson.fromJson(cardDetails, Card.class);
-					if (card.getFingerprint().equals(token.getCard().getFingerprint())) {
-						cardNotExist = false;
-						cardId = allCardDetails.getData().get(i).getId();
-					}
-				}
-			}
-			if (cardNotExist) {
-				HashMap<String, Object> source = new HashMap<String, Object>();
-				source.put("source", token.getId());
-				
-				cardId = customer.getSources().create(source).getId();
-				System.out.println("Card created");
-			} else {
-				System.out.println("Card already exists");
-			}
-			
-			HashMap<String, Object> chargeParam = new HashMap<String, Object>();
-			chargeParam.put("amount", total);
-			chargeParam.put("currency", "usd");
-			chargeParam.put("customerId", customerId);
-			chargeParam.put("source", cardId);
-			
-			Charge charge = Charge.create(chargeParam);
-			System.out.println(gson.toJson(charge));
-			
-			} catch (CardException e) {
-	            System.out.println("CardException: " + e.getMessage());
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-			
-			for (Cart item : cartItems) {
+            for (Cart item : cartItems) {
 				OrderItem orderItem = new OrderItem();
 				orderItem.setBookId(item.getBookId());
 				orderItem.setQuantity(item.getQuantity());
@@ -226,6 +143,7 @@ public class CustomerStripe extends HttpServlet {
 			order.setOrderDate(currentDate);
 			
 			order.setSubtotal(subtotal);
+			order.setCustomerId(userid);
 			
 			OrderDAO orderDb = new OrderDAO();
 			orderId = orderDb.insertOrder(order);
@@ -238,9 +156,91 @@ public class CustomerStripe extends HttpServlet {
 				response.sendRedirect(request.getContextPath() + "/customer/cart?p=myCart&success=Checked%20Out%20Successfully");
 				return;
 			}
-		} catch (StripeException e) {
-			e.printStackTrace();
-			request.setAttribute("err", e.getMessage());
+//			Stripe.apiKey = StripeConnection.getStripeApiKey();
+//			
+//			Customer customer = new Customer();
+//			String customerId = user.getStripeCustomerId();
+//			
+//			if (user.getStripeCustomerId() == null) {
+//				HashMap<String, Object> customerParam = new HashMap<String, Object>();
+//				customerParam.put("email", user.getEmail());
+//				
+//				Customer newCustomer = Customer.create(customerParam);
+//				customerId = newCustomer.getId();
+//				
+//				customer = Customer.retrieve(customerId);
+//				userDb.changeUserStripeCustomerIdById(userid, customerId);
+//			} else {
+//				customer = Customer.retrieve(user.getStripeCustomerId());
+//			}
+//			
+//			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//			System.out.println(gson.toJson(customer));
+//			
+//			PaymentSourceCollection allCardDetails = customer.getSources();
+//			
+//			Token token = null;
+//			try {
+//				HashMap<String, Object> cardParam = new HashMap<String, Object>();
+//				cardParam.put("number", cardNumber);
+//				cardParam.put("exp_month", expMonth);
+//				cardParam.put("exp_year", expYear);
+//				cardParam.put("cvc", cvc);
+//				
+//				HashMap<String, Object> tokenParam = new HashMap<String, Object>();
+//				tokenParam.put("card", cardParam);
+//	
+//				token = Token.create(tokenParam);
+//			
+//			PaymentMethod paymentMethod = PaymentMethod.create(Map.of(
+//                    "type", "card",
+//                    "card[number]", cardNumber,
+//                    "card[exp_month]", expMonth,
+//                    "card[exp_year]", expYear,
+//                    "card[cvc]", cvc
+//            ));
+//			
+//			String paymentMethodId = paymentMethod.getId();
+//
+//			String cardId = "";
+//			Boolean cardNotExist = true;
+//			if (allCardDetails != null) {
+//				for (int i = 0; i < allCardDetails.getData().size(); i++) {
+//					String cardDetails = ((StripeObject) allCardDetails.getData().get(i)).toJson();
+//					Card card = gson.fromJson(cardDetails, Card.class);
+//					if (card.getFingerprint().equals(token.getCard().getFingerprint())) {
+//						cardNotExist = false;
+//						cardId = allCardDetails.getData().get(i).getId();
+//					}
+//				}
+//			}
+//			if (cardNotExist) {
+//				HashMap<String, Object> source = new HashMap<String, Object>();
+//				source.put("source", token.getId());
+//				
+//				cardId = customer.getSources().create(source).getId();
+//				System.out.println("Card created");
+//			} else {
+//				System.out.println("Card already exists");
+//			}
+//			
+//			HashMap<String, Object> chargeParam = new HashMap<String, Object>();
+//			chargeParam.put("amount", total);
+//			chargeParam.put("currency", "usd");
+//			chargeParam.put("customerId", customerId);
+//			chargeParam.put("source", cardId);
+//			
+//			Charge charge = Charge.create(chargeParam);
+//			System.out.println(gson.toJson(charge));
+//			
+//			} catch (CardException e) {
+//	            System.out.println("CardException: " + e.getMessage());
+//	        } catch (Exception e) {
+//	            e.printStackTrace();
+//	        }
+//		} catch (StripeException e) {
+//			e.printStackTrace();
+//			request.setAttribute("err", e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
