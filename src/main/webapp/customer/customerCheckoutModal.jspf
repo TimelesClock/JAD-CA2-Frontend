@@ -26,13 +26,13 @@
 
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Expiry Month</span></label>
-					<input type="number" name="expMonth" class="input input-bordered"
+					<input type="number" name="expMonth" class="input input-bordered" min=1 max=12
 						required>
 				</div>
 
 				<div class="form-control">
-					<label class="label"> <span class="label-text">CVV</span></label>
-					<input type="number" name="cvv" class="input input-bordered"
+					<label class="label"> <span class="label-text">CVC</span></label>
+					<input type="number" name="cvc" class="input input-bordered"
 						required>
 				</div>
 			</div>

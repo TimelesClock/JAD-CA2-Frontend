@@ -2,6 +2,7 @@ package servlets.customer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -13,19 +14,20 @@ import javax.servlet.http.HttpSession;
 
 import models.Cart;
 import models.CartDAO;
-import util.CustomerUtil;
+import models.Order;
+import models.OrderDAO;
 
 /**
- * Servlet implementation class CustomerCart
+ * Servlet implementation class CustomerOrder
  */
-@WebServlet("/customer/cart")
-public class CustomerCart extends HttpServlet {
+@WebServlet("/customer/order")
+public class CustomerOrder extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public CustomerCart() {
+    public CustomerOrder() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,6 +35,7 @@ public class CustomerCart extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@SuppressWarnings("unchecked")
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		HttpSession session = request.getSession(false);
@@ -47,7 +50,9 @@ public class CustomerCart extends HttpServlet {
             return;
         }
 
-		List<Cart> cartItems = new ArrayList<>();
+		HashMap<String,Object> hashmap = new HashMap<>();
+		ArrayList<Order> orders = new ArrayList<>();
+		ArrayList<Cart> cartItems = new ArrayList<>();
 		// Get page and limit from request, or set default values
         int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
         int limit = 5;
@@ -55,17 +60,25 @@ public class CustomerCart extends HttpServlet {
         int totalRecords = -1;
         int totalPages = 0;
         try {
-        	CartDAO db = new CartDAO();
-        	cartItems = db.getCart(userid, limit, offset);
+        	OrderDAO db = new OrderDAO();
+        	hashmap = db.getOrderHistory(userid, limit, offset);
         	
-        	if (cartItems.size() == 0) {
-    			request.setAttribute("err", "Cart is empty.");
+        	orders = (ArrayList<Order>) hashmap.get("orders");
+        	
+        	if (orders.size() == 0) {
+    			request.setAttribute("err", "Order history is empty.");
     		}
         	
-        	totalRecords = db.getTotalCartItems(userid);
+        	cartItems = (ArrayList<Cart>) hashmap.get("cartItems");
+        	
+        	if (orders.size() != cartItems.size()) {
+    			request.setAttribute("err", "Something went wrong.");
+    		}
+        	
+        	totalRecords = db.getTotalOrderHistory(userid);
         	
         	if (totalRecords == -1) {
-    			request.setAttribute("err", "Something went wrong.");
+    			request.setAttribute("err", "Total orders made not found.");
     		}
 
             totalPages = (int) Math.ceil((double) totalRecords / limit);
@@ -73,12 +86,12 @@ public class CustomerCart extends HttpServlet {
 			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 		}
+        request.setAttribute("orders", orders);
 		request.setAttribute("cart", cartItems);
 		request.setAttribute("totalRecords", totalRecords);
 		request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
-        CustomerUtil.addCartSummaryContext(request, response);
-        request.getRequestDispatcher("/customer/customerCart.jsp").forward(request, response);
+        request.getRequestDispatcher("/customer/customerOrder.jsp").forward(request, response);
 	}
 
 	/**
