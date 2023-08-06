@@ -13,14 +13,15 @@ import dbaccess.*;
 
 public class UserDAO {
 
-	public ArrayList<User> getUsers(Integer limit, Integer offset) throws SQLException {
+	public ArrayList<User> getUsers(Integer limit, Integer offset,String search) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		ArrayList<User> users = new ArrayList<User>();
 		try {
-			String sql = "SELECT * FROM users WHERE role = 'customer' LIMIT ?,?";
+			String sql = "SELECT * FROM users WHERE role = 'customer' AND name LIKE ? LIMIT ?,?";
 			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, offset);
-			pstmt.setInt(2, limit);
+			pstmt.setString(1,"%"+search+"%");
+			pstmt.setInt(2, offset);
+			pstmt.setInt(3, limit);
 			ResultSet userRs = pstmt.executeQuery();
 			while (userRs.next()) {
 				User user = new User();
@@ -40,13 +41,14 @@ public class UserDAO {
 		return users;
 	}
 	
-	public Integer getTotalUsers() throws SQLException {
+	public Integer getTotalUsers(String search) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		Integer numberOfUsers = 0;
 		try {
-			String sql = "SELECT COUNT(*) AS number_of_users FROM users WHERE role = 'customer'";
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
+			String sql = "SELECT COUNT(*) AS number_of_users FROM users WHERE role = 'customer' AND name LIKE ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1,"%"+search+"%");
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				numberOfUsers = rs.getInt("number_of_users");
 			}

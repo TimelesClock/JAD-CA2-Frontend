@@ -9,15 +9,20 @@ List<Address> addresses = (List<Address>) request.getAttribute("addresses");
 %>
 <%!int currentPage;
 	String imageUrl;
-	int totalPages;%>
+	int totalPages;
+	String search;%>
 <%
 try {
+	search = request.getParameter("search");
 	String pageNum = request.getParameter("page");
 	String totalPageRaw = request.getAttribute("totalPages") != null
 	? request.getAttribute("totalPages").toString()
 	: "";
 	currentPage = pageNum != null ? Integer.parseInt(pageNum) : 1;
 	totalPages = totalPageRaw != null ? Integer.parseInt(totalPageRaw) : totalPages;
+	if (totalPages == 0){
+		totalPages = 1;
+	}
 } catch (Exception e) {
 	totalPages = 1;
 	currentPage = 1;
@@ -42,13 +47,21 @@ try {
 				<h1 class="text-2xl font-bold mb-4 ms-5">View Customer</h1>
 				<button class="btn" onclick="add_customer_modal.showModal()">Add
 					New Customer</button>
+				<div class="flex ms-24 mt-10 w-1/2">
+
+					<form action="<%=request.getContextPath() + "/admin/customer"%>" method="get" class="w-2/3">
+						<input type="text" name="search" placeholder="Search Customer"
+							class="input input-bordered w-full max-w-xs" /> <input
+							type="submit" value="Search" class="btn btn-primary mt-2">
+					</form>
+				</div>
 				<div class="flex justify-center my-5">
 					<div class="join">
 						<a
-							href="<%=request.getContextPath() + "/admin/customer?page=" + (currentPage - 1)%>"
+							href="<%=request.getContextPath() + "/admin/customer?page=" + (currentPage - 1)%><%=search != null ? ("&search=" + search) : ""%>"
 							class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
 						<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
-							href="<%=request.getContextPath() + "/admin/customer?page=" + (currentPage + 1)%>"
+							href="<%=request.getContextPath() + "/admin/customer?page=" + (currentPage + 1)%><%=search != null ? ("&search=" + search) : ""%>"
 							class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
 					</div>
 				</div>
@@ -101,10 +114,10 @@ try {
 				<div class="flex justify-center my-5">
 					<div class="join">
 						<a
-							href="<%=request.getContextPath() + "/admin/customer?page=" + (currentPage - 1)%>"
+							href="<%=request.getContextPath() + "/admin/customer?page=" + (currentPage - 1)%><%=search != null ? ("&search=" + search) : ""%>"
 							class="join-item btn <%=currentPage == 1 ? "btn-disabled" : ""%>">«</a>
 						<a href="#" class="join-item btn">Page <%=currentPage%></a> <a
-							href="<%=request.getContextPath() + "/admin/customer?page=" + (currentPage + 1)%>"
+							href="<%=request.getContextPath() + "/admin/customer?page=" + (currentPage + 1)%><%=search != null ? ("&search=" + search) : ""%>"
 							class="join-item btn <%=currentPage == totalPages ? "btn-disabled" : ""%>">»</a>
 					</div>
 				</div>

@@ -32,7 +32,6 @@ public class AdminCustomer extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		try {
-			System.out.println(request.getContextPath());
 			String page_raw = request.getParameter("page");
 			Integer page;
 			try {
@@ -40,9 +39,12 @@ public class AdminCustomer extends HttpServlet {
 			} catch (Exception e) {
 				page = 1;
 			}
-
-			AdminUtil.addUserContext(request, page);
-			AdminUtil.addUserCountContext(request);
+			String search = request.getParameter("search");
+			if (search == null) {
+				search = "";
+			}
+			AdminUtil.addUserContext(request, page,search);
+			AdminUtil.addUserCountContext(request,search);
 			AdminUtil.addAddressContext(request);
 			request.getRequestDispatcher("/admin/customer/adminCustomer.jsp").forward(request, response);
 

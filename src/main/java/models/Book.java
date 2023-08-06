@@ -17,8 +17,17 @@ public class Book {
     private int genreId;
     private String genreName;
     private String imageUrl;
+    private int totalQuantitySold;
 
-    // Constructor
+    public int getTotalQuantitySold() {
+		return totalQuantitySold;
+	}
+
+	public void setTotalQuantitySold(int totalQuanatitySold) {
+		this.totalQuantitySold = totalQuanatitySold;
+	}
+
+	// Constructor
     public Book() {
     }
     

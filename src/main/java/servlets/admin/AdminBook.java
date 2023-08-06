@@ -37,9 +37,13 @@ public class AdminBook extends HttpServlet {
 			}catch(Exception e) {
 				page = 1;
 			}
+			String search = request.getParameter("search");
+			if (search == null) {
+				search = "";
+			}
 			AdminUtil.addContext(request);
-			AdminUtil.addBookContext(request,page);
-			AdminUtil.addBookCountContext(request);
+			AdminUtil.addBookContext(request,page,search);
+			AdminUtil.addBookCountContext(request,search);
 			request.getRequestDispatcher("/admin/book/adminBook.jsp").forward(request, response);;
 		}catch(Exception e) {
 			e.printStackTrace();
