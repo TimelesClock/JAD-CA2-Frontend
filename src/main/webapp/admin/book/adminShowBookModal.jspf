@@ -11,10 +11,6 @@
 				<h2 class="card-title line-clamp-1" id="show_title"></h2>
 				<p id="show_description"></p>
 				<div>
-					<strong>Author ID:</strong>
-					<p id="show_author_id"></p>
-				</div>
-				<div>
 					<strong>Author Name:</strong>
 					<p id="show_author_name"></p>
 				</div>
@@ -25,6 +21,10 @@
 				<div>
 					<strong>Quantity:</strong>
 					<p id="show_quantity"></p>
+				</div>
+				<div>
+					<strong>Total Quantity Sold:</strong>
+					<p id="show_sold"></p>
 				</div>
 				<div>
 					<strong>Publication Date:</strong>
@@ -39,16 +39,8 @@
 					<p id="show_rating"></p>
 				</div>
 				<div>
-					<strong>Publisher ID:</strong>
-					<p id="show_publisher_id"></p>
-				</div>
-				<div>
 					<strong>Publisher Name:</strong>
 					<p id="show_publisher_name"></p>
-				</div>
-				<div>
-					<strong>Genre ID:</strong>
-					<p id="show_genre_id"></p>
 				</div>
 				<div>
 					<strong>Genre Name:</strong>

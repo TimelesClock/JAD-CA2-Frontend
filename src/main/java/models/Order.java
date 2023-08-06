@@ -9,6 +9,17 @@ public class Order {
 	private String status;
 	private double subtotal;
 	private ArrayList<OrderItem> orderItems;
+	private int customerId;
+	
+	
+
+	public int getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(int customerId) {
+		this.customerId = customerId;
+	}
 
 	public String getStatus() {
 		return status;

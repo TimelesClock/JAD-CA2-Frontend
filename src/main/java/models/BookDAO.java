@@ -214,16 +214,24 @@ public class BookDAO {
 		return quantityOfBooks;
 	}
 
-	public ArrayList<Book> getAllBooks(Integer limit, Integer offset) throws SQLException {
+	public ArrayList<Book> getAllBooks(Integer limit, Integer offset,String search) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		ArrayList<Book> books = new ArrayList<>();
 		try {
-			String sql = "SELECT b.*,p.name AS publisher,a.name AS author,g.name AS genre "
-					+ "FROM books b,genres g,publishers p,authors a WHERE  b.genre_id = g.genre_id AND"
-					+ " b.publisher_id = p.publisher_id AND b.author_id = a.author_id ORDER BY book_id ASC LIMIT ?,?";
+			String sql = "SELECT b.*, p.name AS publisher, a.name AS author, g.name AS genre, SUM(oi.quantity) AS total_quantity_sold "
+		            + "FROM books b "
+		            + "JOIN genres g ON b.genre_id = g.genre_id "
+		            + "JOIN publishers p ON b.publisher_id = p.publisher_id "
+		            + "JOIN authors a ON b.author_id = a.author_id "
+		            + "LEFT JOIN order_items oi ON b.book_id = oi.book_id "
+		            + "WHERE b.title LIKE ? "
+		            + "GROUP BY b.book_id, p.name, a.name, g.name "
+		            + "ORDER BY book_id ASC LIMIT ?,?";
+
 			PreparedStatement stmt = conn.prepareStatement(sql);
-			stmt.setInt(1, offset);
-			stmt.setInt(2, limit);
+			stmt.setString(1,"%"+search+"%");
+			stmt.setInt(2, offset);
+			stmt.setInt(3, limit);
 			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				Book book = new Book();
@@ -242,6 +250,7 @@ public class BookDAO {
 				book.setPublisherName(rs.getString("publisher"));
 				book.setAuthorName(rs.getString("author"));
 				book.setGenreName(rs.getString("genre"));
+				book.setTotalQuantitySold(rs.getInt("total_quantity_sold"));
 				books.add(book);
 			}
 			rs.close();
@@ -369,13 +378,14 @@ public class BookDAO {
 		return deleted;
 	}
 	
-	public Integer getAllTotalBooks() throws SQLException {
+	public Integer getAllTotalBooks(String search) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		Integer numberOfBooks = 0;
 		try {
-			String sql = "SELECT COUNT(*) AS number_of_books FROM books";
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
+			String sql = "SELECT COUNT(*) AS number_of_books FROM books WHERE title LIKE ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1,"%"+search+"%");
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				numberOfBooks = rs.getInt("number_of_books");
 			}
@@ -386,6 +396,7 @@ public class BookDAO {
 		} finally {
 			conn.close();
 		}
+		System.out.println(numberOfBooks);
 		return numberOfBooks;
 	}
 }

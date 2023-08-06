@@ -193,7 +193,7 @@
 			} else {
 			%>
 			<figure class="w-full h-80">
-				<span class="	"><%=book.getTitle()%></span>
+				<img src="<%=request.getContextPath() + "/image/book.jpg" %>" alt="<%=book.getTitle() %>" class = "w-full h-full">
 			</figure>
 			<%
 			}

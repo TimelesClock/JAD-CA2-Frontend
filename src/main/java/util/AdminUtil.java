@@ -72,7 +72,7 @@ public class AdminUtil {
 
 	}
 
-	public static void addBookContext(HttpServletRequest request, Integer page) {
+	public static void addBookContext(HttpServletRequest request, Integer page,String search) {
 		try {
 			BookDAO db = new BookDAO();
 			ArrayList<Book> books = new ArrayList<Book>();
@@ -82,7 +82,7 @@ public class AdminUtil {
 			Integer limit = 25;
 			Integer offset = (page - 1) * limit;
 
-			books = db.getAllBooks(limit, offset);
+			books = db.getAllBooks(limit, offset,search);
 
 			request.setAttribute("books", books);
 		} catch (Exception e) {
@@ -91,18 +91,19 @@ public class AdminUtil {
 
 	}
 
-	public static void addBookCountContext(HttpServletRequest request) {
+	public static void addBookCountContext(HttpServletRequest request,String search) {
 		try {
 			BookDAO db = new BookDAO();
-			Integer bookCount = db.getAllTotalBooks();
+			Integer bookCount = db.getAllTotalBooks(search);
 			Integer pages = (int) Math.ceil((double) bookCount / 25);
+			System.out.println(pages);
 			request.setAttribute("totalPages", pages);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void addUserContext(HttpServletRequest request, Integer page) {
+	public static void addUserContext(HttpServletRequest request, Integer page,String search) {
 		try {
 			UserDAO db = new UserDAO();
 			ArrayList<User> users = new ArrayList<User>();
@@ -112,7 +113,7 @@ public class AdminUtil {
 			Integer limit = 25;
 			Integer offset = (page - 1) * limit;
 
-			users = db.getUsers(limit, offset);
+			users = db.getUsers(limit, offset,search);
 
 			request.setAttribute("users", users);
 		} catch (Exception e) {
@@ -120,10 +121,10 @@ public class AdminUtil {
 		}
 	}
 
-	public static void addUserCountContext(HttpServletRequest request) {
+	public static void addUserCountContext(HttpServletRequest request,String search) {
 		try {
 			UserDAO db = new UserDAO();
-			Integer userCount = db.getTotalUsers();
+			Integer userCount = db.getTotalUsers(search);
 			Integer pages = (int) Math.ceil((double) userCount / 25);
 			request.setAttribute("totalPages", pages);
 		} catch (Exception e) {

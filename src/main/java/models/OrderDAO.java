@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
 import dbaccess.*;
+import java.util.Map;
+import java.util.HashMap;
 
 public class OrderDAO {
 
@@ -127,6 +129,7 @@ public class OrderDAO {
 			order.setOrderDate(rs.getDate("order_date"));
 			order.setSubtotal(rs.getFloat("subtotal"));
 			order.setStatus(rs.getString("status"));
+			order.setCustomerId(rs.getInt("customer_id"));
 
 			int orderId = order.getOrderId();
 			sql = "SELECT * FROM order_items oi INNER JOIN books b ON oi.book_id = b.book_id WHERE order_id = ?";
@@ -194,5 +197,37 @@ public class OrderDAO {
 			conn.close();
 		}
 		return rowsAffected;
+	}
+	
+	public List<Map<String, Object>> getTopCustomers() {
+		Connection conn = DBConnection.getConnection();
+		List<Map<String, Object>> result = new ArrayList<>();
+		try {
+			String sql = "SELECT u.name AS customer_name, u.user_id AS customer_id, ROUND(SUM(o.subtotal), 2) AS total_spent " +
+			             "FROM users u " +
+			             "JOIN orders o ON u.user_id = o.customer_id " +
+			             "GROUP BY u.name, u.user_id " +
+			             "ORDER BY total_spent DESC " +
+			             "LIMIT 10";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				Map<String, Object> row = new HashMap<>();
+				row.put("customer_name", rs.getString("customer_name"));
+				row.put("customer_id", rs.getInt("customer_id"));
+				row.put("total_spent", rs.getDouble("total_spent"));
+				result.add(row);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 }
