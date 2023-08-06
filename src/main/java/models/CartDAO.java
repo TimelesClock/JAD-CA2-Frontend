@@ -10,18 +10,18 @@ import java.util.HashMap;
 import dbaccess.*;
 
 public class CartDAO {
-    public ArrayList<Cart> getCart(int userId, Integer limit, Integer offset) throws SQLException {
+    public ArrayList<Cart> getCart(int userid, Integer limit, Integer offset) throws SQLException {
 		Connection conn = DBConnection.getConnection();
         ArrayList<Cart> cartItems = new ArrayList<Cart>();
         try {
-            String sql = "SELECT c.cart_id, b.image, b.book_id, b.title, a.name AS author, b.price, b.quantity AS max, c.quantity\r\n"
+            String sql = "SELECT c.cart_id, b.image_url, b.book_id, b.title, a.name AS author, b.price, b.quantity AS max, c.quantity\r\n"
             + "FROM cart c\r\n"
             + "INNER JOIN books b ON c.book_id = b.book_id\r\n"
             + "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
             + "WHERE user_id = ?\r\n"
             + "LIMIT ?, ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, userId);
+            pst.setInt(1, userid);
             pst.setInt(2, offset);
             pst.setInt(3, limit);
             ResultSet rs = pst.executeQuery();
@@ -34,7 +34,42 @@ public class CartDAO {
 				item.setPrice(rs.getBigDecimal("price"));
 				item.setMax(rs.getInt("max"));
 				item.setQuantity(rs.getInt("quantity"));
-				item.setImage(rs.getString("image"));
+				item.setImage(rs.getString("image_url"));
+
+				cartItems.add(item);
+            }
+            rs.close();
+            pst.close();
+        } catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+        return cartItems;
+    }
+    
+    public ArrayList<Cart> getCartItems(int userid) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+        ArrayList<Cart> cartItems = new ArrayList<Cart>();
+        try {
+            String sql = "SELECT c.cart_id, b.image_url, b.book_id, b.title, a.name AS author, b.price, b.quantity AS max, c.quantity\r\n"
+            + "FROM cart c\r\n"
+            + "INNER JOIN books b ON c.book_id = b.book_id\r\n"
+            + "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
+            + "WHERE user_id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, userid);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()) {
+                Cart item = new Cart();
+                item.setCartId(rs.getInt("cart_id"));
+				item.setBookId(rs.getInt("book_id"));
+				item.setTitle(rs.getString("title"));
+				item.setAuthor(rs.getString("author"));
+				item.setPrice(rs.getBigDecimal("price"));
+				item.setMax(rs.getInt("max"));
+				item.setQuantity(rs.getInt("quantity"));
+				item.setImage(rs.getString("image_url"));
 
 				cartItems.add(item);
             }
@@ -48,7 +83,7 @@ public class CartDAO {
         return cartItems;
     }
 
-    public Integer getTotalCartItems(int userId) throws SQLException {
+    public Integer getTotalCartItems(int userid) throws SQLException {
         Connection conn = DBConnection.getConnection();
         Integer totalRecords = 0;
         try{
@@ -58,7 +93,7 @@ public class CartDAO {
             + "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
             + "WHERE user_id = ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, userId);
+            pst.setInt(1, userid);
             ResultSet rs = pst.executeQuery();
             if(rs.next()){
                 totalRecords = rs.getInt(1);
@@ -72,8 +107,55 @@ public class CartDAO {
         }
         return totalRecords;
     }
+    
+    public Integer getTotalCartQuantity(int userid) throws SQLException {
+        Connection conn = DBConnection.getConnection();
+        Integer totalRecords = 0;
+        try{
+            String sql = "SELECT SUM(c.quantity) AS total_quantity\r\n"
+            + "FROM cart c\r\n"
+            + "INNER JOIN books b ON c.book_id = b.book_id\r\n"
+            + "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
+            + "WHERE user_id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, userid);
+            ResultSet rs = pst.executeQuery();
+            if(rs.next()){
+                totalRecords = rs.getInt("total_quantity");
+            }
+            rs.close();
+            pst.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+        return totalRecords;
+    }
+    
+    public Integer getCartItemQuantity(int userid, int bookId) throws SQLException {
+        Connection conn = DBConnection.getConnection();
+        Integer currentQuantity = 0;
+        try{
+            String sql = "SELECT quantity FROM cart WHERE user_id = ? AND book_id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, userid);
+            pst.setInt(2, bookId);
+            ResultSet rs = pst.executeQuery();
+            if(rs.next()){
+            	currentQuantity = rs.getInt("quantity");
+            } else {
+            	currentQuantity = 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+        return currentQuantity;
+    }
 
-    public Double getSubtotal(int userId) throws SQLException {
+    public Double getSubtotal(int userid) throws SQLException {
         Connection conn = DBConnection.getConnection();
         Double subtotal = 0.00;
         try{
@@ -83,7 +165,7 @@ public class CartDAO {
             + "INNER JOIN authors a ON b.author_id = a.author_id\r\n"
             + "WHERE user_id = ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, userId);
+            pst.setInt(1, userid);
             ResultSet rs = pst.executeQuery();
             if(rs.next()){
                 subtotal = rs.getDouble(1);
@@ -98,7 +180,7 @@ public class CartDAO {
         return subtotal;
     }
 
-    public Integer addToCart(int userId, HashMap<String,Integer> cartItem) throws SQLException {
+    public Integer addToCart(int userid, int bookId, int quantity) throws SQLException {
 		Connection conn = DBConnection.getConnection();
         int rowsAffected = 0;
         try {
@@ -107,10 +189,28 @@ public class CartDAO {
             + "ON DUPLICATE KEY UPDATE\r\n" 
             + "quantity = quantity + ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, userId);
-            pst.setInt(2, cartItem.get("bookId"));
-            pst.setInt(3, cartItem.get("quantity"));
-            pst.setInt(4, cartItem.get("quantity"));
+            pst.setInt(1, userid);
+            pst.setInt(2, bookId);
+            pst.setInt(3, quantity);
+            pst.setInt(4, quantity);
+            rowsAffected = pst.executeUpdate();
+            pst.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+        return rowsAffected;
+    }
+    
+    public Integer updateCart(int quantity, int cartId) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+        int rowsAffected = 0;
+        try {
+            String sql = "UPDATE cart SET quantity = ? WHERE cart_id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, quantity);
+            pst.setInt(2, cartId);
             rowsAffected = pst.executeUpdate();
             pst.close();
         } catch (Exception e) {
@@ -128,6 +228,23 @@ public class CartDAO {
             String sql = "DELETE FROM cart WHERE cart_id = ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, cartId);
+            rowsAffected = pst.executeUpdate();
+            pst.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+        return rowsAffected;
+    }
+    
+    public Integer deleteAllFromCart(int userid) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+        int rowsAffected = 0;
+        try {
+            String sql = "DELETE FROM cart WHERE user_id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, userid);
             rowsAffected = pst.executeUpdate();
             pst.close();
         } catch (Exception e) {

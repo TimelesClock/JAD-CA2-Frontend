@@ -14,7 +14,7 @@ import models.UserDAO;
 /**
  * Servlet implementation class CustomerProfile
  */
-@WebServlet("/CustomerProfile")
+@WebServlet("/customer/profile")
 public class CustomerProfile extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -32,11 +32,21 @@ public class CustomerProfile extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		HttpSession session = request.getSession(false);
-		int userId = (int) session.getAttribute("userId");
+		int userid = -1;
+		try {
+			userid = Integer.parseInt((String) session.getAttribute("userid"));
+		} catch (NumberFormatException e) {
+        	e.printStackTrace();
+            System.out.println("error");
+            request.setAttribute("err", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/home");
+            return;
+        }
+		
 		User user = new User();
         try {
             UserDAO db = new UserDAO();
-            user = db.getUserById(userId);
+            user = db.getUserById(userid);
         } catch (Exception e) {
         	e.printStackTrace();
             System.out.println("error");
@@ -45,7 +55,7 @@ public class CustomerProfile extends HttpServlet {
             return;
         }
         request.setAttribute("user", user);
-        request.getRequestDispatcher("customer/customerProfile.jsp").forward(request, response);
+        request.getRequestDispatcher("/customer/customerProfile.jsp").forward(request, response);
 	}
 
 	/**
@@ -53,7 +63,43 @@ public class CustomerProfile extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
+		HttpSession session = request.getSession(false);
+		int userid = -1;
+		try {
+			userid = Integer.parseInt((String) session.getAttribute("userid"));
+		} catch (NumberFormatException e) {
+        	e.printStackTrace();
+            System.out.println("error");
+            request.setAttribute("err", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/home");
+            return;
+        }
+		
+		String username = request.getParameter("username");
+		String email = request.getParameter("email");
+		String phone = request.getParameter("phone");
+		String addressId = request.getParameter("addressId");
+		if (addressId.equals("0")) {
+			addressId = null;
+		}
+		int rowsAffected = 0;
+		try {
+			UserDAO db = new UserDAO();
+			rowsAffected = db.editUserById(userid, username, email, phone, addressId);
+			
+			if (rowsAffected > 0) {
+				response.sendRedirect(request.getContextPath()+"/customer/profile?success=Profile%20Changed%20Successfully");
+				return;
+			} else {
+				response.sendRedirect(request.getContextPath()+"/customer/profile?err=Something%20Went%20Wrong");
+				return;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect(request.getContextPath()+"/customer/profile?err=Something%20Went%20Wrong");
+			return;
+		}
+		// doGet(request, response);
 	}
 
 }

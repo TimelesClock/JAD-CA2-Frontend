@@ -5,7 +5,7 @@
 	%>
 	<div class="flex flex-row items-center">
 
-		<form action="CustomerPanelServlet" method="get">
+		<form action="<%=request.getContextPath() + "/customer/cart"%>" method="get">
 			<input type="hidden" name="p" value="myCart">
 			<button type="submit">
 				<svg xmlns="http://www.w3.org/2000/svg"
@@ -34,22 +34,32 @@
 					%> <%=username%> <%
  } else {
  %>
-					<button type="button" onclick="window.location.href='login.jsp';">Sign
-						In / Register</button> <%
- }
- %>
+					<form action="<%=request.getContextPath() + "/customer/"%>"
+						method="get">
+						<button type="submit">Sign In / Register</button>
+					</form>
+					<%
+					}
+					%>
 					<div class="divider m-0 px-0"></div>
 				</li>
 				<li>
-					<form action="CustomerPanelServlet" method="get">
+					<form action="<%=request.getContextPath() + "/customer/profile"%>"
+						method="get">
 						<input type="hidden" name="p" value="myProfile">
 						<button type="submit">My Profile</button>
 					</form>
 				</li>
 				<li>
-					<form action="CustomerPanelServlet" method="get">
+					<form action="<%=request.getContextPath() + "/customer/changePassword"%>" method="get">
 						<input type="hidden" name="p" value="changePasswordForm">
 						<button type="submit">Change Password</button>
+					</form>
+				</li>
+				<li>
+					<form action="<%=request.getContextPath() + "/customer/address"%>" method="get">
+						<input type="hidden" name="p" value="myAddress">
+						<button type="submit">My Address</button>
 					</form>
 				</li>
 			</ul>

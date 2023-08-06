@@ -55,7 +55,8 @@
 					<h3 class="my-5 text-xl font-semibold">
 						$<%=book.getPrice()%>
 					</h3>
-					<form action="CustomerPanelServlet" method="post">
+					<form action="<%=request.getContextPath() + "/customer/cart/add"%>"
+						method="post">
 						<input type="hidden" name="function" value="addToCart"> <input
 							type="hidden" name="bookId" value="<%=book.getBookId()%>">
 						<div class="flex flex-row items-center mb-5">
@@ -81,6 +82,31 @@
 								Add to Cart</button>
 						</div>
 					</form>
+					<%
+					try {
+						String success = (String) request.getParameter("success");
+						String err = (String) request.getParameter("err");
+						if (success != null) {
+					%>
+					<p class=""><%=success%></p>
+					<%
+					} else if (err != null) {
+					%>
+					<p class=""><%=err%></p>
+					<%
+					}
+					} catch (Exception e) {
+					String err = (String) request.getParameter("err");
+					%>
+					<!-- Error Message -->
+					<div class="toast toast-top toast-center justify-center">
+						<div class="alert alert-error">
+							<span><%=err%></span>
+						</div>
+					</div>
+					<%
+					}
+					%>
 					<div class="tabs pt-6 pb-3">
 						<button type="button" class="tab tab-lg tab-lifted tab-active"
 							id="descriptionTab">Description</button>
@@ -272,7 +298,7 @@
 	<%
 	}
 	%>
-	<div class = "mt-72">
+	<div class="mt-72">
 		<%@include file="footer.html"%>
 	</div>
 

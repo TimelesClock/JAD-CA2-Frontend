@@ -41,20 +41,20 @@ public class BookServlet extends HttpServlet {
         int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
         int limit = 15;
         int offset = (page - 1) * limit;
-        int totalRecords = 0;
+        int totalRecords = -1;
         int totalPages = 0;
         try {
             BookDAO db1 = new BookDAO();
             books = db1.getBooks(filter, limit, offset);
         	
-        	if (books == null) {
+        	if (books.size() == 0) {
     			request.setAttribute("err", "No books found.");
     		}
 
         	totalRecords = db1.getTotalBooks(filter);
         	
-    		if (totalRecords == 0) {
-    			request.setAttribute("err", "Zero books found.");
+    		if (totalRecords == -1) {
+    			request.setAttribute("err", "Something went wrong.");
     		}
 
             totalPages = (int) Math.ceil((double) totalRecords / limit);

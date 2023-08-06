@@ -111,13 +111,13 @@ public class UserDAO {
 		return numberOfUsers;
 	}
 
-	public User getUserById(int userId) throws SQLException {
+	public User getUserById(int userid) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		User user = new User();
 		try {
 			String sql = "SELECT * FROM users WHERE user_id = ?";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
-			userStmt.setInt(1, userId);
+			userStmt.setInt(1, userid);
 			ResultSet userRs = userStmt.executeQuery();
 			while (userRs.next()) {
 				user.setUserId(userRs.getInt("user_id"));
@@ -125,6 +125,8 @@ public class UserDAO {
 				user.setEmail(userRs.getString("email"));
 				user.setRole(userRs.getString("role"));
 				user.setPhone(userRs.getString("phone"));
+				user.setAddressId(Integer.toString(userRs.getInt("address_id")));
+				user.setStripeCustomerId(userRs.getString("stripe_customer_id"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -134,17 +136,36 @@ public class UserDAO {
 		return user;
 	}
 
-	public Integer editUserById(int userId, String name, String email, String phone,String addressId) throws SQLException {
+	public Integer editUserById(int userid, String name, String email, String phone, String addressId) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		int rowsAffected = 0;
 		try {
-			String sql = "UPDATE users SET name = ?, email = ?, phone = ?,address_id = ? WHERE user_id = ?;";
+			String sql = "UPDATE users SET name = ?, email = ?, phone = ?, address_id = ? WHERE user_id = ?;";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
 			userStmt.setString(1, name);
 			userStmt.setString(2, email);
 			userStmt.setString(3, phone);
-			userStmt.setString(4,addressId);
-			userStmt.setInt(5, userId);
+			userStmt.setString(4, addressId);
+			userStmt.setInt(5, userid);
+			rowsAffected = userStmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return rowsAffected;
+	}
+	
+	public Integer editUserProfileById(int userid, String name, String email, String phone) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		int rowsAffected = 0;
+		try {
+			String sql = "UPDATE users SET name = ?, email = ?, phone = ? WHERE user_id = ?;";
+			PreparedStatement userStmt = conn.prepareStatement(sql);
+			userStmt.setString(1, name);
+			userStmt.setString(2, email);
+			userStmt.setString(3, phone);
+			userStmt.setInt(4, userid);
 			rowsAffected = userStmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -154,14 +175,31 @@ public class UserDAO {
 		return rowsAffected;
 	}
 
-	public Integer changeUserPasswordById(int userId, String password) throws SQLException {
+	public Integer changeUserPasswordById(int userid, String password) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		int rowsAffected = 0;
 		try {
 			String sql = "UPDATE users SET password = MD5(?) WHERE user_id = ?;";
 			PreparedStatement userStmt = conn.prepareStatement(sql);
 			userStmt.setString(1, password);
-			userStmt.setInt(2, userId);
+			userStmt.setInt(2, userid);
+			rowsAffected = userStmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return rowsAffected;
+	}
+	
+	public Integer changeUserAddressById(int userid, String addressId) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		int rowsAffected = 0;
+		try {
+			String sql = "UPDATE users SET address_id = ? WHERE user_id = ?;";
+			PreparedStatement userStmt = conn.prepareStatement(sql);
+			userStmt.setString(1, addressId);
+			userStmt.setInt(2, userid);
 			rowsAffected = userStmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();

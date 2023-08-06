@@ -205,7 +205,7 @@
 				</h2>
 				<p class="line-clamp-2"><%=book.getDescription().length() > 100 ? book.getDescription().substring(0, 100) + "..." : book.getDescription()%></p>
 				<div class="card-actions justify-end">
-					<form class="btn btn-primary" action="BookDetails"
+					<form class="btn btn-primary" action="bookDetails"
 						method="get">
 						<input type="hidden" name="bookId" value='<%=book.getBookId()%>'>
 						<input class="w-full h-full" type="submit" value="SHOW DETAILS" />

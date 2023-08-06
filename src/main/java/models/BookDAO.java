@@ -110,6 +110,7 @@ public class BookDAO {
 			ResultSet rs = pst.executeQuery();
 
 			if (rs.next()) {
+				book.setBookId(bookId);
 				book.setImage(rs.getString("image_url"));
 				book.setTitle(rs.getString("title"));
 				book.setAuthorId(rs.getInt("author_id"));
@@ -192,6 +193,25 @@ public class BookDAO {
 			conn.close();
 		}
 		return totalBooks;
+	}
+	
+	public Integer getQuantityOfBook(int bookId) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		Integer quantityOfBooks = 0;
+		try {
+			String sql = "SELECT quantity FROM books WHERE book_id = ?;";
+			PreparedStatement pst = conn.prepareStatement(sql);
+			pst.setInt(1, bookId);;
+			ResultSet rs = pst.executeQuery();
+			if (rs.next()) {
+				quantityOfBooks = rs.getInt("quantity");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return quantityOfBooks;
 	}
 
 	public ArrayList<Book> getAllBooks(Integer limit, Integer offset,String search) throws SQLException {

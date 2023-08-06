@@ -8,21 +8,29 @@ public class User {
     private String role;
     private String phone;
     private String addressId;
+    private String stripeCustomerId;
+    
     public User() {
     }
 
     
     // Getters and Setters
 
+    public String getStripeCustomerId() {
+		return stripeCustomerId;
+	}
+
+	public void setStripeCustomerId(String stripeCustomerId) {
+		this.stripeCustomerId = stripeCustomerId;
+	}
+    
     public String getAddressId() {
 		return addressId;
 	}
 
-
 	public void setAddressId(String addressId) {
 		this.addressId = addressId;
 	}
-
 
 	public int getUserId() {
         return userId;
